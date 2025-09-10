@@ -289,7 +289,6 @@ function handleAddShow(e) {
     const date = document.getElementById('newDate').value;
     const year = document.getElementById('newYear').value;
     const note = document.getElementById('newNote').value;
-    const horror = document.getElementById('newHorror').checked;
     const isMovie = document.getElementById('isMovie').checked;
     
     const section = title.charAt(0).toUpperCase();
@@ -300,7 +299,6 @@ function handleAddShow(e) {
         status,
         genres: genres.sort(),
         section: sectionKey,
-        horror,
         isMovie,
         seasons: []
     };
@@ -480,7 +478,6 @@ function editItem(index) {
     document.getElementById('newStatus').value = item.status;
     document.getElementById('newGenres').value = item.genres.join(', ');
     document.getElementById('newNote').value = item.note || '';
-    document.getElementById('newHorror').checked = item.horror || false;
     
     // Pre-fill date if item is watched
     if (item.date && item.status === 'watched') {
