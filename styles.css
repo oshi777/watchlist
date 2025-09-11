@@ -12,6 +12,24 @@ body {
     min-height: 100vh;
 }
 
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #404040;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #7f7f7f;
+}
+
 .container {
     max-width: 1400px;
     margin: 0 auto;
