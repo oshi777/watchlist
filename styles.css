@@ -499,9 +499,19 @@ header p {
 }
 
 .modal input[type="date"] {
-    width: 100%;
-    padding: 12px;
-    box-sizing: border-box;
+    width: 100% !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+}
+
+.modal input[type="date"]::-webkit-input-placeholder {
+    color: #7f7f7f;
+}
+
+.modal input[type="date"]:invalid {
+    color: #7f7f7f;
 }
 
 .modal input:focus, .modal select:focus {
