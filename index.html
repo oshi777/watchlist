@@ -29,6 +29,7 @@
                     <button id="exportBtn" class="add-btn">Export</button>
                     <button id="importBtn" class="add-btn">Import</button>
                     <button id="resetBtn" class="reset-btn">Reset All</button>
+                    <button onclick="window.location.href='guide.html'" class="add-btn">Guide</button>
                     <input type="file" id="importFile" accept=".json" style="display:none;">
                 </div>
             </div>
@@ -117,22 +118,10 @@
     </div>
 
     <script>
-        // Auth check and protection
         if (!localStorage.getItem('_auth_token')) {
             window.location.href = 'login.html';
         }
         
-        // Disable inspect tools
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                (e.ctrlKey && e.shiftKey && e.key === 'C') || (e.ctrlKey && e.key === 'u')) {
-                e.preventDefault();
-                return false;
-            }
-        });
-        
-        // Lock button functionality
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('lockBtn').addEventListener('click', function() {
                 localStorage.removeItem('_auth_token');
