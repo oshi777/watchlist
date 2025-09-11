@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchly - User Guide</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Watchly User Guide</h1>
+            <p>Learn how to use your personal watchlist</p>
+            <button onclick="window.location.href='index.html'" class="add-btn">Back To Watchly</button>
+        </header>
+
+        <main>
+            <div class="guide-content">
+                <div class="guide-section">
+                    <h2>Getting Started</h2>
+                    <p>Welcome to Watchly! This guide will help you manage your movies and TV shows effectively.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Adding Items</h2>
+                    <ul>
+                        <li>Click <strong>"+ Add Show"</strong> button</li>
+                        <li>Enter the title, select status (To Watch/Watched/Upcoming)</li>
+                        <li>Add genres separated by commas (e.g., Action, Drama, Comedy)</li>
+                        <li>Optionally add date, release year, and notes</li>
+                        <li>Check "Movie" if it's a movie instead of a TV show</li>
+                        <li>Click <strong>"Add to Watchlist"</strong></li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Managing Items</h2>
+                    <ul>
+                        <li><strong>Mark Watched/Unwatched:</strong> Toggle completion status</li>
+                        <li><strong>Add Season/Movie:</strong> Track individual seasons or movie sequels</li>
+                        <li><strong>Edit:</strong> Modify title, genres, notes, or other details</li>
+                        <li><strong>Delete:</strong> Remove items with confirmation dialog</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Search & Filter</h2>
+                    <ul>
+                        <li><strong>Search:</strong> Type in the search box to find titles or genres</li>
+                        <li><strong>Status Filter:</strong> Show only Watched, Upcoming, or To Watch items</li>
+                        <li><strong>Genre Filter:</strong> Filter by specific genres</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Data Management</h2>
+                    <ul>
+                        <li><strong>Export:</strong> Download your watchlist as a JSON backup file</li>
+                        <li><strong>Import:</strong> Upload a previously exported JSON file</li>
+                        <li><strong>Reset All:</strong> Clear entire watchlist (with confirmation)</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Status Icons</h2>
+                    <ul>
+                        <li><strong>✓</strong> - Watched</li>
+                        <li><strong>→</strong> - Upcoming</li>
+                        <li><strong>○</strong> - To Watch</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Organization</h2>
+                    <p>Items are automatically organized alphabetically by first letter. Your stats show total items, watched count, and upcoming releases.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Security</h2>
+                    <p>Use the <strong>"Lock"</strong> button to log out and secure your watchlist. You'll need to re-enter the password to access it again.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .guide-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .guide-section {
+            background: linear-gradient(135deg, #404040, #000000);
+            border: 2px solid #7f7f7f;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .guide-section h2 {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #7f7f7f;
+            padding-bottom: 10px;
+        }
+
+        .guide-section p, .guide-section li {
+            color: #bfbfbf;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .guide-section ul {
+            padding-left: 20px;
+        }
+
+        .guide-section strong {
+            color: #ffffff;
+        }
+    </style>
+</body>
+</html>
