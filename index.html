@@ -122,6 +122,16 @@
             window.location.href = 'login.html';
         }
         
+        // Disable dev tools
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'C') || (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('lockBtn').addEventListener('click', function() {
                 localStorage.removeItem('_auth_token');
