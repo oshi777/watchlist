@@ -504,14 +504,41 @@ header p {
     box-sizing: border-box !important;
     max-width: 100% !important;
     min-width: 0 !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    display: block !important;
 }
 
 .modal input[type="date"]::-webkit-input-placeholder {
+    color: #7f7f7f !important;
+    opacity: 1 !important;
+}
+
+.modal input[type="date"]::-webkit-datetime-edit-text {
+    color: #7f7f7f;
+}
+
+.modal input[type="date"]::-webkit-datetime-edit-month-field {
+    color: #7f7f7f;
+}
+
+.modal input[type="date"]::-webkit-datetime-edit-day-field {
+    color: #7f7f7f;
+}
+
+.modal input[type="date"]::-webkit-datetime-edit-year-field {
     color: #7f7f7f;
 }
 
 .modal input[type="date"]:invalid {
-    color: #7f7f7f;
+    color: #7f7f7f !important;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 2) {
+    .modal input[type="date"] {
+        width: 100% !important;
+        flex-shrink: 1 !important;
+    }
 }
 
 .modal input:focus, .modal select:focus {
