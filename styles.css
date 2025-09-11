@@ -498,6 +498,12 @@ header p {
     box-sizing: border-box;
 }
 
+.modal input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
 .modal input:focus, .modal select:focus {
     outline: none;
     border-color: #bfbfbf;
