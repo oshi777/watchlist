@@ -67,9 +67,10 @@
                 <div class="guide-section">
                     <h2>Data Management</h2>
                     <ul>
-                        <li><strong>Export:</strong> Download your watchlist as a JSON backup file</li>
-                        <li><strong>Import:</strong> Upload a previously exported JSON file</li>
+                        <li><strong>Export:</strong> Download watchlist + rankings as JSON backup</li>
+                        <li><strong>Import:</strong> Upload previously exported JSON file</li>
                         <li><strong>Reset All:</strong> Clear entire watchlist (with confirmation)</li>
+                        <li><strong>Auto Backup:</strong> Daily cloud backup (setup required)</li>
                     </ul>
                 </div>
 
@@ -85,6 +86,69 @@
                 <div class="guide-section">
                     <h2>Organization</h2>
                     <p>Items are automatically organized alphabetically by first letter. Your stats show total items, watched count, and upcoming releases.</p>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Leaderboard</h2>
+                    <ul>
+                        <li><strong>Personal Rankings:</strong> Create your own ranked list of favorites</li>
+                        <li><strong>Add Items:</strong> Select from dropdown to add watchlist items to leaderboard</li>
+                        <li><strong>Drag & Drop:</strong> Reorder items by dragging them up/down</li>
+                        <li><strong>Auto Scroll:</strong> Page scrolls automatically when dragging near edges</li>
+                        <li><strong>Remove Items:</strong> Click × button with confirmation dialog</li>
+                        <li><strong>Sync:</strong> Rankings automatically sync with your main watchlist</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Auto Backup Setup</h2>
+                    <p><strong>Step 1:</strong> Get your free JSONBin.io API key</p>
+                    <ul>
+                        <li>Go to <a href="https://jsonbin.io" target="_blank" style="color: #ffffff;">jsonbin.io</a></li>
+                        <li>Click "Create Account" (free)</li>
+                        <li>Verify your email address</li>
+                        <li>Go to "API Keys" section</li>
+                        <li>Click "Create Access Key"</li>
+                        <li>Copy your Master Key (starts with $2a$...)</li>
+                    </ul>
+                    
+                    <p><strong>Step 2:</strong> Enable Auto Backup</p>
+                    <ul>
+                        <li>Go to Backup page in Watchly</li>
+                        <li>Click "Setup API Key"</li>
+                        <li>Paste your JSONBin.io Master Key</li>
+                        <li>Click "Save & Test" to validate</li>
+                    </ul>
+                    
+                    <p><strong>How it works:</strong></p>
+                    <ul>
+                        <li>Backs up every 24 hours when changes are made</li>
+                        <li>Uses only ~365 requests per year (out of 10,000 free)</li>
+                        <li>Includes both watchlist and leaderboard data</li>
+                        <li>Monitor status in real-time on Backup page</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Backup Management</h2>
+                    <ul>
+                        <li><strong>Status Monitoring:</strong> Real-time backup status and API usage</li>
+                        <li><strong>Force Backup:</strong> Manual backup trigger anytime</li>
+                        <li><strong>Test Connection:</strong> Verify API key is working</li>
+                        <li><strong>Account Info:</strong> View plan type and remaining requests</li>
+                        <li><strong>Manual Export/Import:</strong> Always available as backup option</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Data Storage</h2>
+                    <ul>
+                        <li><strong>Local Storage:</strong> Data saved in browser (can be lost)</li>
+                        <li><strong>Auto Backup:</strong> Cloud backup to JSONBin.io (recommended)</li>
+                        <li><strong>Manual Export:</strong> Download JSON files for safekeeping</li>
+                        <li><strong>Import:</strong> Restore from JSON files anytime</li>
+                        <li><strong>Combined Backup:</strong> Export includes both watchlist and rankings</li>
+                    </ul>
                 </div>
 
                 <div class="guide-section">
