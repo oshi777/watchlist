@@ -18,6 +18,49 @@ function loadFromStorage() {
 // Save data to localStorage
 function saveToStorage() {
     localStorage.setItem('watchlistData', JSON.stringify(watchlistData));
+    markDataChanged();
+}
+
+function markDataChanged() {
+    localStorage.setItem('dataChanged', 'true');
+}
+
+function checkAutoBackup() {
+    const apiKey = localStorage.getItem('jsonbinApiKey');
+    const dataChanged = localStorage.getItem('dataChanged');
+    const lastBackup = localStorage.getItem('lastAutoBackup');
+    
+    if (!apiKey || !dataChanged) return;
+    
+    const now = Date.now();
+    const dayInMs = 24 * 60 * 60 * 1000;
+    
+    if (!lastBackup || (now - parseInt(lastBackup)) > dayInMs) {
+        performAutoBackup(apiKey);
+    }
+}
+
+function performAutoBackup(apiKey) {
+    const exportData = {
+        watchlistData: watchlistData,
+        rankings: JSON.parse(localStorage.getItem('watchlistRankings') || '[]'),
+        timestamp: new Date().toISOString()
+    };
+    
+    fetch('https://api.jsonbin.io/v3/b', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Master-Key': apiKey
+        },
+        body: JSON.stringify(exportData)
+    }).then(response => {
+        if (response.ok) {
+            localStorage.setItem('lastAutoBackup', Date.now());
+            localStorage.removeItem('dataChanged');
+            console.log('Auto backup completed');
+        }
+    }).catch(err => console.log('Auto backup failed'));
 }
 
 function initializeApp() {
@@ -32,6 +75,7 @@ function initializeApp() {
     updateStats();
     renderWatchlist();
     setupEventListeners();
+    checkAutoBackup();
 }
 
 function populateGenreFilter() {
@@ -106,16 +150,19 @@ function groupBySection(data) {
 
 function sortItemsByDate(items) {
     return items.sort((a, b) => {
-        // Upcoming items go to bottom
-        if (a.status === 'upcoming' && b.status !== 'upcoming') return 1;
-        if (b.status === 'upcoming' && a.status !== 'upcoming') return -1;
+        // Status priority: watched -> pending -> upcoming
+        const statusOrder = { 'watched': 0, 'pending': 1, 'upcoming': 2 };
+        const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+        if (statusDiff !== 0) return statusDiff;
         
+        // Within watched items, sort by date (earliest first)
         if (a.status === 'watched' && b.status === 'watched') {
-            const yearA = a.year ? parseInt(a.year) : (a.date ? new Date(a.date).getFullYear() : 1900);
-            const yearB = b.year ? parseInt(b.year) : (b.date ? new Date(b.date).getFullYear() : 1900);
-            return yearA - yearB; // oldest to newest by year
+            const dateA = a.date ? new Date(a.date) : new Date(0);
+            const dateB = b.date ? new Date(b.date) : new Date(0);
+            return dateA - dateB;
         }
-        return 0; // keep original order for non-watched items
+        
+        return 0;
     });
 }
 
@@ -236,9 +283,17 @@ function setupEventListeners() {
     document.getElementById('confirmReset').addEventListener('click', confirmReset);
     document.getElementById('cancelReset').addEventListener('click', cancelReset);
     
+    // Watch status confirmation
+    document.getElementById('confirmWatchStatus').addEventListener('click', confirmWatchStatus);
+    document.getElementById('cancelWatchStatus').addEventListener('click', cancelWatchStatus);
+    
     // Export functionality
     document.getElementById('exportBtn').addEventListener('click', function() {
-        const data = JSON.stringify(watchlistData, null, 2);
+        const exportData = {
+            watchlistData: watchlistData,
+            rankings: JSON.parse(localStorage.getItem('watchlistRankings') || '[]')
+        };
+        const data = JSON.stringify(exportData, null, 2);
         const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -253,6 +308,24 @@ function setupEventListeners() {
         document.getElementById('importFile').click();
     });
     
+    // Setup auto backup
+    document.getElementById('setupBackup').addEventListener('click', function() {
+        document.getElementById('backupSetupModal').style.display = 'block';
+    });
+    
+    document.getElementById('confirmBackupSetup').addEventListener('click', function() {
+        const apiKey = document.getElementById('apiKeyInput').value.trim();
+        if (apiKey) {
+            localStorage.setItem('jsonbinApiKey', apiKey);
+            document.getElementById('backupSetupModal').style.display = 'none';
+            showConfirmation('Auto backup enabled! Will backup daily when changes are made.');
+        }
+    });
+    
+    document.getElementById('cancelBackupSetup').addEventListener('click', function() {
+        document.getElementById('backupSetupModal').style.display = 'none';
+    });
+    
     document.getElementById('importFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -260,9 +333,16 @@ function setupEventListeners() {
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    if (confirm('This will replace your current watchlist. Continue?')) {
-                        watchlistData.length = 0;
-                        watchlistData.push(...importedData);
+                    if (confirm('This will replace your current watchlist and rankings. Continue?')) {
+                        // Handle old format (just array) or new format (object with watchlistData and rankings)
+                        if (Array.isArray(importedData)) {
+                            watchlistData.length = 0;
+                            watchlistData.push(...importedData);
+                        } else {
+                            watchlistData.length = 0;
+                            watchlistData.push(...(importedData.watchlistData || []));
+                            localStorage.setItem('watchlistRankings', JSON.stringify(importedData.rankings || []));
+                        }
                         saveToStorage();
                         populateGenreFilter();
                         updateStats();
@@ -338,24 +418,62 @@ function handleAddShow(e) {
     applyFilters();
 }
 
+let itemToToggle = null;
+
 function toggleWatchStatus(index) {
     const item = watchlistData[index];
     
     if (item.status === 'watched') {
-        item.status = 'pending';
-        delete item.date;
+        // Show confirmation only when unmarking as watched
+        itemToToggle = index;
+        document.getElementById('watchStatusMessage').textContent = `Are you sure you want to mark "${item.title}" as unwatched?`;
+        document.getElementById('watchStatusModal').style.display = 'block';
     } else {
+        // Mark as watched immediately without confirmation
         item.status = 'watched';
         item.date = new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
+        saveToStorage();
+        updateStats();
+        applyFilters();
     }
-    
-    saveToStorage();
-    updateStats();
-    applyFilters();
+}
+
+function confirmWatchStatus() {
+    if (itemToToggle !== null) {
+        const item = watchlistData[itemToToggle];
+        if (item.status === 'watched') {
+            item.status = 'pending';
+            delete item.date;
+        } else {
+            item.status = 'watched';
+            item.date = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+        saveToStorage();
+        updateStats();
+        applyFilters();
+        itemToToggle = null;
+    }
+    document.getElementById('watchStatusModal').style.display = 'none';
+}
+
+function cancelWatchStatus() {
+    itemToToggle = null;
+    document.getElementById('watchStatusModal').style.display = 'none';
+}
+
+function showConfirmation(message) {
+    const msgEl = document.getElementById('confirmationMsg');
+    msgEl.textContent = message;
+    msgEl.classList.add('show');
+    setTimeout(() => msgEl.classList.remove('show'), 3000);
 }
 
 function addSeason(index) {
