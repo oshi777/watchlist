@@ -308,24 +308,6 @@ function setupEventListeners() {
         document.getElementById('importFile').click();
     });
     
-    // Setup auto backup
-    document.getElementById('setupBackup').addEventListener('click', function() {
-        document.getElementById('backupSetupModal').style.display = 'block';
-    });
-    
-    document.getElementById('confirmBackupSetup').addEventListener('click', function() {
-        const apiKey = document.getElementById('apiKeyInput').value.trim();
-        if (apiKey) {
-            localStorage.setItem('jsonbinApiKey', apiKey);
-            document.getElementById('backupSetupModal').style.display = 'none';
-            showConfirmation('Auto backup enabled! Will backup daily when changes are made.');
-        }
-    });
-    
-    document.getElementById('cancelBackupSetup').addEventListener('click', function() {
-        document.getElementById('backupSetupModal').style.display = 'none';
-    });
-    
     document.getElementById('importFile').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
