@@ -60,7 +60,7 @@
             color: #7f7f7f;
         }
         
-        .login-btn {
+        .login-btn, .guest-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #7f7f7f, #404040);
@@ -76,10 +76,21 @@
             letter-spacing: 1px;
         }
         
+        .guest-btn {
+            background: linear-gradient(135deg, #555555, #333333);
+            margin-top: 10px;
+        }
+        
         .login-btn:hover {
             background: linear-gradient(135deg, #bfbfbf, #7f7f7f);
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(191,191,191,0.3);
+        }
+        
+        .guest-btn:hover {
+            background: linear-gradient(135deg, #777777, #555555);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(85,85,85,0.3);
         }
         
         .error {
@@ -96,12 +107,13 @@
         <form class="login-form" id="loginForm">
             <input type="password" id="passwordInput" placeholder="Enter Password" required>
             <button type="submit" class="login-btn">Login</button>
+            <button type="button" class="guest-btn" onclick="loginAsGuest()">Login as Guest</button>
             <div id="errorMsg" class="error"></div>
         </form>
     </div>
 
     <script>
-        // Disable right-click and F12
+        // Disable dev tools
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
             if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
@@ -110,7 +122,12 @@
                 return false;
             }
         });
-
+        
+        function loginAsGuest() {
+            localStorage.setItem('_auth_token', btoa(Date.now() + '_guest'));
+            window.location.href = 'index.html';
+        }
+        
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const password = document.getElementById('passwordInput').value;
@@ -124,7 +141,6 @@
             }
         });
 
-        // Check if already authenticated
         if (localStorage.getItem('_auth_token')) {
             window.location.href = 'index.html';
         }
