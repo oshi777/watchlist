@@ -14,6 +14,7 @@
         <div class="nav-links">
             <a href="index.html" class="nav-link">Home</a>
             <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="backup.html" class="nav-link">Backup</a>
             <a href="guide.html" class="nav-link">Guide</a>
         </div>
     </nav>
@@ -38,7 +39,6 @@
                     <button id="addShowBtn" class="add-btn">+ Add Show</button>
                     <button id="exportBtn" class="add-btn">Export</button>
                     <button id="importBtn" class="add-btn">Import</button>
-                    <button id="setupBackup" class="add-btn">Setup Auto Backup</button>
                     <button id="resetBtn" class="reset-btn">Reset All</button>
                     <input type="file" id="importFile" accept=".json" style="display:none;">
                 </div>
@@ -143,19 +143,7 @@
         </div>
     </div>
 
-    <!-- Auto Backup Setup Modal -->
-    <div id="backupSetupModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Setup Auto Backup</h2>
-            <p>Get your free API key from <a href="https://jsonbin.io" target="_blank" style="color: #ffffff;">jsonbin.io</a></p>
-            <input type="text" id="apiKeyInput" placeholder="Enter your JSONBin.io API key">
-            <div class="modal-actions">
-                <button id="confirmBackupSetup" class="delete-btn">Enable Backup</button>
-                <button id="cancelBackupSetup" class="cancel-btn">Cancel</button>
-            </div>
-        </div>
-    </div>
+
 
     <script>
         if (!localStorage.getItem('_auth_token')) {
