@@ -36,29 +36,22 @@
                         <h4>API Key</h4>
                         <div id="apiKeyStatus">Not Set</div>
                         <button id="setupApiKey" class="add-btn">Setup API Key</button>
+                        <button id="removeApiKey" class="delete-btn" style="display:none; margin-top:10px;">Remove API Key</button>
                     </div>
 
-                    <div class="info-card">
-                        <h4>Plan Type</h4>
-                        <div id="planType">Unknown</div>
-                    </div>
 
-                    <div class="info-card">
-                        <h4>Requests Remaining</h4>
-                        <div id="requestsRemaining">Unknown</div>
-                    </div>
 
                     <div class="info-card">
                         <h4>Last Backup</h4>
                         <div id="lastBackupTime">Never</div>
                     </div>
 
-                    <div class="info-card wide-card">
+                    <div class="info-card">
                         <h4>Changes Since Backup</h4>
                         <div id="changesSince">No changes</div>
                     </div>
 
-                    <div class="info-card wide-card">
+                    <div class="info-card extra-wide-card">
                         <h4>Next Backup</h4>
                         <div id="nextBackup">N/A</div>
                     </div>
@@ -80,7 +73,7 @@
             <p>Get your free API key from <a href="https://jsonbin.io" target="_blank" style="color: #ffffff;">jsonbin.io</a></p>
             <input type="text" id="apiKeyInput" placeholder="Enter your JSONBin.io API key">
             <div class="modal-actions">
-                <button id="confirmApiKey" class="delete-btn">Save & Test</button>
+                <button id="confirmApiKey" class="delete-btn">Save</button>
                 <button id="cancelApiKey" class="cancel-btn">Cancel</button>
             </div>
         </div>
@@ -94,6 +87,19 @@
             <p id="statusMessage"></p>
             <div class="modal-actions">
                 <button id="statusOk" class="delete-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove API Key Confirmation Modal -->
+    <div id="removeApiKeyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Remove API Key</h2>
+            <p>This will disable auto backup. You can add a new API key anytime.</p>
+            <div class="modal-actions">
+                <button id="confirmRemoveApiKey" class="delete-btn">Remove</button>
+                <button id="cancelRemoveApiKey" class="cancel-btn">Cancel</button>
             </div>
         </div>
     </div>
@@ -150,6 +156,10 @@
             grid-column: span 2;
         }
 
+        .extra-wide-card {
+            grid-column: span 3;
+        }
+
         .info-card h4 {
             margin-bottom: 10px;
             color: #bfbfbf;
@@ -189,6 +199,7 @@
 
             // API Key Status
             if (apiKey) {
+                document.getElementById('removeApiKey').style.display = 'block';
                 if (apiKeyValid === 'false') {
                     document.getElementById('apiKeyStatus').textContent = 'Invalid Key';
                     document.getElementById('setupApiKey').textContent = 'Fix API Key';
@@ -201,6 +212,7 @@
                     document.getElementById('backupStatus').className = 'status-indicator status-active';
                 }
             } else {
+                document.getElementById('removeApiKey').style.display = 'none';
                 document.getElementById('apiKeyStatus').textContent = 'Not Set';
                 document.getElementById('setupApiKey').textContent = 'Setup API Key';
                 document.getElementById('backupStatus').textContent = 'Not Configured';
@@ -234,33 +246,10 @@
                 document.getElementById('nextBackup').textContent = 'N/A';
             }
 
-            // Only show unknown if no API key, don't refetch account info every update
-            if (!apiKey) {
-                document.getElementById('planType').textContent = 'Unknown';
-                document.getElementById('requestsRemaining').textContent = 'Unknown';
-            }
+
         }
 
-        function fetchAccountInfo(apiKey) {
-            fetch('https://api.jsonbin.io/v3/me', {
-                method: 'GET',
-                headers: {
-                    'X-Master-Key': apiKey
-                }
-            }).then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to fetch account info');
-                }
-            }).then(data => {
-                document.getElementById('planType').textContent = data.plan || 'Free';
-                document.getElementById('requestsRemaining').textContent = data.requestsRemaining || 'Unknown';
-            }).catch(err => {
-                document.getElementById('planType').textContent = 'Error';
-                document.getElementById('requestsRemaining').textContent = 'Error';
-            });
-        }
+
 
         document.getElementById('setupApiKey').addEventListener('click', function() {
             document.getElementById('apiKeyModal').style.display = 'block';
@@ -283,7 +272,7 @@
                         localStorage.setItem('apiKeyValid', 'true');
                         document.getElementById('apiKeyModal').style.display = 'none';
                         showStatus('Success', 'API key validated and saved!');
-                        fetchAccountInfo(apiKey);
+
                     } else {
                         localStorage.setItem('jsonbinApiKey', apiKey);
                         localStorage.setItem('apiKeyValid', 'false');
@@ -313,6 +302,22 @@
         
         document.getElementById('statusOk').addEventListener('click', function() {
             document.getElementById('statusModal').style.display = 'none';
+        });
+        
+        document.getElementById('removeApiKey').addEventListener('click', function() {
+            document.getElementById('removeApiKeyModal').style.display = 'block';
+        });
+        
+        document.getElementById('confirmRemoveApiKey').addEventListener('click', function() {
+            localStorage.removeItem('jsonbinApiKey');
+            localStorage.removeItem('apiKeyValid');
+            document.getElementById('removeApiKeyModal').style.display = 'none';
+            showStatus('Success', 'API key removed. Auto backup disabled.');
+            updateBackupStatus();
+        });
+        
+        document.getElementById('cancelRemoveApiKey').addEventListener('click', function() {
+            document.getElementById('removeApiKeyModal').style.display = 'none';
         });
         
         // Close modals when clicking X
@@ -380,7 +385,7 @@
                 if (response.ok) {
                     localStorage.setItem('apiKeyValid', 'true');
                     showStatus('Success', 'Connection successful!');
-                    fetchAccountInfo(apiKey);
+
                     updateBackupStatus();
                 } else {
                     localStorage.setItem('apiKeyValid', 'false');
