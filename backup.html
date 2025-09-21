@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchly - Auto Backup</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Watchly</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+            <a href="backup.html" class="nav-link">Backup</a>
+            <a href="guide.html" class="nav-link">Guide</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <header>
+            <h1>Auto Backup Status</h1>
+            <p>Monitor your automatic backup system</p>
+        </header>
+
+        <main>
+            <div class="backup-container">
+                <div class="status-card">
+                    <h3>Backup Status</h3>
+                    <div class="status-indicator" id="backupStatus">Not Configured</div>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>GitHub Token</h4>
+                        <div id="apiKeyStatus">Not Set</div>
+                        <button id="setupApiKey" class="add-btn">Setup GitHub</button>
+                        <button id="removeApiKey" class="delete-btn" style="display:none; margin-top:10px;">Remove Token</button>
+                    </div>
+
+
+
+                    <div class="info-card">
+                        <h4>Last Backup</h4>
+                        <div id="lastBackupTime">Never</div>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Changes Since Backup</h4>
+                        <div id="changesSince">No changes</div>
+                    </div>
+
+                    <div class="info-card extra-wide-card">
+                        <h4>Backup Location</h4>
+                        <div id="backupLocation">Not created yet</div>
+                        <button id="viewBackup" class="add-btn" style="display:none; margin-top:10px;">View Backup</button>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="forceBackup" class="add-btn">Force Backup Now</button>
+                    <button id="testConnection" class="add-btn">Test Connection</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- API Key Setup Modal -->
+    <div id="apiKeyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Setup GitHub Backup</h2>
+            <p>Get your free token from <a href="https://github.com/settings/tokens" target="_blank" style="color: #ffffff;">GitHub Settings</a></p>
+            <input type="text" id="githubTokenInput" placeholder="Enter your GitHub personal access token">
+            <div class="modal-actions">
+                <button id="confirmApiKey" class="delete-btn">Save</button>
+                <button id="cancelApiKey" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Message Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="statusTitle">Status</h2>
+            <p id="statusMessage"></p>
+            <div class="modal-actions">
+                <button id="statusOk" class="delete-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove API Key Confirmation Modal -->
+    <div id="removeApiKeyModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Remove GitHub Token</h2>
+            <p>This will disable auto backup. You can add a new token anytime.</p>
+            <div class="modal-actions">
+                <button id="confirmRemoveApiKey" class="delete-btn">Remove</button>
+                <button id="cancelRemoveApiKey" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .backup-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #404040, #000000);
+            border: 2px solid #7f7f7f;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .status-indicator {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 10px;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .status-active {
+            background: #28a745;
+            color: #ffffff;
+        }
+
+        .status-inactive {
+            background: #dc3545;
+            color: #ffffff;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #404040, #000000);
+            border: 2px solid #7f7f7f;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .wide-card {
+            grid-column: span 2;
+        }
+
+        .extra-wide-card {
+            grid-column: span 3;
+        }
+
+        .info-card h4 {
+            margin-bottom: 10px;
+            color: #bfbfbf;
+        }
+
+        .info-card div {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .actions button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #7f7f7f, #404040);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    </style>
+
+    <script>
+        function updateBackupStatus() {
+            const githubToken = localStorage.getItem('githubToken');
+            const lastBackup = localStorage.getItem('lastAutoBackup');
+            const dataChanged = localStorage.getItem('dataChanged');
+            const tokenValid = localStorage.getItem('githubTokenValid');
+
+            // Token Status
+            if (githubToken) {
+                document.getElementById('removeApiKey').style.display = 'block';
+                if (tokenValid === 'false') {
+                    document.getElementById('apiKeyStatus').textContent = 'Invalid Token';
+                    document.getElementById('setupApiKey').textContent = 'Fix GitHub Token';
+                    document.getElementById('backupStatus').textContent = 'Invalid Token';
+                    document.getElementById('backupStatus').className = 'status-indicator status-inactive';
+                } else {
+                    document.getElementById('apiKeyStatus').textContent = 'Valid';
+                    document.getElementById('setupApiKey').textContent = 'Update GitHub Token';
+                    document.getElementById('backupStatus').textContent = 'Active';
+                    document.getElementById('backupStatus').className = 'status-indicator status-active';
+                }
+            } else {
+                document.getElementById('removeApiKey').style.display = 'none';
+                document.getElementById('apiKeyStatus').textContent = 'Not Set';
+                document.getElementById('setupApiKey').textContent = 'Setup GitHub';
+                document.getElementById('backupStatus').textContent = 'Not Configured';
+                document.getElementById('backupStatus').className = 'status-indicator status-inactive';
+            }
+
+            // Last Backup
+            if (lastBackup) {
+                const date = new Date(parseInt(lastBackup));
+                document.getElementById('lastBackupTime').textContent = date.toLocaleString();
+            } else {
+                document.getElementById('lastBackupTime').textContent = 'Never';
+            }
+
+            // Changes Since Backup
+            document.getElementById('changesSince').textContent = dataChanged ? 'Yes' : 'No';
+
+            // Backup Location
+            const gistUrl = localStorage.getItem('watchlyGistUrl');
+            if (gistUrl) {
+                document.getElementById('backupLocation').textContent = 'GitHub Gist';
+                document.getElementById('viewBackup').style.display = 'block';
+            } else {
+                document.getElementById('backupLocation').textContent = 'Not created yet';
+                document.getElementById('viewBackup').style.display = 'none';
+            }
+
+
+        }
+
+
+
+        document.getElementById('setupApiKey').addEventListener('click', function() {
+            document.getElementById('apiKeyModal').style.display = 'block';
+        });
+        
+        document.getElementById('confirmApiKey').addEventListener('click', function() {
+            const githubToken = document.getElementById('githubTokenInput').value.trim();
+            if (githubToken) {
+                localStorage.setItem('githubToken', githubToken);
+                localStorage.setItem('githubTokenValid', 'true');
+                document.getElementById('apiKeyModal').style.display = 'none';
+                showStatus('Success', 'GitHub token saved!');
+                updateBackupStatus();
+            }
+        });
+        
+        document.getElementById('cancelApiKey').addEventListener('click', function() {
+            document.getElementById('apiKeyModal').style.display = 'none';
+        });
+        
+        function showStatus(title, message) {
+            document.getElementById('statusTitle').textContent = title;
+            document.getElementById('statusMessage').textContent = message;
+            document.getElementById('statusModal').style.display = 'block';
+        }
+        
+        document.getElementById('statusOk').addEventListener('click', function() {
+            document.getElementById('statusModal').style.display = 'none';
+        });
+        
+        document.getElementById('removeApiKey').addEventListener('click', function() {
+            document.getElementById('removeApiKeyModal').style.display = 'block';
+        });
+        
+        document.getElementById('confirmRemoveApiKey').addEventListener('click', function() {
+            localStorage.removeItem('githubToken');
+            localStorage.removeItem('githubTokenValid');
+            document.getElementById('removeApiKeyModal').style.display = 'none';
+            showStatus('Success', 'GitHub token removed. Auto backup disabled.');
+            updateBackupStatus();
+        });
+        
+        document.getElementById('cancelRemoveApiKey').addEventListener('click', function() {
+            document.getElementById('removeApiKeyModal').style.display = 'none';
+        });
+        
+        // Close modals when clicking X
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+
+        document.getElementById('forceBackup').addEventListener('click', function() {
+            const githubToken = localStorage.getItem('githubToken');
+            if (!githubToken) {
+                showStatus('Warning', 'Please setup GitHub token first');
+                return;
+            }
+
+            const watchlistData = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+            const rankings = JSON.parse(localStorage.getItem('watchlistRankings') || '[]');
+            
+            const exportData = {
+                watchlistData: watchlistData,
+                rankings: rankings,
+                timestamp: new Date().toISOString()
+            };
+            
+            const gistId = localStorage.getItem('watchlyGistId');
+            
+            if (gistId) {
+                // Update existing gist
+                const updateData = {
+                    files: {
+                        'watchly-backup.json': {
+                            content: JSON.stringify(exportData, null, 2)
+                        }
+                    }
+                };
+                
+                fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                }).then(response => {
+                    if (response.ok) {
+                        localStorage.setItem('lastAutoBackup', Date.now());
+                        localStorage.removeItem('dataChanged');
+                        localStorage.setItem('githubTokenValid', 'true');
+                        const gistUrl = localStorage.getItem('watchlyGistUrl');
+                        showStatus('Success', 'Backup updated successfully!');
+                        updateBackupStatus();
+                    } else {
+                        localStorage.setItem('githubTokenValid', 'false');
+                        showStatus('Error', 'Backup failed. Invalid token.');
+                        updateBackupStatus();
+                    }
+                }).catch(err => {
+                    showStatus('Error', 'Backup failed. Check your connection.');
+                });
+            } else {
+                // Create new gist
+                const gistData = {
+                    description: 'Watchly Backup - Access at gist.github.com',
+                    public: false,
+                    files: {
+                        'watchly-backup.json': {
+                            content: JSON.stringify(exportData, null, 2)
+                        }
+                    }
+                };
+                
+                fetch('https://api.github.com/gists', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(gistData)
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                }).then(data => {
+                    if (data) {
+                        localStorage.setItem('watchlyGistId', data.id);
+                        localStorage.setItem('watchlyGistUrl', data.html_url);
+                        localStorage.setItem('lastAutoBackup', Date.now());
+                        localStorage.removeItem('dataChanged');
+                        localStorage.setItem('githubTokenValid', 'true');
+                        showStatus('Success', `Backup created! View at: ${data.html_url}`);
+                        updateBackupStatus();
+                    }
+                }).catch(err => {
+                    localStorage.setItem('githubTokenValid', 'false');
+                    showStatus('Error', 'Backup failed. Check your connection.');
+                });
+            }
+        });
+
+        document.getElementById('testConnection').addEventListener('click', function() {
+            const githubToken = localStorage.getItem('githubToken');
+            if (!githubToken) {
+                showStatus('Warning', 'Please setup GitHub token first');
+                return;
+            }
+
+            fetch('https://api.github.com/user', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            }).then(response => {
+                if (response.ok) {
+                    localStorage.setItem('githubTokenValid', 'true');
+                    showStatus('Success', 'GitHub connection successful!');
+                    updateBackupStatus();
+                } else {
+                    localStorage.setItem('githubTokenValid', 'false');
+                    showStatus('Error', 'Connection failed. Invalid token.');
+                    updateBackupStatus();
+                }
+            }).catch(err => {
+                showStatus('Error', 'Connection failed. Check your internet.');
+            });
+        });
+
+        // View backup button
+        document.getElementById('viewBackup').addEventListener('click', function() {
+            const gistUrl = localStorage.getItem('watchlyGistUrl');
+            if (gistUrl) {
+                window.open(gistUrl, '_blank');
+            }
+        });
+        
+        // Update status every 30 seconds
+        setInterval(updateBackupStatus, 30000);
+        updateBackupStatus();
+    </script>
+</body>
+</html>
