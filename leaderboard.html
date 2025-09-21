@@ -293,12 +293,20 @@
                 div.addEventListener('dragleave', handleDragLeave);
                 div.addEventListener('drop', handleDrop);
                 div.addEventListener('dragend', handleDragEnd);
+                
+                // Touch events for mobile
+                div.addEventListener('touchstart', handleTouchStart, {passive: false});
+                div.addEventListener('touchmove', handleTouchMove, {passive: false});
+                div.addEventListener('touchend', handleTouchEnd);
 
                 container.appendChild(div);
             });
         }
 
         let draggedElement = null;
+        let touchStartY = 0;
+        let touchElement = null;
+        let touchOffset = 0;
 
         function handleDragStart(e) {
             draggedElement = this;
@@ -367,6 +375,65 @@
             });
             stopAutoScroll();
             draggedElement = null;
+        }
+        
+        function handleTouchStart(e) {
+            touchElement = this;
+            touchStartY = e.touches[0].clientY;
+            const rect = this.getBoundingClientRect();
+            touchOffset = touchStartY - rect.top;
+            this.classList.add('dragging');
+        }
+        
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!touchElement) return;
+            
+            const touch = e.touches[0];
+            const currentY = touch.clientY;
+            
+            // Find element under touch
+            const elementBelow = document.elementFromPoint(touch.clientX, currentY);
+            const rankingItem = elementBelow?.closest('.ranking-item');
+            
+            // Clear previous highlights
+            document.querySelectorAll('.ranking-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            
+            // Highlight current target
+            if (rankingItem && rankingItem !== touchElement) {
+                rankingItem.classList.add('drag-over');
+            }
+        }
+        
+        function handleTouchEnd(e) {
+            if (!touchElement) return;
+            
+            const touch = e.changedTouches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const targetItem = elementBelow?.closest('.ranking-item');
+            
+            if (targetItem && targetItem !== touchElement) {
+                const draggedIndex = parseInt(touchElement.dataset.index);
+                const targetIndex = parseInt(targetItem.dataset.index);
+                
+                const draggedItem = rankings.splice(draggedIndex, 1)[0];
+                rankings.splice(targetIndex, 0, draggedItem);
+                
+                saveRankings();
+                renderLeaderboard();
+            }
+            
+            // Clean up
+            touchElement.classList.remove('dragging');
+            document.querySelectorAll('.ranking-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            
+            touchElement = null;
+            touchStartY = 0;
+            touchOffset = 0;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
