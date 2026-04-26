@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watchly - Leaderboard</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -58,8 +61,8 @@
         }
 
         .ranking-item {
-            background: linear-gradient(135deg, #404040, #000000);
-            border: 2px solid #7f7f7f;
+            background: var(--surface);
+            border: 1px solid rgba(195,199,206,0.1);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 15px;
@@ -72,7 +75,7 @@
         }
 
         .ranking-item:hover {
-            border-color: #bfbfbf;
+            border-color: var(--muted);
             transform: translateY(-2px);
         }
 
@@ -88,15 +91,15 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: #ffffff;
-            box-shadow: 0 0 15px #ffffff;
+            background: var(--light);
+            box-shadow: 0 0 15px var(--light);
             border-radius: 2px;
         }
 
         .rank-number {
             font-size: 2rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--light);
             min-width: 50px;
             text-align: center;
         }
@@ -108,17 +111,17 @@
         .item-title {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--light);
             margin-bottom: 5px;
         }
 
         .item-details {
-            color: #bfbfbf;
+            color: var(--silver);
             font-size: 0.9rem;
         }
 
         .drag-handle {
-            color: #7f7f7f;
+            color: var(--muted);
             font-size: 1.5rem;
             cursor: grab;
             display: flex;
@@ -129,11 +132,11 @@
         .no-items {
             text-align: center;
             padding: 60px 20px;
-            color: #bfbfbf;
+            color: var(--silver);
             font-size: 1.2rem;
-            background: linear-gradient(135deg, #404040, #000000);
+            background: var(--surface);
             border-radius: 15px;
-            border: 2px solid #7f7f7f;
+            border: 1px solid rgba(195,199,206,0.1);
         }
 
         .add-to-ranking {
@@ -146,17 +149,17 @@
         .add-to-ranking select {
             flex: 1;
             padding: 12px;
-            border: 2px solid #7f7f7f;
+            border: 1px solid var(--muted);
             border-radius: 8px;
-            background-color: #404040;
-            color: #ffffff;
+            background-color: var(--surface);
+            color: var(--light);
             font-size: 1rem;
         }
 
         .add-to-ranking button {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #7f7f7f, #404040);
-            color: #ffffff;
+            background: var(--muted);
+            color: var(--light);
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -166,7 +169,7 @@
 
         .delete-from-ranking {
             background: none;
-            color: #7f7f7f;
+            color: var(--muted);
             border: none;
             cursor: pointer;
             font-size: 1.5rem;

@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watchly - Auto Backup</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -72,7 +75,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Setup GitHub Backup</h2>
-            <p>Get your free token from <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color: #ffffff;">GitHub Settings</a></p>
+            <p>Get your free token from <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color: var(--light);">GitHub Settings</a></p>
             <input type="text" id="githubTokenInput" placeholder="Enter your GitHub personal access token">
             <div class="modal-actions">
                 <button id="confirmApiKey" class="delete-btn">Save</button>
@@ -111,7 +114,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Your GitHub Token</h2>
-            <input type="text" id="tokenDisplay" readonly style="width:100%; padding:12px; margin:10px 0; background:#000; color:#fff; border:2px solid #7f7f7f; border-radius:8px;">
+            <input type="text" id="tokenDisplay" readonly style="width:100%; padding:12px; margin:10px 0; background:var(--bg); color:var(--light); border:1px solid var(--muted); border-radius:8px;">
             <div class="modal-actions">
                 <button id="copyToken" class="delete-btn">Copy Token</button>
                 <button id="closeViewToken" class="cancel-btn">Close</button>
@@ -126,8 +129,8 @@
         }
 
         .status-card {
-            background: linear-gradient(135deg, #404040, #000000);
-            border: 2px solid #7f7f7f;
+            background: var(--surface);
+            border: 1px solid rgba(195,199,206,0.1);
             border-radius: 15px;
             padding: 30px;
             text-align: center;
@@ -144,12 +147,12 @@
 
         .status-active {
             background: #28a745;
-            color: #ffffff;
+            color: var(--light);
         }
 
         .status-inactive {
             background: #dc3545;
-            color: #ffffff;
+            color: var(--light);
         }
 
         .info-grid {
@@ -160,8 +163,8 @@
         }
 
         .info-card {
-            background: linear-gradient(135deg, #404040, #000000);
-            border: 2px solid #7f7f7f;
+            background: var(--surface);
+            border: 1px solid rgba(195,199,206,0.1);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -177,13 +180,13 @@
 
         .info-card h4 {
             margin-bottom: 10px;
-            color: #bfbfbf;
+            color: var(--silver);
         }
 
         .info-card div {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #ffffff;
+            color: var(--light);
             margin-bottom: 15px;
         }
 
@@ -195,8 +198,8 @@
 
         .actions button {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #7f7f7f, #404040);
-            color: #ffffff;
+            background: var(--muted);
+            color: var(--light);
             border: none;
             border-radius: 8px;
             cursor: pointer;

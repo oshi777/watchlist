@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watchly - User Guide</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -102,7 +105,7 @@
                     <h2>Auto Backup Setup</h2>
                     <p><strong>Step 1:</strong> Get GitHub personal access token</p>
                     <ul>
-                        <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color: #ffffff;">github.com/settings/tokens</a></li>
+                        <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color: var(--light);">github.com/settings/tokens</a></li>
                         <li>Click "Generate new token (classic)"</li>
                         <li>Give it any name (e.g., "Watchly")</li>
                         <li>Check "gist" permission</li>
@@ -166,23 +169,23 @@
         }
 
         .guide-section {
-            background: linear-gradient(135deg, #404040, #000000);
-            border: 2px solid #7f7f7f;
+            background: var(--surface);
+            border: 1px solid rgba(195,199,206,0.1);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
         }
 
         .guide-section h2 {
-            color: #ffffff;
+            color: var(--light);
             font-size: 1.5rem;
             margin-bottom: 15px;
-            border-bottom: 2px solid #7f7f7f;
+            border-bottom: 2px solid var(--muted);
             padding-bottom: 10px;
         }
 
         .guide-section p, .guide-section li {
-            color: #bfbfbf;
+            color: var(--silver);
             line-height: 1.6;
             margin-bottom: 10px;
         }
@@ -192,7 +195,7 @@
         }
 
         .guide-section strong {
-            color: #ffffff;
+            color: var(--light);
         }
     </style>
     
