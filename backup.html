@@ -64,6 +64,7 @@
 
                 <div class="actions">
                     <button id="forceBackup" class="add-btn">Force Backup Now</button>
+                    <button id="syncFromGist" class="add-btn">Sync from Gist</button>
                     <button id="testConnection" class="add-btn">Test Connection</button>
                 </div>
             </div>
@@ -77,6 +78,11 @@
             <h2>Setup GitHub Backup</h2>
             <p>Get your free token from <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color: var(--light);">GitHub Settings</a></p>
             <input type="text" id="githubTokenInput" placeholder="Enter your GitHub personal access token">
+            <div style="margin: 15px 0;">
+                <label style="display: block; margin-bottom: 5px; color: var(--silver);">Optional: Gist ID (for syncing existing backup)</label>
+                <input type="text" id="gistIdInput" placeholder="Enter Gist ID or full URL (e.g., 6fc1dd72f9d94b297e09b1daef19a163)" style="width: 100%; padding: 10px; background: var(--bg); color: var(--light); border: 1px solid var(--muted); border-radius: 8px;">
+                <small style="color: var(--silver); display: block; margin-top: 5px;">Paste either the Gist ID or full URL from gist.github.com</small>
+            </div>
             <div class="modal-actions">
                 <button id="confirmApiKey" class="delete-btn">Save</button>
                 <button id="cancelApiKey" class="cancel-btn">Cancel</button>
@@ -271,11 +277,32 @@
         
         document.getElementById('confirmApiKey').addEventListener('click', function() {
             const githubToken = document.getElementById('githubTokenInput').value.trim();
+            let gistId = document.getElementById('gistIdInput').value.trim();
+            
             if (githubToken) {
                 localStorage.setItem('githubToken', githubToken);
                 localStorage.setItem('githubTokenValid', 'true');
+                
+                if (gistId) {
+                    // Extract Gist ID from URL if full URL was provided
+                    if (gistId.includes('gist.github.com')) {
+                        const match = gistId.match(/gist\.github\.com\/[^\/]+\/([a-f0-9]+)/);
+                        if (match) {
+                            gistId = match[1];
+                        }
+                    }
+                    
+                    // User provided existing gist ID
+                    localStorage.setItem('watchlyGistId', gistId);
+                    localStorage.setItem('watchlyGistUrl', `https://gist.github.com/${gistId}`);
+                    showStatus('Success', 'GitHub token and Gist ID saved! Click "Sync from Gist" to load your data.');
+                } else {
+                    showStatus('Success', 'GitHub token saved!');
+                }
+                
                 document.getElementById('apiKeyModal').style.display = 'none';
-                showStatus('Success', 'GitHub token saved!');
+                document.getElementById('githubTokenInput').value = '';
+                document.getElementById('gistIdInput').value = '';
                 updateBackupStatus();
             }
         });
@@ -381,9 +408,15 @@
                         localStorage.setItem('lastAutoBackup', Date.now());
                         localStorage.removeItem('dataChanged');
                         localStorage.setItem('githubTokenValid', 'true');
-                        const gistUrl = localStorage.getItem('watchlyGistUrl');
                         showStatus('Success', 'Backup updated successfully!');
                         updateBackupStatus();
+                    } else if (response.status === 404) {
+                        // Gist doesn't exist anymore, clear it and create new one
+                        console.log('Gist not found, creating new one');
+                        localStorage.removeItem('watchlyGistId');
+                        localStorage.removeItem('watchlyGistUrl');
+                        // Trigger the function again to create new gist
+                        document.getElementById('forceBackup').click();
                     } else {
                         localStorage.setItem('githubTokenValid', 'false');
                         showStatus('Error', 'Backup failed. Invalid token.');
@@ -404,6 +437,7 @@
                     }
                 };
                 
+                console.log('Creating new gist...');
                 fetch('https://api.github.com/gists', {
                     method: 'POST',
                     headers: {
@@ -412,16 +446,25 @@
                     },
                     body: JSON.stringify(gistData)
                 }).then(response => {
+                    console.log('Response status:', response.status);
                     if (response.ok) {
                         return response.json();
                     } else {
-                        return response.json().then(errData => {
-                            throw new Error(errData.message || 'Failed to create gist');
-                        }).catch(() => {
-                            throw new Error(`HTTP ${response.status}: Token missing 'gist' scope permission`);
+                        return response.text().then(text => {
+                            console.error('Error response:', text);
+                            let errorMsg = `HTTP ${response.status}`;
+                            try {
+                                const errData = JSON.parse(text);
+                                errorMsg = errData.message || errorMsg;
+                                console.error('Error details:', errData);
+                            } catch(e) {
+                                errorMsg = text || errorMsg;
+                            }
+                            throw new Error(errorMsg);
                         });
                     }
                 }).then(data => {
+                    console.log('Gist created:', data);
                     localStorage.setItem('watchlyGistId', data.id);
                     localStorage.setItem('watchlyGistUrl', data.html_url);
                     localStorage.setItem('lastAutoBackup', Date.now());
@@ -430,7 +473,8 @@
                     showStatus('Success', `Backup created! View at: ${data.html_url}`);
                     updateBackupStatus();
                 }).catch(err => {
-                    showStatus('Error', `Backup failed: ${err.message}. Make sure your token has 'gist' permission enabled.`);
+                    console.error('Full error:', err);
+                    showStatus('Error', `Backup failed: ${err.message}. Your token needs 'Gists: Read and write' permission under Account permissions.`);
                     updateBackupStatus();
                 });
             }
@@ -469,6 +513,79 @@
             if (gistUrl) {
                 window.open(gistUrl, '_blank');
             }
+        });
+
+        // Sync from Gist button
+        document.getElementById('syncFromGist').addEventListener('click', function() {
+            const githubToken = localStorage.getItem('githubToken');
+            if (!githubToken) {
+                showStatus('Warning', 'Please setup GitHub token first');
+                return;
+            }
+
+            const gistId = localStorage.getItem('watchlyGistId');
+            if (!gistId) {
+                showStatus('Warning', 'No backup found. Create a backup first using "Force Backup Now".');
+                return;
+            }
+
+            console.log('Syncing from gist:', gistId);
+            fetch(`https://api.github.com/gists/${gistId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `token ${githubToken}`
+                }
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else if (response.status === 404) {
+                    throw new Error('Backup not found. It may have been deleted.');
+                } else {
+                    throw new Error(`Failed to sync: HTTP ${response.status}`);
+                }
+            }).then(data => {
+                console.log('Gist data received:', data);
+                const fileContent = data.files['watchly-backup.json']?.content;
+                if (!fileContent) {
+                    throw new Error('Backup file not found in gist');
+                }
+
+                const importedData = JSON.parse(fileContent);
+                
+                if (confirm('This will replace your current watchlist with the backup from GitHub. Continue?')) {
+                    // Clear current data
+                    localStorage.removeItem('watchlistData');
+                    localStorage.removeItem('watchlistRankings');
+                    
+                    // Import watchlist data
+                    const items = importedData.watchlistData || [];
+                    items.forEach((item, index) => {
+                        if (!item.id) item.id = 'item_' + Date.now() + '_' + index;
+                    });
+                    localStorage.setItem('watchlistData', JSON.stringify(items));
+                    
+                    // Import rankings
+                    let rankings = importedData.rankings || [];
+                    let rankingIds = [];
+                    
+                    if (rankings.length > 0) {
+                        if (typeof rankings[0] === 'string') {
+                            rankingIds = rankings;
+                        } else if (rankings[0].id) {
+                            rankingIds = rankings.map(r => r.id);
+                        }
+                    }
+                    
+                    localStorage.setItem('watchlistRankings', JSON.stringify(rankingIds));
+                    localStorage.removeItem('dataChanged');
+                    
+                    showStatus('Success', `Synced successfully! ${items.length} items imported. Refresh the page to see changes.`);
+                    updateBackupStatus();
+                }
+            }).catch(err => {
+                console.error('Sync error:', err);
+                showStatus('Error', `Sync failed: ${err.message}`);
+            });
         });
         
         // Update status every 30 seconds

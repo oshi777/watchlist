@@ -105,11 +105,14 @@
                     <h2>Auto Backup Setup</h2>
                     <p><strong>Step 1:</strong> Get GitHub personal access token</p>
                     <ul>
-                        <li>Go to <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer" style="color: var(--light);">github.com/settings/tokens</a></li>
-                        <li>Click "Generate new token (classic)"</li>
-                        <li>Give it any name (e.g., "Watchly")</li>
-                        <li>Check "gist" permission</li>
-                        <li>Copy your token (starts with ghp_...)</li>
+                        <li>Go to <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener noreferrer" style="color: var(--light);">github.com/settings/tokens</a></li>
+                        <li>Click "Generate new token" (Fine-grained token)</li>
+                        <li>Give it a name (e.g., "Watchly")</li>
+                        <li>Set expiration (recommended: No expiration)</li>
+                        <li>Repository access: Select "Public Repositories (read-only)"</li>
+                        <li>Scroll to <strong>Account permissions</strong> (NOT Repository permissions)</li>
+                        <li>Find "Gists" and set to <strong>"Read and write"</strong></li>
+                        <li>Click "Generate token" and copy it (starts with github_pat_...)</li>
                     </ul>
                     
                     <p><strong>Step 2:</strong> Setup in Watchly</p>
@@ -118,6 +121,8 @@
                         <li>Click "Setup GitHub"</li>
                         <li>Paste your token</li>
                         <li>Click "Save"</li>
+                        <li>Click "Test Connection" to verify</li>
+                        <li>Click "Force Backup Now" to create your first backup</li>
                     </ul>
                     
                     <p><strong>How it works:</strong></p>
@@ -127,6 +132,38 @@
                         <li>Access your backup at gist.github.com</li>
                         <li>Includes both watchlist and leaderboard data</li>
                         <li>Click "View Backup" button to see your data</li>
+                    </ul>
+                </div>
+
+                <div class="guide-section">
+                    <h2>Sync Across Devices</h2>
+                    <p><strong>Setup on First Device:</strong></p>
+                    <ul>
+                        <li>Complete Auto Backup setup (see above)</li>
+                        <li>Click "Force Backup Now" to create your backup</li>
+                        <li>Click "View Backup" to open your GitHub Gist</li>
+                        <li>Copy the Gist ID from the URL: gist.github.com/username/<strong>GIST_ID</strong></li>
+                    </ul>
+                    
+                    <p><strong>Setup on Additional Devices:</strong></p>
+                    <ul>
+                        <li>Open Watchly on your new device</li>
+                        <li>Go to Backup page</li>
+                        <li>Click "Setup GitHub"</li>
+                        <li>Enter your GitHub token (same one from first device)</li>
+                        <li>Enter the Gist ID you copied</li>
+                        <li>Click "Save"</li>
+                        <li>Click "Sync from Gist" to download your watchlist</li>
+                        <li>Refresh the page to see all your data</li>
+                    </ul>
+                    
+                    <p><strong>Daily Usage:</strong></p>
+                    <ul>
+                        <li><strong>Make changes on any device:</strong> Auto-backup runs every minute</li>
+                        <li><strong>Switch devices:</strong> Click "Sync from Gist" to get latest data</li>
+                        <li><strong>Force Backup Now:</strong> Manually push changes immediately</li>
+                        <li><strong>Sync from Gist:</strong> Pull latest changes from GitHub</li>
+                        <li>All devices stay in sync through GitHub Gist</li>
                     </ul>
                 </div>
 
