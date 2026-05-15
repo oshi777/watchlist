@@ -843,30 +843,39 @@ header p {
 /* Mobile Phones */
 @media (max-width: 480px) {
     body {
-        padding-top: 70px;
+        padding-top: 75px;
     }
     
     .navbar {
-        padding: 0 10px;
+        padding: 4px 6px;
         height: auto;
-        min-height: 60px;
-        flex-wrap: wrap;
+        min-height: 65px;
+        flex-direction: column;
+        gap: 4px;
+        align-items: center;
     }
     
     .nav-brand {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
+        width: 100%;
+        text-align: center;
+        padding: 2px 0;
     }
     
     .nav-links {
-        gap: 8px;
+        gap: 5px;
         width: 100%;
         justify-content: center;
-        padding: 5px 0;
+        flex-wrap: wrap;
+        padding: 0;
     }
     
     .nav-link {
-        padding: 4px 8px;
-        font-size: 0.75rem;
+        padding: 4px 10px;
+        font-size: 0.7rem;
+        flex: 0 1 auto;
+        min-width: 55px;
+        text-align: center;
     }
     
     .container {
@@ -874,23 +883,36 @@ header p {
     }
     
     header {
-        padding: 15px 8px;
-        margin-top: 10px;
+        padding: 15px 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
     }
     
     header h1 {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        margin-bottom: 6px;
     }
     
     header p {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
+        margin-bottom: 15px;
     }
     
     .lock-btn {
-        top: 10px;
-        right: 10px;
-        padding: 6px 12px;
-        font-size: 0.8rem;
+        top: 8px;
+        right: 8px;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+    
+    .search-container {
+        margin-bottom: 12px;
+    }
+    
+    #searchInput {
+        padding: 10px 12px;
+        font-size: 16px;
+        margin-bottom: 12px;
     }
     
     .filters {
@@ -899,33 +921,56 @@ header p {
         gap: 8px;
     }
     
-    .filters select, .add-btn, .reset-btn {
+    .filters select {
+        width: 100%;
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+    
+    .add-btn, .reset-btn {
         width: 100%;
         padding: 10px;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
     
     .stats {
         flex-direction: row;
         gap: 10px;
-        padding: 12px;
+        padding: 12px 8px;
         justify-content: space-around;
+        margin-bottom: 15px;
+    }
+    
+    .stat-item {
+        padding: 4px 6px;
     }
     
     .stat-number {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+        margin-bottom: 3px;
     }
     
     .stat-label {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.3px;
+    }
+    
+    .items-grid {
+        gap: 12px;
     }
     
     .item {
-        padding: 15px;
+        padding: 12px;
     }
     
     .item-title {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
+        line-height: 1.3;
+    }
+    
+    .item-details {
+        font-size: 0.85rem;
+        margin-bottom: 10px;
     }
     
     .item-actions {
@@ -941,37 +986,323 @@ header p {
     }
     
     .genre-tag {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         padding: 4px 8px;
     }
     
+    .season-info {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+    
     .modal-content {
-        padding: 12px;
-        width: 98%;
-        margin: 1% auto;
-        max-height: 98vh;
+        padding: 15px;
+        width: 95%;
+        margin: 2% auto;
+        max-height: 96vh;
+    }
+    
+    .close {
+        font-size: 24px;
+        right: 12px;
+        top: 8px;
     }
     
     .modal h2 {
-        font-size: 1.3rem;
-        margin-bottom: 12px;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        padding-right: 30px;
     }
     
     .modal input, .modal select {
-        padding: 8px;
+        padding: 10px;
         font-size: 16px;
-        margin: 4px 0;
+        margin: 6px 0;
     }
     
     .modal button {
-        padding: 8px;
-        font-size: 0.8rem;
+        padding: 10px;
+        font-size: 0.85rem;
         margin-top: 8px;
     }
     
     .modal-actions {
         gap: 8px;
         margin-top: 12px;
+        flex-direction: column;
+    }
+    
+    .delete-btn, .cancel-btn {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .section-header {
+        font-size: 1.3rem;
+        padding: 10px 0;
+        letter-spacing: 1.5px;
+        margin-bottom: 15px;
+    }
+    
+    .confirmation-msg {
+        top: 80px;
+        right: 8px;
+        left: 8px;
+        width: auto;
+        font-size: 0.85rem;
+        padding: 10px 15px;
+    }
+    
+    /* Backup page specific */
+    .backup-container {
+        padding: 0;
+    }
+    
+    .status-card {
+        padding: 15px 12px;
+        margin-bottom: 15px;
+    }
+    
+    .status-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    
+    .status-indicator {
+        font-size: 1.1rem;
+        padding: 6px 12px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+    
+    .info-card {
+        padding: 12px;
+    }
+    
+    .info-card h4 {
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+    }
+    
+    .info-card div {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+    
+    .actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .actions button {
+        width: 100%;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    /* Guide page specific */
+    .guide-content {
+        padding: 8px;
+    }
+    
+    .guide-section {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .guide-section h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+    }
+    
+    .guide-section p, .guide-section li {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+    
+    .guide-section ul {
+        padding-left: 15px;
+    }
+}
+
+/* Extra Small Phones (iPhone SE, small Android phones) */
+@media (max-width: 380px) {
+    body {
+        padding-top: 110px;
+    }
+    
+    .navbar {
+        padding: 8px;
+        min-height: 100px;
+        gap: 6px;
+    }
+    
+    .nav-brand {
+        font-size: 1.3rem;
+        padding: 3px 0;
+    }
+    
+    .nav-links {
+        gap: 6px;
+    }
+    
+    .nav-link {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        min-width: 60px;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    header {
+        padding: 20px 12px;
+        margin-top: 5px;
+    }
+    
+    header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+    }
+    
+    header p {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    #searchInput {
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+    
+    .filters {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .filters select, .add-btn, .reset-btn {
+        padding: 11px;
+        font-size: 0.85rem;
+    }
+    
+    .stats {
+        gap: 10px;
+        padding: 15px 8px;
+    }
+    
+    .stat-item {
+        padding: 3px 5px;
+    }
+    
+    .stat-number {
+        font-size: 1.6rem;
+    }
+    
+    .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .item {
+        padding: 15px;
+    }
+    
+    .item-title {
+        font-size: 1.05rem;
+    }
+    
+    .item-details {
+        font-size: 0.85rem;
+    }
+    
+    .action-btn {
+        padding: 11px;
+        font-size: 0.8rem;
+    }
+    
+    .genre-tag {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    .section-header {
+        font-size: 1.3rem;
+        padding: 12px 0;
+        letter-spacing: 1.5px;
+    }
+    
+    .modal-content {
+        padding: 15px;
+        width: 96%;
+    }
+    
+    .modal h2 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+    
+    .modal input, .modal select {
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    .modal button {
+        padding: 11px;
+        font-size: 0.85rem;
+    }
+    
+    .close {
+        font-size: 26px;
+        right: 12px;
+    }
+    
+    /* Backup page */
+    .status-card {
+        padding: 15px 12px;
+    }
+    
+    .status-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .status-indicator {
+        font-size: 1.1rem;
+        padding: 7px 14px;
+    }
+    
+    .info-card {
+        padding: 12px;
+    }
+    
+    .info-card h4 {
+        font-size: 0.95rem;
+    }
+    
+    .info-card div {
+        font-size: 0.95rem;
+    }
+    
+    .actions button {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+    
+    /* Guide page */
+    .guide-section {
+        padding: 15px;
+    }
+    
+    .guide-section h2 {
+        font-size: 1.2rem;
+    }
+    
+    .guide-section p, .guide-section li {
+        font-size: 0.85rem;
     }
 }
 

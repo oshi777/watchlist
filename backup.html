@@ -551,37 +551,70 @@
                 }
 
                 const importedData = JSON.parse(fileContent);
+                const localData = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+                const remoteData = importedData.watchlistData || [];
                 
-                if (confirm('This will replace your current watchlist with the backup from GitHub. Continue?')) {
-                    // Clear current data
-                    localStorage.removeItem('watchlistData');
-                    localStorage.removeItem('watchlistRankings');
-                    
-                    // Import watchlist data
-                    const items = importedData.watchlistData || [];
-                    items.forEach((item, index) => {
-                        if (!item.id) item.id = 'item_' + Date.now() + '_' + index;
-                    });
-                    localStorage.setItem('watchlistData', JSON.stringify(items));
-                    
-                    // Import rankings
-                    let rankings = importedData.rankings || [];
-                    let rankingIds = [];
-                    
-                    if (rankings.length > 0) {
-                        if (typeof rankings[0] === 'string') {
-                            rankingIds = rankings;
-                        } else if (rankings[0].id) {
-                            rankingIds = rankings.map(r => r.id);
-                        }
+                // Smart merge logic
+                const mergedData = [];
+                const seenIds = new Set();
+                let addedCount = 0;
+                let updatedCount = 0;
+                
+                // First, add all remote items (they're the source of truth from backup)
+                remoteData.forEach(item => {
+                    if (!item.id) item.id = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    mergedData.push(item);
+                    seenIds.add(item.id);
+                });
+                
+                // Then, add any local items that don't exist in remote (new items added locally)
+                localData.forEach(item => {
+                    if (!item.id) item.id = 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    if (!seenIds.has(item.id)) {
+                        mergedData.push(item);
+                        addedCount++;
                     }
-                    
-                    localStorage.setItem('watchlistRankings', JSON.stringify(rankingIds));
-                    localStorage.removeItem('dataChanged');
-                    
-                    showStatus('Success', `Synced successfully! ${items.length} items imported. Refresh the page to see changes.`);
-                    updateBackupStatus();
+                });
+                
+                const localCount = localData.length;
+                const remoteCount = remoteData.length;
+                const finalCount = mergedData.length;
+                
+                let message = '';
+                if (addedCount > 0) {
+                    message = `Merged successfully! Remote: ${remoteCount} items, Local: ${localCount} items, Final: ${finalCount} items (${addedCount} local items preserved). Click "Force Backup Now" to save merged data.`;
+                } else if (localCount === remoteCount) {
+                    message = `Synced successfully! ${finalCount} items loaded. Already up to date.`;
+                } else {
+                    message = `Synced successfully! ${finalCount} items loaded from backup.`;
                 }
+                
+                // Save merged data
+                localStorage.setItem('watchlistData', JSON.stringify(mergedData));
+                
+                // Import rankings
+                let rankings = importedData.rankings || [];
+                let rankingIds = [];
+                
+                if (rankings.length > 0) {
+                    if (typeof rankings[0] === 'string') {
+                        rankingIds = rankings;
+                    } else if (rankings[0].id) {
+                        rankingIds = rankings.map(r => r.id);
+                    }
+                }
+                
+                localStorage.setItem('watchlistRankings', JSON.stringify(rankingIds));
+                
+                // Mark as changed if we added local items so they get backed up
+                if (addedCount > 0) {
+                    localStorage.setItem('dataChanged', 'true');
+                } else {
+                    localStorage.removeItem('dataChanged');
+                }
+                
+                showStatus('Success', message);
+                updateBackupStatus();
             }).catch(err => {
                 console.error('Sync error:', err);
                 showStatus('Error', `Sync failed: ${err.message}`);
