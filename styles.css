@@ -1021,6 +1021,11 @@ header p {
         margin: 5px 0;
     }
     
+    /* Backup page inputs */
+    input[type="text"], input[type="password"], select {
+        font-size: 16px !important;
+    }
+    
     .modal button {
         padding: 8px;
         font-size: 0.8rem;
