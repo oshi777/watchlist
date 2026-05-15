@@ -843,13 +843,13 @@ header p {
 /* Mobile Phones */
 @media (max-width: 480px) {
     body {
-        padding-top: 50px;
+        padding-top: 65px;
     }
     
     .navbar {
         padding: 2px 4px;
         height: auto;
-        min-height: 40px;
+        min-height: 50px;
         flex-direction: row;
         gap: 2px;
         align-items: center;
