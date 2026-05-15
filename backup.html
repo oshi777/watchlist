@@ -414,20 +414,24 @@
                 }).then(response => {
                     if (response.ok) {
                         return response.json();
+                    } else {
+                        return response.json().then(errData => {
+                            throw new Error(errData.message || 'Failed to create gist');
+                        }).catch(() => {
+                            throw new Error(`HTTP ${response.status}: Token missing 'gist' scope permission`);
+                        });
                     }
                 }).then(data => {
-                    if (data) {
-                        localStorage.setItem('watchlyGistId', data.id);
-                        localStorage.setItem('watchlyGistUrl', data.html_url);
-                        localStorage.setItem('lastAutoBackup', Date.now());
-                        localStorage.removeItem('dataChanged');
-                        localStorage.setItem('githubTokenValid', 'true');
-                        showStatus('Success', `Backup created! View at: ${data.html_url}`);
-                        updateBackupStatus();
-                    }
+                    localStorage.setItem('watchlyGistId', data.id);
+                    localStorage.setItem('watchlyGistUrl', data.html_url);
+                    localStorage.setItem('lastAutoBackup', Date.now());
+                    localStorage.removeItem('dataChanged');
+                    localStorage.setItem('githubTokenValid', 'true');
+                    showStatus('Success', `Backup created! View at: ${data.html_url}`);
+                    updateBackupStatus();
                 }).catch(err => {
-                    localStorage.setItem('githubTokenValid', 'false');
-                    showStatus('Error', 'Backup failed. Check your connection.');
+                    showStatus('Error', `Backup failed: ${err.message}. Make sure your token has 'gist' permission enabled.`);
+                    updateBackupStatus();
                 });
             }
         });
