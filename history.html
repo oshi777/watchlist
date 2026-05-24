@@ -249,7 +249,7 @@
 
             // Year only: "2023"
             if (/^\d{4}$/.test(s)) {
-                return new Date(parseInt(s), 6, 1); // mid-year placeholder
+                return new Date(parseInt(s), 0, 1); // Jan 1 = earliest in that year
             }
 
             // "Jan 5, 2023" or "Jan 5 2023"
