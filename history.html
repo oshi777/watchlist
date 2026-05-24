@@ -287,12 +287,14 @@
 
                 // Add the top-level item entry if it has a date and is watched
                 if (isWatched && item.date) {
+                    const raw = String(item.date).trim();
                     entries.push({
                         title: item.title,
                         subtitle: null,
                         type: item.isMovie ? 'movie' : 'show',
                         date: item.date,
                         parsedDate: parseDate(item.date),
+                        yearOnly: /^\d{4}$/.test(raw),
                         partNumber: 0,
                         genres: item.genres || [],
                         isMovie: item.isMovie
@@ -303,6 +305,7 @@
                 if (hasSeason) {
                     item.seasons.forEach(s => {
                         if (!s.date) return;
+                        const raw = String(s.date).trim();
                         const label = item.isMovie
                             ? (s.season ? `Movie ${s.season}` : 'Movie')
                             : `Season ${s.season}`;
@@ -312,6 +315,7 @@
                             type: item.isMovie ? 'movie-part' : 'season',
                             date: s.date,
                             parsedDate: parseDate(s.date),
+                            yearOnly: /^\d{4}$/.test(raw),
                             partNumber: s.season || 0,
                             genres: item.genres || [],
                             isMovie: item.isMovie
@@ -336,11 +340,13 @@
             const withDate = entries.filter(e => e.parsedDate !== null);
             const noDate   = entries.filter(e => e.parsedDate === null);
 
-            // Sort: newest→oldest; ties broken by partNumber ascending (so Movie 1 is below Movie 2)
+            // Sort: newest→oldest; ties broken by yearOnly (year-only goes lower), then partNumber ascending
             withDate.sort((a, b) => {
                 const dateDiff = b.parsedDate - a.parsedDate;
                 if (dateDiff !== 0) return dateDiff;
-                // Same date: lower part/season number goes lower on the page (higher index = further down)
+                // Same timestamp: full dates above year-only dates
+                if (a.yearOnly !== b.yearOnly) return a.yearOnly ? 1 : -1;
+                // Both same type: lower part/season number goes lower on the page
                 return (b.partNumber || 0) - (a.partNumber || 0);
             });
 
