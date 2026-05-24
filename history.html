@@ -293,6 +293,7 @@
                         type: item.isMovie ? 'movie' : 'show',
                         date: item.date,
                         parsedDate: parseDate(item.date),
+                        partNumber: 0,
                         genres: item.genres || [],
                         isMovie: item.isMovie
                     });
@@ -303,7 +304,7 @@
                     item.seasons.forEach(s => {
                         if (!s.date) return;
                         const label = item.isMovie
-                            ? (s.season ? `Part ${s.season}` : 'Movie')
+                            ? (s.season ? `Movie ${s.season}` : 'Movie')
                             : `Season ${s.season}`;
                         entries.push({
                             title: item.title,
@@ -311,6 +312,7 @@
                             type: item.isMovie ? 'movie-part' : 'season',
                             date: s.date,
                             parsedDate: parseDate(s.date),
+                            partNumber: s.season || 0,
                             genres: item.genres || [],
                             isMovie: item.isMovie
                         });
@@ -334,7 +336,13 @@
             const withDate = entries.filter(e => e.parsedDate !== null);
             const noDate   = entries.filter(e => e.parsedDate === null);
 
-            withDate.sort((a, b) => b.parsedDate - a.parsedDate);
+            // Sort: newest→oldest; ties broken by partNumber ascending (so Movie 1 is below Movie 2)
+            withDate.sort((a, b) => {
+                const dateDiff = b.parsedDate - a.parsedDate;
+                if (dateDiff !== 0) return dateDiff;
+                // Same date: lower part/season number goes lower on the page (higher index = further down)
+                return (b.partNumber || 0) - (a.partNumber || 0);
+            });
 
             const sorted = [...withDate, ...noDate];
 
