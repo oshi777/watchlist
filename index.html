@@ -19,6 +19,7 @@
             <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
             <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
             <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+            <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
         </div>
     </nav>
     
@@ -85,7 +86,14 @@
                     <option value="upcoming">Upcoming</option>
                 </select>
                 <input type="text" id="newGenres" placeholder="Genres (comma separated)" required>
-                <input type="date" id="newDate" placeholder="Date">
+                <div class="date-input-group">
+                    <div class="date-type-toggle">
+                        <label><input type="radio" name="newDateType" value="full" checked> Full Date</label>
+                        <label><input type="radio" name="newDateType" value="year"> Year Only</label>
+                    </div>
+                    <input type="date" id="newDate" placeholder="Date">
+                    <input type="number" id="newDateYear" placeholder="Year watched" min="1900" max="2100" style="display:none;">
+                </div>
                 <input type="number" id="newYear" placeholder="Release Year (optional)" min="1900" max="2030">
                 <input type="text" id="newNote" placeholder="Notes (optional)">
                 <label><input type="checkbox" id="isMovie"> Movie</label>
@@ -101,7 +109,14 @@
             <h2>Add Season Completion</h2>
             <p id="seasonTitle"></p>
             <input type="number" id="seasonNumber" placeholder="Season Number" min="1" required>
-            <input type="date" id="seasonDate" required>
+            <div class="date-input-group">
+                <div class="date-type-toggle">
+                    <label><input type="radio" name="seasonDateType" value="full" checked> Full Date</label>
+                    <label><input type="radio" name="seasonDateType" value="year"> Year Only</label>
+                </div>
+                <input type="date" id="seasonDate">
+                <input type="number" id="seasonDateYear" placeholder="Year" min="1900" max="2100" style="display:none;">
+            </div>
             <div class="modal-actions">
                 <button id="confirmSeason" class="delete-btn">Add Season</button>
                 <button id="deleteSeason" class="delete-btn" style="display:none;">Delete Season</button>
@@ -149,6 +164,12 @@
     </div>
 
 
+
+    <style>
+        .date-input-group { display: flex; flex-direction: column; gap: 6px; }
+        .date-type-toggle { display: flex; gap: 16px; font-size: 0.85rem; color: var(--silver); }
+        .date-type-toggle label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    </style>
 
     <script src="script.js"></script>
 </body>

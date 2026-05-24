@@ -304,6 +304,22 @@ function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', applyFilters);
     document.getElementById('statusFilter').addEventListener('change', applyFilters);
     document.getElementById('genreFilter').addEventListener('change', applyFilters);
+
+    // Date type toggles
+    document.querySelectorAll('input[name="newDateType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const isYear = this.value === 'year';
+            document.getElementById('newDate').style.display = isYear ? 'none' : '';
+            document.getElementById('newDateYear').style.display = isYear ? '' : 'none';
+        });
+    });
+    document.querySelectorAll('input[name="seasonDateType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const isYear = this.value === 'year';
+            document.getElementById('seasonDate').style.display = isYear ? 'none' : '';
+            document.getElementById('seasonDateYear').style.display = isYear ? '' : 'none';
+        });
+    });
     
     document.getElementById('addShowBtn').addEventListener('click', () => {
         resetAddForm();
@@ -436,7 +452,10 @@ function handleAddShow(e) {
     const title = document.getElementById('newTitle').value;
     const status = document.getElementById('newStatus').value;
     const genres = document.getElementById('newGenres').value.split(',').map(g => g.trim()).filter(g => g.length > 0);
-    const date = document.getElementById('newDate').value;
+    const dateType = document.querySelector('input[name="newDateType"]:checked').value;
+    const date = dateType === 'year'
+        ? document.getElementById('newDateYear').value
+        : document.getElementById('newDate').value;
     const year = document.getElementById('newYear').value;
     const note = document.getElementById('newNote').value;
     const isMovie = document.getElementById('isMovie').checked;
@@ -458,11 +477,15 @@ function handleAddShow(e) {
     if (year) itemData.year = year;
     
     if (date) {
-        itemData.date = new Date(date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
+        if (dateType === 'year') {
+            itemData.date = date; // just the year string e.g. "2023"
+        } else {
+            itemData.date = new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
     }
     
     if (editIndex !== undefined) {
@@ -543,6 +566,10 @@ function addSeason(index) {
     document.getElementById('seasonTitle').textContent = `Add ${isMovie ? 'movie' : 'season'} for: ${item.title}`;
     document.getElementById('seasonNumber').value = '';
     document.getElementById('seasonDate').value = '';
+    document.getElementById('seasonDateYear').value = '';
+    document.querySelector('input[name="seasonDateType"][value="full"]').checked = true;
+    document.getElementById('seasonDate').style.display = '';
+    document.getElementById('seasonDateYear').style.display = 'none';
     document.querySelector('#seasonModal h2').textContent = isMovie ? 'Add Movie Completion' : 'Add Season Completion';
     document.getElementById('confirmSeason').textContent = isMovie ? 'Add Movie' : 'Add Season';
     document.getElementById('seasonNumber').placeholder = isMovie ? 'Movie Number' : 'Season Number';
@@ -560,7 +587,20 @@ function editSeason(itemIndex, seasonIndex) {
     const isMovie = item.isMovie;
     document.getElementById('seasonTitle').textContent = `Edit ${isMovie ? 'movie' : 'season'} for: ${item.title}`;
     document.getElementById('seasonNumber').value = season.season || '';
-    document.getElementById('seasonDate').value = new Date(season.date).toISOString().split('T')[0];
+    // Detect year-only vs full date
+    if (/^\d{4}$/.test(season.date)) {
+        document.querySelector('input[name="seasonDateType"][value="year"]').checked = true;
+        document.getElementById('seasonDate').style.display = 'none';
+        document.getElementById('seasonDateYear').style.display = '';
+        document.getElementById('seasonDateYear').value = season.date;
+        document.getElementById('seasonDate').value = '';
+    } else {
+        document.querySelector('input[name="seasonDateType"][value="full"]').checked = true;
+        document.getElementById('seasonDate').style.display = '';
+        document.getElementById('seasonDateYear').style.display = 'none';
+        document.getElementById('seasonDateYear').value = '';
+        document.getElementById('seasonDate').value = new Date(season.date).toISOString().split('T')[0];
+    }
     document.querySelector('#seasonModal h2').textContent = isMovie ? 'Edit Movie' : 'Edit Season';
     document.getElementById('confirmSeason').textContent = isMovie ? 'Update Movie' : 'Update Season';
     document.getElementById('seasonNumber').placeholder = isMovie ? 'Movie Number' : 'Season Number';
@@ -571,7 +611,10 @@ function editSeason(itemIndex, seasonIndex) {
 
 function handleSeasonUpdate() {
     const seasonNumber = document.getElementById('seasonNumber').value;
-    const seasonDate = document.getElementById('seasonDate').value;
+    const seasonDateType = document.querySelector('input[name="seasonDateType"]:checked').value;
+    const seasonDate = seasonDateType === 'year'
+        ? document.getElementById('seasonDateYear').value
+        : document.getElementById('seasonDate').value;
     
     if (!seasonDate || currentEditingItem === null) return;
     if (!seasonNumber && !watchlistData[currentEditingItem].isMovie) return;
@@ -579,11 +622,13 @@ function handleSeasonUpdate() {
     const item = watchlistData[currentEditingItem];
     if (!item.seasons) item.seasons = [];
     
-    const formattedDate = new Date(seasonDate).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+    const formattedDate = seasonDateType === 'year'
+        ? seasonDate  // just the year string
+        : new Date(seasonDate).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
     
     if (currentSeasonIndex !== null) {
         const seasonData = { date: formattedDate };
@@ -662,20 +707,37 @@ function editItem(index) {
     document.getElementById('newNote').value = item.note || '';
     
     if (item.date && item.status === 'watched') {
-        const dateParts = item.date.split(' ');
-        if (dateParts.length >= 3) {
-            const monthMap = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
-            const month = dateParts[0];
-            const day = dateParts[1].replace(',', '');
-            const year = dateParts[2];
-            const monthNum = monthMap[month] || 1;
-            const formattedDate = `${year}-${monthNum.toString().padStart(2, '0')}-${day.padStart(2, '0')}`;
-            document.getElementById('newDate').value = formattedDate;
-        } else {
+        // Check if it's a year-only value (4 digits)
+        if (/^\d{4}$/.test(item.date)) {
+            document.querySelector('input[name="newDateType"][value="year"]').checked = true;
+            document.getElementById('newDate').style.display = 'none';
+            document.getElementById('newDateYear').style.display = '';
+            document.getElementById('newDateYear').value = item.date;
             document.getElementById('newDate').value = '';
+        } else {
+            document.querySelector('input[name="newDateType"][value="full"]').checked = true;
+            document.getElementById('newDate').style.display = '';
+            document.getElementById('newDateYear').style.display = 'none';
+            document.getElementById('newDateYear').value = '';
+            const dateParts = item.date.split(' ');
+            if (dateParts.length >= 3) {
+                const monthMap = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+                const month = dateParts[0];
+                const day = dateParts[1].replace(',', '');
+                const year = dateParts[2];
+                const monthNum = monthMap[month] || 1;
+                const formattedDate = `${year}-${monthNum.toString().padStart(2, '0')}-${day.padStart(2, '0')}`;
+                document.getElementById('newDate').value = formattedDate;
+            } else {
+                document.getElementById('newDate').value = '';
+            }
         }
     } else {
+        document.querySelector('input[name="newDateType"][value="full"]').checked = true;
+        document.getElementById('newDate').style.display = '';
+        document.getElementById('newDateYear').style.display = 'none';
         document.getElementById('newDate').value = '';
+        document.getElementById('newDateYear').value = '';
     }
     
     document.getElementById('newYear').value = item.year || '';
@@ -696,6 +758,11 @@ function resetAddForm() {
     delete form.dataset.editIndex;
     form.querySelector('button[type="submit"]').textContent = 'Add to Watchlist';
     document.querySelector('#addModal h2').textContent = 'Add New Show/Movie';
+    // Reset date toggle to full date
+    document.querySelector('input[name="newDateType"][value="full"]').checked = true;
+    document.getElementById('newDate').style.display = '';
+    document.getElementById('newDateYear').style.display = 'none';
+    document.getElementById('newDateYear').value = '';
 }
 
 document.addEventListener('DOMContentLoaded', function() {

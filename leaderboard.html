@@ -19,6 +19,7 @@
             <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
             <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
             <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+            <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
         </div>
     </nav>
     
@@ -69,7 +70,7 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            cursor: grab;
+            cursor: default;
             transition: all 0.3s ease;
             position: relative;
         }
@@ -81,7 +82,6 @@
 
         .ranking-item.dragging {
             opacity: 0.5;
-            cursor: grabbing;
         }
 
         .ranking-item.drag-over::before {
@@ -127,6 +127,13 @@
             display: flex;
             align-items: center;
             transform: translateY(-3px);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
         }
 
         .no-items {
@@ -303,7 +310,6 @@
 
                 const div = document.createElement('div');
                 div.className = 'ranking-item';
-                div.draggable = true;
                 div.dataset.index = index;
 
                 div.innerHTML = `
@@ -313,19 +319,23 @@
                         <div class="item-details">${item.genres.join(', ')} ${item.year ? `(${item.year})` : ''}</div>
                     </div>
                     <button class="delete-from-ranking" onclick="showRemoveConfirm(${index})">×</button>
-                    <div class="drag-handle">⋮⋮</div>
+                    <div class="drag-handle" draggable="true">⋮⋮</div>
                 `;
 
-                div.addEventListener('dragstart', handleDragStart);
+                // Drag events on the handle only, but operate on the parent item
+                const handle = div.querySelector('.drag-handle');
+                handle.addEventListener('dragstart', (e) => handleDragStart.call(div, e));
+                handle.addEventListener('dragend', (e) => handleDragEnd.call(div, e));
+
+                // Drop zone events stay on the item
                 div.addEventListener('dragover', handleDragOver);
                 div.addEventListener('dragleave', handleDragLeave);
                 div.addEventListener('drop', handleDrop);
-                div.addEventListener('dragend', handleDragEnd);
-                
-                // Touch events for mobile
-                div.addEventListener('touchstart', handleTouchStart, {passive: false});
-                div.addEventListener('touchmove', handleTouchMove, {passive: false});
-                div.addEventListener('touchend', handleTouchEnd);
+
+                // Touch events on the handle for mobile
+                handle.addEventListener('touchstart', (e) => handleTouchStart.call(div, e), {passive: false});
+                handle.addEventListener('touchmove', (e) => handleTouchMove.call(div, e), {passive: false});
+                handle.addEventListener('touchend', (e) => handleTouchEnd.call(div, e));
 
                 container.appendChild(div);
             });
@@ -340,6 +350,7 @@
             draggedElement = this;
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.dataset.index);
         }
 
         let autoScrollId = null;
