@@ -285,8 +285,8 @@
 
                 if (!isWatched && !hasSeason) return;
 
-                // Add the top-level item entry if it has a date and is watched
-                if (isWatched && item.date) {
+                // Add the top-level item entry only if it has no seasons/movies logged
+                if (isWatched && item.date && !hasSeason) {
                     const raw = String(item.date).trim();
                     entries.push({
                         title: item.title,
