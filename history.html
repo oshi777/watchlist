@@ -194,9 +194,9 @@
         }
 
         .badge-show {
-            background: rgba(58,63,71,0.5);
-            color: var(--muted);
-            border: 1px solid rgba(195,199,206,0.08);
+            background: rgba(195,199,206,0.15);
+            color: var(--silver);
+            border: 1px solid rgba(195,199,206,0.3);
         }
 
         .no-history {
@@ -295,6 +295,7 @@
                         date: item.date,
                         parsedDate: parseDate(item.date),
                         yearOnly: /^\d{4}$/.test(raw),
+                        typeRank: 0,  // top-level entries win ties
                         partNumber: 0,
                         genres: item.genres || [],
                         isMovie: item.isMovie
@@ -316,6 +317,7 @@
                             date: s.date,
                             parsedDate: parseDate(s.date),
                             yearOnly: /^\d{4}$/.test(raw),
+                            typeRank: 1,  // seasons/parts lose to top-level on a tie
                             partNumber: s.season || 0,
                             genres: item.genres || [],
                             isMovie: item.isMovie
@@ -340,13 +342,15 @@
             const withDate = entries.filter(e => e.parsedDate !== null);
             const noDate   = entries.filter(e => e.parsedDate === null);
 
-            // Sort: newest→oldest; ties broken by yearOnly (year-only goes lower), then partNumber ascending
+            // Sort: newest→oldest; ties broken by yearOnly, then typeRank (show/movie above seasons), then partNumber desc
             withDate.sort((a, b) => {
                 const dateDiff = b.parsedDate - a.parsedDate;
                 if (dateDiff !== 0) return dateDiff;
                 // Same timestamp: full dates above year-only dates
                 if (a.yearOnly !== b.yearOnly) return a.yearOnly ? 1 : -1;
-                // Both same type: lower part/season number goes lower on the page
+                // Same date & same yearOnly: top-level show/movie above seasons (typeRank 0 < 1)
+                if (a.typeRank !== b.typeRank) return a.typeRank - b.typeRank;
+                // Both seasons/parts of same date: lower number goes lower on page
                 return (b.partNumber || 0) - (a.partNumber || 0);
             });
 
