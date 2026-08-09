@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Watchly - Settings</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=7">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand" style="font-size: 0.75rem;">Watchly</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
+            <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
+            <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+            <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
+            <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+            <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
+            <a href="settings.html" class="nav-link active-nav" style="font-size: 0.7rem;">Settings</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Settings</h1>
+            <p>Customize your Watchly experience</p>
+        </header>
+
+        <main>
+            <div class="settings-container">
+
+                <!-- Card Display Mode -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Poster Display Mode</h3>
+                        <p>Choose how movie/show posters appear in the expanded detail view</p>
+                    </div>
+
+                    <div class="display-options">
+
+                        <!-- Option 1: Cover (default) -->
+                        <label class="display-option" id="optionCover">
+                            <input type="radio" name="posterMode" value="cover" checked>
+                            <div class="option-preview cover-preview">
+                                <div class="preview-poster cover-poster">
+                                    <div class="preview-img-wrap cover-wrap">
+                                        <div class="preview-img-inner"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-lines">
+                                    <div class="preview-line w80"></div>
+                                    <div class="preview-line w50"></div>
+                                    <div class="preview-line w95"></div>
+                                    <div class="preview-line w70"></div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Fill (Default)</span>
+                                <span class="option-desc">Poster fills the full height — top of image anchored, sides slightly trimmed on very wide formats</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Contain (full poster) -->
+                        <label class="display-option" id="optionContain">
+                            <input type="radio" name="posterMode" value="contain">
+                            <div class="option-preview contain-preview">
+                                <div class="preview-poster contain-poster">
+                                    <div class="preview-img-wrap contain-wrap">
+                                        <div class="preview-img-inner"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-lines">
+                                    <div class="preview-line w80"></div>
+                                    <div class="preview-line w50"></div>
+                                    <div class="preview-line w95"></div>
+                                    <div class="preview-line w70"></div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Full Poster</span>
+                                <span class="option-desc">Entire poster visible — dark bars fill empty space above and below</span>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .active-nav {
+            background: var(--muted);
+            color: var(--light) !important;
+        }
+
+        .settings-container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .settings-card {
+            background: var(--surface);
+            border: 1px solid rgba(195,199,206,0.1);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .settings-card-header {
+            margin-bottom: 24px;
+        }
+
+        .settings-card-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 6px;
+        }
+
+        .settings-card-header p {
+            font-size: 0.88rem;
+            color: var(--silver);
+        }
+
+        .display-options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .display-option {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px;
+            border: 2px solid rgba(195,199,206,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .display-option:hover {
+            border-color: rgba(195,199,206,0.25);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .display-option input[type="radio"] {
+            display: none;
+        }
+
+        .display-option.selected {
+            border-color: var(--silver);
+            background: rgba(195,199,206,0.06);
+        }
+
+        /* mini preview mockup */
+        .option-preview {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            background: #0d0e12;
+            border-radius: 8px;
+            padding: 8px;
+            width: 130px;
+            height: 80px;
+            align-items: center;
+        }
+
+        .preview-poster {
+            flex-shrink: 0;
+            width: 40px;
+            height: 64px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #1a1d23;
+        }
+
+        .preview-img-wrap {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* cover: fills full height, slight horizontal clip visual */
+        .cover-wrap .preview-img-inner {
+            width: 110%;
+            height: 100%;
+            background: linear-gradient(160deg, #3a3f4a, #555b66);
+            border-radius: 2px;
+        }
+
+        /* contain: full image visible with letterbox bars */
+        .contain-wrap {
+            flex-direction: column;
+            background: #0d0e12;
+        }
+        .contain-wrap .preview-img-inner {
+            width: 90%;
+            height: 78%;
+            background: linear-gradient(160deg, #3a3f4a, #555b66);
+            border-radius: 2px;
+        }
+
+        .preview-lines {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .preview-line {
+            height: 4px;
+            background: rgba(195,199,206,0.2);
+            border-radius: 2px;
+        }
+        .w50 { width: 50%; }
+        .w70 { width: 70%; }
+        .w80 { width: 80%; }
+        .w95 { width: 95%; }
+
+        .option-label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .option-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .option-desc {
+            font-size: 0.8rem;
+            color: var(--silver);
+            line-height: 1.45;
+        }
+
+        .saved-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: var(--surface);
+            color: var(--light);
+            border: 1px solid var(--silver);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            z-index: 9999;
+        }
+        .saved-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .settings-card { padding: 16px; }
+            .option-preview { width: 90px; height: 64px; padding: 6px; }
+            .preview-poster { width: 28px; height: 46px; }
+            .display-option { gap: 12px; padding: 14px; }
+        }
+    </style>
+
+    <div class="saved-toast" id="savedToast">Settings saved</div>
+
+    <script>
+        const MODES = { cover: 'cover', contain: 'contain' };
+
+        function getCurrentMode() {
+            return localStorage.getItem('posterDisplayMode') || 'cover';
+        }
+
+        function applySelection(mode) {
+            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            const radio = document.querySelector(`input[name="posterMode"][value="${mode}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.closest('.display-option').classList.add('selected');
+            }
+        }
+
+        function showToast() {
+            const t = document.getElementById('savedToast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        document.querySelectorAll('input[name="posterMode"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                localStorage.setItem('posterDisplayMode', this.value);
+                applySelection(this.value);
+                showToast();
+            });
+        });
+
+        // Init
+        applySelection(getCurrentMode());
+    </script>
+</body>
+</html>

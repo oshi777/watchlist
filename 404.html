@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Watchly - Page Not Found</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=7">
+    <style>
+        .error-wrap {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-card {
+            text-align: center;
+            max-width: 520px;
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid rgba(195,199,206,0.1);
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .error-code {
+            font-size: 7rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, var(--light) 0%, var(--muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -4px;
+        }
+
+        .error-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .error-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 10px;
+        }
+
+        .error-msg {
+            font-size: 0.95rem;
+            color: var(--silver);
+            margin-bottom: 36px;
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .error-actions a {
+            padding: 11px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--muted);
+            color: var(--light);
+            border: 1px solid rgba(195,199,206,0.15);
+        }
+
+        .btn-primary:hover {
+            background: var(--silver);
+            color: var(--bg);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--silver);
+            border: 1px solid rgba(195,199,206,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: var(--muted);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .error-card {
+                padding: 40px 24px;
+            }
+            .error-code {
+                font-size: 5rem;
+            }
+            .error-actions {
+                flex-direction: column;
+            }
+            .error-actions a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand" style="font-size: 0.75rem;">Watchly</div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
+            <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+            <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
+            <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+            <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
+        </div>
+    </nav>
+
+    <div class="error-wrap">
+        <div class="error-card">
+            <div class="error-code">404</div>
+            <div class="error-title">This page isn't in your watchlist</div>
+            
+            <div class="error-actions">
+                <a href="index.html" class="btn-primary">Go to Watchly</a>
+                <a href="javascript:history.back()" class="btn-secondary">Go Back</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
