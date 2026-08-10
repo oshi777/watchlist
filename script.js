@@ -471,18 +471,46 @@ function openDetailModal(index) {
 
     // actions
     document.getElementById('detailActions').innerHTML = `
-        <button class="action-btn ${item.status === 'watched' ? 'watched' : ''}" onclick="toggleWatchStatus(${index}); refreshDetailModal(${index});">
+        <button class="action-btn ${item.status === 'watched' ? 'watched' : ''}" id="toggleWatchBtn">
             ${item.status === 'watched' ? 'Mark Unwatched' : 'Mark Watched'}
         </button>
-        <button class="action-btn" onclick="addSeason(${index}); document.getElementById('detailModal').style.display='none';">
+        <button class="action-btn" id="addSeasonBtn">
             ${item.isMovie ? 'Add Movie' : 'Add Season'}
         </button>
-        <button class="action-btn" onclick="editItem(${index}); document.getElementById('detailModal').style.display='none';">
+        <button class="action-btn" id="editItemBtn">
             Edit
         </button>
-        <button class="action-btn" onclick="deleteItem(${index}); document.getElementById('detailModal').style.display='none';">
+        <button class="action-btn" id="deleteItemBtn">
             Delete
         </button>`;
+
+    // Add direct event listeners to avoid conflicts
+    document.getElementById('toggleWatchBtn').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleWatchStatus(index);
+    };
+    
+    document.getElementById('addSeasonBtn').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        addSeason(index);
+        document.getElementById('detailModal').style.display = 'none';
+    };
+    
+    document.getElementById('editItemBtn').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        editItem(index);
+        document.getElementById('detailModal').style.display = 'none';
+    };
+    
+    document.getElementById('deleteItemBtn').onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        deleteItem(index);
+        document.getElementById('detailModal').style.display = 'none';
+    };
 
     document.getElementById('detailModal').style.display = 'block';
 }
@@ -493,7 +521,7 @@ function refreshDetailModal(index) {
         if (document.getElementById('detailModal').style.display === 'block') {
             openDetailModal(index);
         }
-    }, 50);
+    }, 100); // Increased timeout to ensure data is properly updated
 }
 
 function getStatusIcon(status) {
@@ -552,15 +580,34 @@ function setupEventListeners() {
     
     document.querySelectorAll('.close').forEach(closeBtn => {
         closeBtn.addEventListener('click', (e) => {
-            e.target.closest('.modal').style.display = 'none';
-            resetAddForm();
+            const modal = e.target.closest('.modal');
+            modal.style.display = 'none';
+            
+            // Only reset add form for the add modal
+            if (modal.id === 'addModal') {
+                resetAddForm();
+            }
+            
+            // Clear watch status modal state
+            if (modal.id === 'watchStatusModal') {
+                itemToToggle = null;
+            }
         });
     });
     
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal')) {
             e.target.style.display = 'none';
-            resetAddForm();
+            
+            // Only reset add form for the add modal
+            if (e.target.id === 'addModal') {
+                resetAddForm();
+            }
+            
+            // Clear watch status modal state
+            if (e.target.id === 'watchStatusModal') {
+                itemToToggle = null;
+            }
         }
         if (e.target.id === 'detailModal') {
             e.target.style.display = 'none';
@@ -767,19 +814,30 @@ function toggleWatchStatus(index) {
     const item = watchlistData[index];
     
     if (item.status === 'watched') {
+        // Store the index for the confirmation workflow
         itemToToggle = index;
         document.getElementById('watchStatusMessage').textContent = `Are you sure you want to mark "${item.title}" as unwatched?`;
         document.getElementById('watchStatusModal').style.display = 'block';
     } else {
+        // Mark as watched immediately
         item.status = 'watched';
         item.date = new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
         });
+        // Auto-remove from currently watching if it was there
+        if (item.currentlyWatching) {
+            item.currentlyWatching = false;
+        }
         saveToStorage();
+        renderCurrentlyWatching();
+        renderWatchlist();
         updateStats();
         applyFilters();
+        
+        // Refresh the detail modal to show updated status
+        refreshDetailModal(index);
     }
 }
 
@@ -787,15 +845,31 @@ function confirmWatchStatus() {
     if (itemToToggle !== null) {
         const item = watchlistData[itemToToggle];
         const idx = itemToToggle;
+        
+        // When unmarking as watched, set to pending and clear currentlyWatching
         item.status = 'pending';
         delete item.date;
+        
+        // Clear the currently watching flag when marking as unwatched
+        if (item.currentlyWatching) {
+            item.currentlyWatching = false;
+        }
+        
         saveToStorage();
+        renderCurrentlyWatching();
+        renderWatchlist();
         updateStats();
         applyFilters();
+        
+        // Close modal first, then refresh detail modal
+        document.getElementById('watchStatusModal').style.display = 'none';
         itemToToggle = null;
+        
+        // Refresh the detail modal with updated data
         refreshDetailModal(idx);
+    } else {
+        document.getElementById('watchStatusModal').style.display = 'none';
     }
-    document.getElementById('watchStatusModal').style.display = 'none';
 }
 
 function cancelWatchStatus() {
@@ -1067,36 +1141,50 @@ function renderCurrentlyWatching() {
     grid.style.display = 'grid';
     emptyState.style.display = 'none';
     
-    grid.innerHTML = currentlyWatchingItems.map(item => `
-        <div class="currently-watching-item" data-id="${item.id}">
-            <div class="item-title">${escapeHtml(item.title)}</div>
-            <div class="item-progress">
-                ${item.currentEpisode ? `Episode ${item.currentEpisode}${item.currentSeason ? ` (Season ${item.currentSeason})` : ''}` : 'In Progress'}
-            </div>
-            <div class="item-actions">
-                <button class="action-btn" onclick="markEpisodeWatched('${item.id}')">
-                    <i class="lucide-plus"></i> Next Episode
-                </button>
-                <button class="action-btn" onclick="removeFromCurrentlyWatching('${item.id}')">
-                    <i class="lucide-check"></i> Finished
-                </button>
-                <button class="action-btn" onclick="showDetail('${item.id}')">
-                    <i class="lucide-info"></i> Details
-                </button>
-            </div>
-        </div>
-    `).join('');
+    grid.innerHTML = currentlyWatchingItems.map(item => {
+        const itemIndex = watchlistData.indexOf(item);
+        
+        // Create thumbnail card similar to main watchlist but without status badge
+        const footerHtml = `
+            <div class="item-poster-footer">
+                <div class="item-poster-title">${escapeHtml(item.title)}</div>
+                <div class="item-poster-meta">
+                    ${item.currentEpisode ? `<span>S${item.currentSeason || 1}E${item.currentEpisode}</span>` : ''}
+                    ${item.year ? `<span>${escapeHtml(item.year)}</span>` : ''}
+                </div>
+            </div>`;
+
+        if (item.poster) {
+            return `
+                <div class="item has-poster currently-watching-card" data-id="${item.id}" onclick="openDetailModal(${itemIndex})">
+                    <img src="${item.poster}" alt="${escapeHtml(item.title)}" class="item-poster-bg" loading="lazy">
+                    ${footerHtml}
+                </div>`;
+        } else {
+            const letter = item.title.charAt(0).toUpperCase();
+            return `
+                <div class="item no-poster currently-watching-card" data-id="${item.id}" onclick="openDetailModal(${itemIndex})">
+                    <div class="item-poster-placeholder">
+                        <div class="item-poster-placeholder-letter">${escapeHtml(letter)}</div>
+                    </div>
+                    ${footerHtml}
+                </div>`;
+        }
+    }).join('');
 }
 
 function addToCurrentlyWatching(itemId) {
     const item = watchlistData.find(i => i.id === itemId);
     if (item) {
         item.currentlyWatching = true;
+        item.status = 'currently-watching';
         if (!item.currentEpisode && !item.isMovie) item.currentEpisode = 1;
         if (!item.currentSeason && !item.isMovie) item.currentSeason = 1;
         saveToStorage();
         renderCurrentlyWatching();
         renderWatchlist();
+        updateStats();
+        applyFilters();
     }
 }
 
@@ -1105,11 +1193,101 @@ function removeFromCurrentlyWatching(itemId) {
     if (item) {
         item.currentlyWatching = false;
         item.status = 'watched';
+        item.date = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+        saveToStorage();
+        renderCurrentlyWatching();
+        renderWatchlist();
+        updateStats();
+        applyFilters();
+    }
+}
+
+// Auto-remove from Currently Watching when marked as watched
+function markAsWatched(itemId) {
+    const item = watchlistData.find(i => i.id === itemId);
+    if (item) {
+        item.status = 'watched';
+        // Auto-remove from currently watching if it was there
+        if (item.currentlyWatching) {
+            item.currentlyWatching = false;
+        }
         saveToStorage();
         renderCurrentlyWatching();
         renderWatchlist();
         updateStats();
     }
+}
+
+function openAddFromListModal() {
+    const modal = document.getElementById('addFromListModal');
+    const availableShows = document.getElementById('availableShows');
+    const noShowsMessage = document.getElementById('noShowsMessage');
+    const searchInput = document.getElementById('listSearchInput');
+    
+    // Get shows that are not currently watching and not watched
+    const eligibleShows = watchlistData.filter(item => 
+        !item.currentlyWatching && 
+        item.status !== 'watched'
+    );
+    
+    if (eligibleShows.length === 0) {
+        availableShows.style.display = 'none';
+        noShowsMessage.style.display = 'block';
+    } else {
+        availableShows.style.display = 'block';
+        noShowsMessage.style.display = 'none';
+        renderAvailableShows(eligibleShows);
+    }
+    
+    // Clear search
+    searchInput.value = '';
+    
+    modal.style.display = 'block';
+}
+
+function renderAvailableShows(shows) {
+    const availableShows = document.getElementById('availableShows');
+    
+    availableShows.innerHTML = shows.map(item => `
+        <div class="available-show-item">
+            <div class="show-info">
+                <div class="show-title">${escapeHtml(item.title)}</div>
+                <div class="show-details">
+                    ${item.status === 'pending' ? 'To Watch' : 
+                      item.status === 'upcoming' ? 'Upcoming' : 
+                      item.status === 'currently-watching' ? 'Currently Watching' : 'Unknown'}
+                    ${item.genres ? ` • ${item.genres.slice(0, 2).join(', ')}` : ''}
+                    ${item.year ? ` • ${item.year}` : ''}
+                </div>
+            </div>
+            <button class="add-to-currently-btn" onclick="addToCurrentlyWatchingFromList('${item.id}')">
+                Add
+            </button>
+        </div>
+    `).join('');
+}
+
+function addToCurrentlyWatchingFromList(itemId) {
+    addToCurrentlyWatching(itemId);
+    document.getElementById('addFromListModal').style.display = 'none';
+    
+    // Show success message
+    showConfirmation('Added to Currently Watching!');
+}
+
+function filterAvailableShows() {
+    const searchTerm = document.getElementById('listSearchInput').value.toLowerCase();
+    const eligibleShows = watchlistData.filter(item => 
+        !item.currentlyWatching && 
+        item.status !== 'watched' &&
+        item.title.toLowerCase().includes(searchTerm)
+    );
+    
+    renderAvailableShows(eligibleShows);
 }
 
 function markEpisodeWatched(itemId) {
@@ -1124,13 +1302,28 @@ function markEpisodeWatched(itemId) {
         renderCurrentlyWatching();
     }
 }
-// Add event listener for the "Add Currently Watching" button in empty state
+
+function showDetail(itemId) {
+    const itemIndex = watchlistData.findIndex(i => i.id === itemId);
+    if (itemIndex !== -1) {
+        openDetailModal(itemIndex);
+    }
+}
+// Add event listeners for Currently Watching functionality
 document.addEventListener('DOMContentLoaded', function() {
-    const addCurrentlyWatchingBtn = document.getElementById('addCurrentlyWatchingBtn');
-    if (addCurrentlyWatchingBtn) {
-        addCurrentlyWatchingBtn.addEventListener('click', function() {
-            // Trigger the main add show button
-            document.getElementById('addShowBtn').click();
+    // Add from List button event listener
+    const addFromListBtn = document.getElementById('addFromListBtn');
+    if (addFromListBtn) {
+        addFromListBtn.addEventListener('click', function() {
+            openAddFromListModal();
+        });
+    }
+    
+    // Search functionality for Add from List modal
+    const listSearchInput = document.getElementById('listSearchInput');
+    if (listSearchInput) {
+        listSearchInput.addEventListener('input', function() {
+            filterAvailableShows();
         });
     }
 });

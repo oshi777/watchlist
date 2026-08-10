@@ -297,10 +297,19 @@ header p {
 
 .currently-watching-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+    gap: 15px;
     position: relative;
     z-index: 2;
+}
+
+.currently-watching-card {
+    cursor: pointer;
+}
+
+.currently-watching-card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
 }
 
 .currently-watching-item {
@@ -390,6 +399,101 @@ header p {
     margin-right: auto;
 }
 
+.empty-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.add-btn.secondary {
+    background: var(--surface);
+    border: 1px solid var(--muted);
+    color: var(--silver);
+}
+
+.add-btn.secondary:hover {
+    background: var(--muted);
+    color: var(--light);
+}
+
+/* Add from List Modal */
+.available-shows {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(195,199,206,0.1);
+    border-radius: 8px;
+    background: rgba(30,33,38,0.3);
+}
+
+.available-show-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid rgba(195,199,206,0.05);
+    transition: background 0.2s ease;
+}
+
+.available-show-item:hover {
+    background: rgba(195,199,206,0.05);
+}
+
+.available-show-item:last-child {
+    border-bottom: none;
+}
+
+.show-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.show-title {
+    font-weight: 600;
+    color: var(--light);
+    font-size: 1rem;
+}
+
+.show-details {
+    font-size: 0.85rem;
+    color: var(--silver);
+}
+
+.add-to-currently-btn {
+    padding: 8px 16px;
+    background: var(--muted);
+    color: var(--light);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.add-to-currently-btn:hover {
+    background: var(--silver);
+    color: var(--bg);
+    transform: translateY(-1px);
+}
+
+.search-filter input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(195,199,206,0.2);
+    border-radius: 8px;
+    background: rgba(30,33,38,0.6);
+    color: var(--light);
+    font-size: 1rem;
+}
+
+.search-filter input:focus {
+    outline: none;
+    border-color: var(--silver);
+    background: var(--surface);
+}
+
 /* Mobile styles for Currently Watching */
 @media (max-width: 768px) {
     .currently-watching-section {
@@ -402,8 +506,8 @@ header p {
     }
     
     .currently-watching-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 12px;
     }
     
     .currently-watching-empty {
@@ -417,12 +521,8 @@ header p {
 
 @media (max-width: 480px) {
     .currently-watching-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-    
-    .currently-watching-item {
-        padding: 16px;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px;
     }
 }
 
@@ -661,6 +761,11 @@ header p {
     height: 100%;
     background-color: rgba(11,12,14,0.9);
     backdrop-filter: blur(10px);
+}
+
+/* Watch Status Modal needs higher z-index than detail modal */
+#watchStatusModal {
+    z-index: 1100;
 }
 
 .modal-content {

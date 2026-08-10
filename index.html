@@ -44,6 +44,7 @@
                     <select id="statusFilter">
                         <option value="all">All Status</option>
                         <option value="watched">Watched</option>
+                        <option value="currently-watching">Currently Watching</option>
                         <option value="upcoming">Upcoming</option>
                         <option value="pending">To Watch</option>
                     </select>
@@ -85,16 +86,43 @@
                     <!-- Content will be populated by JavaScript -->
                 </div>
                 <div class="currently-watching-empty" id="currentlyWatchingEmpty" style="display: none;">
-                    <div class="empty-icon">📺</div>
+                    <div class="empty-icon">
+                        🎬
+                    </div>
                     <h3>Nothing Currently Watching</h3>
-                    <p>Add shows to your watchlist and mark them as "Currently Watching" to see them here.</p>
-                    <button id="addCurrentlyWatchingBtn" class="add-btn">+ Add Show</button>
+                    <p>Add shows from your watchlist to see them here.</p>
+                    <div class="empty-actions">
+                        <button id="addFromListBtn" class="add-btn">Add from List</button>
+                    </div>
                 </div>
             </div>
 
             
             <div class="watchlist" id="watchlist"></div>
         </main>
+    </div>
+
+    <!-- Add from List Modal -->
+    <div id="addFromListModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add to Currently Watching</h2>
+            <p style="margin-bottom: 20px; color: var(--silver);">Select unwatched shows from your list to add to Currently Watching</p>
+            
+            <div class="search-filter">
+                <input type="text" id="listSearchInput" placeholder="Search your watchlist..." style="margin-bottom: 15px;">
+            </div>
+            
+            <div class="available-shows" id="availableShows">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <div class="no-shows-message" id="noShowsMessage" style="display: none;">
+                <p style="text-align: center; color: var(--silver); padding: 40px;">
+                    No unwatched shows available to add. Add some shows to your watchlist first!
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- Confirmation Message -->
