@@ -86,31 +86,36 @@
         </main>
     </div>
 
-    <!-- Item Detail Modal (reused from index) -->
+    <!-- Item Detail Modal -->
     <div id="browseDetailModal" class="modal">
-        <div class="detail-modal-content">
-            <button class="detail-close" id="browseDetailClose">Close</button>
-            <div class="detail-layout">
-                <div class="detail-poster-col">
-                    <img id="bdPosterImg" src="" alt="" class="detail-poster-img">
-                    <div id="bdPosterPlaceholder" class="detail-poster-placeholder">
+        <div class="bd-modal-wrap">
+            <button class="bd-close-btn" id="browseDetailClose">← Close</button>
+            <div class="bd-layout">
+                <!-- Poster -->
+                <div class="bd-poster-col">
+                    <img id="bdPosterImg" src="" alt="" class="bd-poster-img">
+                    <div id="bdPosterPlaceholder" class="bd-poster-ph">
                         <span id="bdPosterLetter"></span>
                     </div>
                 </div>
-                <div class="detail-info-col">
-                    <div class="detail-status-row">
-                        <span id="bdTypeBadge" class="detail-type-badge"></span>
-                        <span id="bdYear" style="font-size:0.8rem;color:var(--silver);"></span>
+                <!-- Info -->
+                <div class="bd-info-col">
+                    <div class="bd-badges">
+                        <span id="bdTypeBadge" class="bd-badge"></span>
+                        <span id="bdYear" class="bd-year"></span>
                     </div>
-                    <h2 id="bdTitle" class="detail-title"></h2>
-                    <div id="bdMeta" class="detail-meta"></div>
-                    <div id="bdOverview" class="detail-overview"></div>
-                    <div id="bdGenres" class="detail-genres"></div>
-                    <div class="detail-actions" style="margin-top:auto;padding-top:16px;">
-                        <button id="bdAddBtn" class="action-btn" style="flex:1;padding:12px;font-size:0.9rem;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;">
-                            + Add to Watchlist
-                        </button>
+                    <h2 id="bdTitle" class="bd-title"></h2>
+                    <p id="bdMeta" class="bd-meta"></p>
+                    <p id="bdOverview" class="bd-overview"></p>
+                    <div id="bdGenres" class="bd-genres"></div>
+                    <!-- Quick add buttons — always visible, no confirm step -->
+                    <div class="bd-add-row">
+                        <span class="bd-add-label">Add as:</span>
+                        <button class="bd-add-btn" data-status="pending">📋 To Watch</button>
+                        <button class="bd-add-btn" data-status="watched">✓ Watched</button>
+                        <button class="bd-add-btn" data-status="upcoming">→ Upcoming</button>
                     </div>
+                    <div id="bdAlreadyAdded" class="bd-already" style="display:none;">✓ Already in your watchlist</div>
                 </div>
             </div>
         </div>
@@ -330,87 +335,128 @@
         }
         .browse-pagination button:disabled { opacity: 0.35; cursor: default; }
 
-        /* detail modal styles (same as index.html) */
-        .detail-modal-content {
-            background: #13151a; margin: 2% auto;
-            border: 1px solid rgba(195,199,206,0.1); border-radius: 20px;
-            width: 92%; max-width: 820px; max-height: 92vh;
-            overflow: hidden; position: relative;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.7);
-            animation: modalSlideIn 0.28s ease;
+        /* ── Browse detail modal — fully scoped, immune to styles.css ── */
+        .bd-modal-wrap {
+            background: #13151a;
+            margin: 3% auto;
+            border: 1px solid rgba(195,199,206,0.12);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 88vh;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.75);
+            animation: bdSlideIn 0.25s ease;
+            display: flex;
+            flex-direction: column;
         }
-        @keyframes modalSlideIn { from{transform:translateY(-40px);opacity:0} to{transform:translateY(0);opacity:1} }
-        .detail-close {
-            position: absolute;
-            top: 12px; right: 14px;
+        @keyframes bdSlideIn { from{transform:translateY(-40px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .bd-close-btn {
+            position: absolute !important;
+            top: 12px !important; right: 14px !important;
             z-index: 10;
-            width: auto !important;
-            min-width: 0 !important;
-            height: 30px !important;
-            padding: 0 12px !important;
-            margin: 0 !important;
+            background: rgba(255,255,255,0.08) !important;
+            border: 1px solid rgba(255,255,255,0.14) !important;
+            color: rgba(255,255,255,0.7) !important;
+            padding: 5px 13px !important;
             border-radius: 20px !important;
             font-size: 0.72rem !important;
             font-weight: 600 !important;
             font-family: inherit !important;
             letter-spacing: 0.4px;
-            text-transform: uppercase;
             cursor: pointer;
-            display: inline-flex !important;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255,255,255,0.07) !important;
-            border: 1px solid rgba(255,255,255,0.14) !important;
-            color: rgba(255,255,255,0.65) !important;
-            backdrop-filter: blur(6px);
-            transition: background 0.2s, color 0.2s;
+            width: auto !important;
+            margin: 0 !important;
+            text-transform: uppercase;
+            transition: background 0.2s !important;
             transform: none !important;
             box-shadow: none !important;
+            line-height: 1.5 !important;
         }
-        .detail-close::before { content: '←'; font-size: 0.85rem; }
-        .detail-close:hover {
-            background: rgba(255,255,255,0.15) !important;
+        .bd-close-btn:hover {
+            background: rgba(255,255,255,0.18) !important;
             color: #fff !important;
             transform: none !important;
-            box-shadow: none !important;
         }
-        .detail-layout { display: flex; height: 92vh; max-height: 92vh; }
-        .detail-poster-col {
-            flex-shrink: 0; width: 300px; position: relative;
-            overflow: hidden; border-radius: 20px 0 0 20px;
-            background: #0d0e12; display: flex; align-items: stretch;
+        .bd-layout {
+            display: flex;
+            height: 82vh;
+            max-height: 82vh;
         }
-        .detail-poster-img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
-        .detail-poster-placeholder {
+        .bd-poster-col {
+            flex-shrink: 0;
+            width: 260px;
+            background: #0d0e12;
+            border-radius: 20px 0 0 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+        }
+        .bd-poster-img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: center top;
+            display: block; transition: opacity 0.3s ease;
+        }
+        .bd-poster-ph {
             width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #1a1d23 0%, #2a2d35 100%);
+            background: linear-gradient(135deg, #1a1d23, #2a2d35);
+            font-size: 6rem; font-weight: 800;
+            color: rgba(195,199,206,0.1);
         }
-        .detail-poster-placeholder span { font-size: 7rem; font-weight: 800; color: rgba(195,199,206,0.12); }
-        .detail-info-col {
-            flex: 1; padding: 32px 28px 24px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 12px;
+        .bd-info-col {
+            flex: 1; min-width: 0;
+            padding: 28px 26px 22px;
+            overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .detail-status-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .detail-type-badge {
-            font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;
-            text-transform: uppercase; letter-spacing: 0.5px;
+        .bd-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-right: 90px; }
+        .bd-badge {
+            font-size: 0.65rem; font-weight: 700; padding: 2px 9px;
+            border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;
             background: rgba(195,199,206,0.15); color: var(--silver);
         }
-        .detail-title { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1.2; margin: 0; }
-        .detail-meta { font-size: 0.85rem; color: rgba(255,255,255,0.45); }
-        .detail-overview { font-size: 0.9rem; color: rgba(255,255,255,0.78); line-height: 1.65; }
-        .detail-genres { display: flex; flex-wrap: wrap; gap: 7px; }
-        .detail-genres .genre-tag {
+        .bd-year { font-size: 0.8rem; color: var(--silver); }
+        .bd-title { font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1.2; margin: 0; }
+        .bd-meta { font-size: 0.83rem; color: rgba(255,255,255,0.4); margin: 0; }
+        .bd-overview { font-size: 0.88rem; color: rgba(255,255,255,0.75); line-height: 1.65; margin: 0; }
+        .bd-genres { display: flex; flex-wrap: wrap; gap: 6px; }
+        .bd-genres .genre-tag {
             background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.8); font-size: 0.78rem;
+            color: rgba(255,255,255,0.8); font-size: 0.75rem; cursor: default;
+        }
+        .bd-genres .genre-tag:hover { background: rgba(255,255,255,0.15); color: #fff; transform: none; }
+        .bd-add-row {
+            margin-top: auto; padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .bd-add-label { font-size: 0.75rem; font-weight: 600; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; }
+        .bd-add-btn {
+            all: unset; box-sizing: border-box; cursor: pointer;
+            padding: 8px 14px; border-radius: 8px;
+            font-size: 0.82rem; font-weight: 600; font-family: inherit;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85);
+            transition: background 0.18s, color 0.18s; white-space: nowrap;
+        }
+        .bd-add-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
+        .bd-add-btn[data-status="watched"] { border-color: rgba(40,167,69,0.5); }
+        .bd-add-btn[data-status="watched"]:hover { background: rgba(40,167,69,0.35); }
+        .bd-add-btn[data-status="upcoming"] { border-color: rgba(230,140,0,0.5); }
+        .bd-add-btn[data-status="upcoming"]:hover { background: rgba(230,140,0,0.3); }
+        .bd-already {
+            font-size: 0.85rem; font-weight: 600; color: rgba(40,167,69,0.9);
+            padding: 8px 12px; background: rgba(40,167,69,0.1);
+            border-radius: 8px; border: 1px solid rgba(40,167,69,0.25);
         }
         @media (max-width: 600px) {
-            .detail-layout { flex-direction: column; height: auto; }
-            .detail-poster-col { width: 100%; height: 260px; border-radius: 20px 20px 0 0; }
-            .detail-modal-content { margin: 0 auto; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; width: 100%; max-height: 95vh; }
-            .detail-info-col { padding: 20px 18px 80px; }
-            .detail-title { font-size: 1.3rem; }
+            .bd-layout { flex-direction: column; height: auto; max-height: none; }
+            .bd-poster-col { width: 100%; height: 240px; border-radius: 20px 20px 0 0; }
+            .bd-modal-wrap { margin: 0; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; width: 100%; max-height: 92vh; }
+            .bd-info-col { padding: 18px 16px 24px; }
+            .bd-title { font-size: 1.25rem; }
             .browse-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
         }
     </style>
@@ -582,46 +628,27 @@
             .then(d => {
                 pendingAddResult = { details: d, type };
 
+                // poster
                 const img = document.getElementById('bdPosterImg');
                 const ph = document.getElementById('bdPosterPlaceholder');
                 const mode = localStorage.getItem('posterDisplayMode') || 'cover';
-
                 if (d.poster_path) {
-                    // Preload image before showing modal so it's ready instantly
-                    const preload = new Image();
-                    preload.src = IMG_FULL + d.poster_path;
-
-                    const showModal = () => {
-                        img.src = IMG_FULL + d.poster_path;
-                        img.style.objectFit = mode;
-                        img.style.objectPosition = mode === 'cover' ? 'center top' : 'center';
-                        img.style.display = 'block';
-                        ph.style.display = 'none';
-                        document.getElementById('browseDetailModal').style.display = 'block';
-                    };
-
-                    if (preload.complete) {
-                        showModal();
-                    } else {
-                        // Show modal immediately but fade image in when loaded
-                        img.style.opacity = '0';
-                        img.style.transition = 'opacity 0.3s ease';
-                        img.src = IMG_FULL + d.poster_path;
-                        img.style.objectFit = mode;
-                        img.style.objectPosition = mode === 'cover' ? 'center top' : 'center';
-                        img.style.display = 'block';
-                        ph.style.display = 'none';
-                        document.getElementById('browseDetailModal').style.display = 'block';
-                        preload.onload = () => { img.style.opacity = '1'; };
-                        img.onload = () => { img.style.opacity = '1'; };
-                    }
+                    img.style.opacity = '0';
+                    img.style.objectFit = mode;
+                    img.style.objectPosition = mode === 'cover' ? 'center top' : 'center';
+                    img.style.display = 'block';
+                    ph.style.display = 'none';
+                    img.onload = () => { img.style.opacity = '1'; };
+                    img.src = IMG_FULL + d.poster_path;
                 } else {
                     img.style.display = 'none';
                     ph.style.display = 'flex';
-                    document.getElementById('bdPosterLetter').textContent = (d.title||d.name||'?').charAt(0).toUpperCase();
-                    document.getElementById('browseDetailModal').style.display = 'block';
+                    ph.querySelector('span').textContent = (d.title || d.name || '?').charAt(0).toUpperCase();
                 }
-                const year = (d.release_date || d.first_air_date || '').slice(0,4);
+
+                // text content
+                const title = d.title || d.name || '';
+                const year = (d.release_date || d.first_air_date || '').slice(0, 4);
                 document.getElementById('bdTypeBadge').textContent = type === 'movie' ? 'Movie' : 'TV Show';
                 document.getElementById('bdYear').textContent = year;
                 document.getElementById('bdTitle').textContent = title;
@@ -632,20 +659,24 @@
                 if (d.number_of_seasons) metaParts.push(`${d.number_of_seasons} seasons`);
                 if (d.status) metaParts.push(d.status);
                 document.getElementById('bdMeta').textContent = metaParts.join(' · ');
-
                 document.getElementById('bdOverview').textContent = d.overview || '';
-                const genresEl = document.getElementById('bdGenres');
-                genresEl.innerHTML = (d.genres||[]).map(g=>`<span class="genre-tag">${escapeHtml(g.name)}</span>`).join('');
 
+                const genresEl = document.getElementById('bdGenres');
+                genresEl.innerHTML = (d.genres || []).map(g => `<span class="genre-tag">${escapeHtml(g.name)}</span>`).join('');
+
+                // already added check
                 const added = getWatchlistTitles();
-                const btn = document.getElementById('bdAddBtn');
+                const alreadyEl = document.getElementById('bdAlreadyAdded');
+                const addRow = document.querySelector('.bd-add-row');
                 if (added.has(title.toLowerCase())) {
-                    btn.textContent = '✓ Already in Watchlist';
-                    btn.style.background = 'rgba(40,167,69,0.4)';
+                    alreadyEl.style.display = 'block';
+                    addRow.style.display = 'none';
                 } else {
-                    btn.textContent = '+ Add to Watchlist';
-                    btn.style.background = 'rgba(255,255,255,0.08)';
+                    alreadyEl.style.display = 'none';
+                    addRow.style.display = 'flex';
                 }
+
+                document.getElementById('browseDetailModal').style.display = 'block';
             })
             .catch(() => {});
     }
@@ -679,10 +710,8 @@
         localStorage.setItem('dataChanged', 'true');
 
         showToast(`"${title}" added to watchlist`);
-        document.getElementById('addConfirmModal').style.display = 'none';
         document.getElementById('browseDetailModal').style.display = 'none';
         pendingAddResult = null;
-        // refresh added badges
         doSearch();
     }
 
@@ -732,14 +761,14 @@
         document.getElementById('browseDetailClose').addEventListener('click', () => {
             document.getElementById('browseDetailModal').style.display = 'none';
         });
-        document.getElementById('bdAddBtn').addEventListener('click', () => {
-            if (!pendingAddResult) return;
-            const title = pendingAddResult.details.title || pendingAddResult.details.name || '';
-            document.getElementById('addConfirmTitle').textContent = `Add "${title}"`;
-            document.getElementById('addConfirmSub').textContent = 'Choose a status for this item:';
-            document.getElementById('browseDetailModal').style.display = 'none';
-            document.getElementById('addConfirmModal').style.display = 'block';
+
+        // Quick-add buttons (no confirm modal needed)
+        document.querySelectorAll('.bd-add-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                addToWatchlist(btn.dataset.status);
+            });
         });
+
         document.getElementById('addConfirmOk').addEventListener('click', () => {
             addToWatchlist(document.getElementById('addConfirmStatus').value);
         });
