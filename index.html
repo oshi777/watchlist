@@ -8,22 +8,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@0.453.0/font/lucide.css">
     <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
     <!-- Fixed Navigation Bar -->
     <nav class="navbar">
         <div class="nav-brand" style="font-size: 0.75rem;">Watchly</div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
-            <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
-            <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
-            <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
-            <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
-            <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
-            <a href="settings.html" class="nav-link" style="font-size: 0.7rem;">Settings</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <div class="nav-menu-container">
+                <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
+                <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
+                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+                <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
+                <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+                <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
+                <a href="settings.html" class="nav-link" style="font-size: 0.7rem;">Settings</a>
+            </div>
         </div>
     </nav>
+    
+    <!-- Site blur overlay -->
+    <div class="site-blur-overlay" id="siteBlur"></div>
     
     <div class="container">
         <header>
@@ -66,6 +75,22 @@
                 </div>
             </div>
 
+            <!-- Currently Watching Section -->
+            <div class="currently-watching-section" id="currentlyWatchingSection">
+                <div class="section-header">
+                    <h2>Currently Watching</h2>
+                    <p class="section-subtitle">Shows and movies you're actively watching</p>
+                </div>
+                <div class="currently-watching-grid" id="currentlyWatchingGrid">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+                <div class="currently-watching-empty" id="currentlyWatchingEmpty" style="display: none;">
+                    <div class="empty-icon">📺</div>
+                    <h3>Nothing Currently Watching</h3>
+                    <p>Add shows to your watchlist and mark them as "Currently Watching" to see them here.</p>
+                    <button id="addCurrentlyWatchingBtn" class="add-btn">+ Add Show</button>
+                </div>
+            </div>
 
             
             <div class="watchlist" id="watchlist"></div>
@@ -87,6 +112,7 @@
                 </div>
                 <select id="newStatus">
                     <option value="pending">To Watch</option>
+                    <option value="currently-watching">Currently Watching</option>
                     <option value="watched">Watched</option>
                     <option value="upcoming">Upcoming</option>
                 </select>
@@ -171,7 +197,6 @@
     <!-- Item Detail Modal -->
     <div id="detailModal" class="modal">
         <div class="detail-modal-content">
-            <button class="detail-close" id="detailClose">Close</button>
             <div class="detail-layout">
                 <div class="detail-poster-col">
                     <img id="detailPosterImg" src="" alt="" class="detail-poster-img">
@@ -180,9 +205,12 @@
                     </div>
                 </div>
                 <div class="detail-info-col">
-                    <div class="detail-status-row">
-                        <span id="detailStatusBadge" class="item-poster-status"></span>
-                        <span id="detailTypeBadge" class="detail-type-badge"></span>
+                    <div class="detail-topbar">
+                        <div class="detail-topbar-badges">
+                            <span id="detailStatusBadge" class="item-poster-status"></span>
+                            <span id="detailTypeBadge" class="detail-type-badge"></span>
+                        </div>
+                        <button class="detail-close" id="detailClose">Close</button>
                     </div>
                     <h2 id="detailTitle" class="detail-title"></h2>
                     <div id="detailMeta" class="detail-meta"></div>
@@ -359,6 +387,7 @@
         }
         .item-poster-status.watched  { background: rgba(40,167,69,0.9);  color: #fff; }
         .item-poster-status.upcoming { background: rgba(230,140,0,0.9);  color: #fff; }
+        .item-poster-status.currently-watching { background: rgba(25,135,230,0.9); color: #fff; }
         .item-poster-status.pending  { background: rgba(80,85,100,0.9);  color: #fff; }
 
         /* subtle hover dim to hint clickability */
@@ -379,7 +408,7 @@
             border: 1px solid rgba(195,199,206,0.1);
             border-radius: 20px;
             width: 92%;
-            max-width: 820px;
+            max-width: 1200px;
             max-height: 92vh;
             overflow: hidden;
             position: relative;
@@ -387,38 +416,43 @@
             animation: modalSlideIn 0.28s ease;
         }
         .detail-close {
-            position: absolute;
-            top: 12px; right: 14px;
-            z-index: 10;
-            width: auto !important;
-            min-width: 0 !important;
-            height: 30px !important;
-            padding: 0 12px !important;
-            margin: 0 !important;
+            background: rgba(255,255,255,0.08) !important;
+            border: 1px solid rgba(255,255,255,0.14) !important;
+            color: rgba(255,255,255,0.7) !important;
+            padding: 5px 13px !important;
             border-radius: 20px !important;
             font-size: 0.72rem !important;
             font-weight: 600 !important;
             font-family: inherit !important;
             letter-spacing: 0.4px;
-            text-transform: uppercase;
             cursor: pointer;
-            display: inline-flex !important;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255,255,255,0.07) !important;
-            border: 1px solid rgba(255,255,255,0.14) !important;
-            color: rgba(255,255,255,0.65) !important;
-            backdrop-filter: blur(6px);
-            transition: background 0.2s, color 0.2s;
+            width: auto !important;
+            margin: 0 !important;
+            text-transform: uppercase;
+            transition: background 0.2s !important;
             transform: none !important;
             box-shadow: none !important;
+            line-height: 1.5 !important;
+            flex-shrink: 0;
         }
-        .detail-close::before { content: '←'; font-size: 0.85rem; }
+        .detail-close::before { content: '←'; font-size: 0.85rem; margin-right: 4px; }
         .detail-close:hover {
-            background: rgba(255,255,255,0.15) !important;
+            background: rgba(255,255,255,0.18) !important;
             color: #fff !important;
             transform: none !important;
-            box-shadow: none !important;
+        }
+        .detail-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .detail-topbar-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .detail-layout {
@@ -428,7 +462,7 @@
         }
         .detail-poster-col {
             flex-shrink: 0;
-            width: 300px;
+            width: calc(92vh * 0.667);
             position: relative;
             overflow: hidden;
             border-radius: 20px 0 0 20px;
@@ -458,7 +492,7 @@
         }
         .detail-info-col {
             flex: 1;
-            padding: 32px 28px 24px;
+            padding: 22px 28px 24px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -551,13 +585,83 @@
         }
 
         /* mobile: stack poster on top */
-        @media (max-width: 600px) {
-            .detail-layout { flex-direction: column; height: auto; }
-            .detail-poster-col { width: 100%; height: 320px; border-radius: 20px 20px 0 0; background: #0d0e12; }
-            .detail-poster-img { width: 100%; height: 100%; object-fit: contain; }
-            .detail-modal-content { margin: 0 auto; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; width: 100%; max-height: 95vh; }
-            .detail-info-col { padding: 20px 18px 80px; }
-            .detail-title { font-size: 1.3rem; }
+        @media (max-width: 768px) {
+            .detail-layout { flex-direction: column; height: 100vh; min-height: 100vh; }
+            .detail-poster-col { 
+                width: 100%; 
+                height: auto; 
+                aspect-ratio: 2/3; 
+                max-height: 45vh; 
+                border-radius: 0; 
+                background: #0d0e12; 
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .detail-poster-img { 
+                width: 100%; 
+                height: 100%; 
+                object-fit: contain; 
+                object-position: center; 
+            }
+            .detail-poster-placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .detail-modal-content { 
+                margin: 0; 
+                border-radius: 0; 
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                right: 0; 
+                bottom: 0; 
+                width: 100%; 
+                height: 100vh;
+                max-height: 100vh; 
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            .detail-info-col { 
+                padding: 18px 16px 0; 
+                gap: 10px; 
+                flex: 1;
+                overflow-y: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                background: #13151a;
+            }
+            .detail-actions { 
+                flex-direction: column; 
+                gap: 8px; 
+                margin-top: auto;
+                padding: 18px 0 24px;
+                flex-shrink: 0;
+            }
+            .detail-actions .action-btn { min-width: unset; width: 100%; }
+            .detail-title { font-size: 1.25rem; }
+            .detail-topbar { margin-bottom: 12px; }
+        }
+        @media (max-width: 480px) {
+            .detail-poster-col { 
+                max-height: 40vh;
+            }
+            .detail-modal-content { 
+                margin: 0; 
+                height: 100vh;
+                max-height: 100vh; 
+            }
+            .detail-title { font-size: 1.1rem; }
+            .detail-info-col { padding: 14px 12px 0; }
+            .detail-actions { 
+                padding: 14px 0 20px;
+            }
         }
 
         /* no-poster / legacy helpers still needed */
@@ -568,7 +672,19 @@
             display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
         }
 
-        /* TMDB attribution */
+        /* grid adjustment — all cards same layout */
+        @media (max-width: 768px) {
+            .items-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+                gap: 12px;
+            }
+        }
+        @media (max-width: 480px) {
+            .items-grid {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 8px;
+            }
+        }
         .tmdb-attribution {
             text-align: center;
             padding: 16px;
@@ -585,5 +701,67 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Hamburger menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            const siteBlur = document.getElementById('siteBlur');
+            
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = hamburger.classList.contains('open');
+                    
+                    if (isOpen) {
+                        closeMenu();
+                    } else {
+                        openMenu();
+                    }
+                });
+                
+                // Close menu when clicking blur overlay
+                if (siteBlur) {
+                    siteBlur.addEventListener('click', closeMenu);
+                }
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                        closeMenu();
+                    }
+                });
+                
+                // Close menu when clicking a nav link
+                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        closeMenu();
+                    });
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && hamburger.classList.contains('open')) {
+                        closeMenu();
+                    }
+                });
+                
+                // Menu control functions
+                function openMenu() {
+                    hamburger.classList.add('open');
+                    navLinks.classList.add('open');
+                    if (siteBlur) siteBlur.classList.add('active');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                }
+                
+                function closeMenu() {
+                    hamburger.classList.remove('open');
+                    navLinks.classList.remove('open');
+                    if (siteBlur) siteBlur.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    </script>
 </body>
 </html>

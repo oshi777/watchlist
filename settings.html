@@ -8,21 +8,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@0.453.0/font/lucide.css">
     <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-brand" style="font-size: 0.75rem;">Watchly</div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
-            <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
-            <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
-            <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
-            <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
-            <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
-            <a href="settings.html" class="nav-link active-nav" style="font-size: 0.7rem;">Settings</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <div class="nav-menu-container">
+                <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
+                <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
+                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+                <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
+                <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+                <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
+                <a href="settings.html" class="nav-link active-nav" style="font-size: 0.7rem;">Settings</a>
+            </div>
         </div>
     </nav>
+
+    <!-- Site blur overlay -->
+    <div class="site-blur-overlay" id="siteBlur"></div>
 
     <div class="container">
         <header>
@@ -32,6 +41,27 @@
 
         <main>
             <div class="settings-container">
+                
+                <!-- Currently Watching Settings -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Currently Watching</h3>
+                        <p>Show a dedicated section for shows and movies you're actively watching</p>
+                    </div>
+                    
+                    <div class="toggle-setting">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="currentlyWatchingToggle" checked>
+                            <div class="toggle-switch">
+                                <div class="toggle-slider"></div>
+                            </div>
+                            <div class="toggle-text">
+                                <span class="toggle-title">Show Currently Watching Section</span>
+                                <span class="toggle-desc">Display a dedicated section on the home page for currently watching items</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
 
                 <!-- Card Display Mode -->
                 <div class="settings-card">
@@ -128,6 +158,79 @@
         .settings-card-header p {
             font-size: 0.88rem;
             color: var(--silver);
+        }
+
+        /* Toggle Setting Styles */
+        .toggle-setting {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .toggle-label:hover {
+            background: rgba(195,199,206,0.05);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--muted);
+            border-radius: 12px;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--light);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-label input[type="checkbox"]:checked + .toggle-switch {
+            background: var(--silver);
+        }
+
+        .toggle-label input[type="checkbox"]:checked + .toggle-switch .toggle-slider {
+            transform: translateX(20px);
+        }
+
+        .toggle-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toggle-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        .toggle-desc {
+            font-size: 0.85rem;
+            color: var(--silver);
+            line-height: 1.4;
         }
 
         .display-options {
@@ -269,11 +372,20 @@
             opacity: 1;
         }
 
+        @media (max-width: 768px) {
+            .settings-container { padding: 0 4px; }
+            .settings-card { padding: 20px; }
+            .display-option { gap: 14px; padding: 16px; }
+            .option-name { font-size: 0.95rem; }
+            .option-desc { font-size: 0.78rem; }
+        }
         @media (max-width: 480px) {
-            .settings-card { padding: 16px; }
-            .option-preview { width: 90px; height: 64px; padding: 6px; }
-            .preview-poster { width: 28px; height: 46px; }
-            .display-option { gap: 12px; padding: 14px; }
+            .settings-card { padding: 14px; }
+            .display-option { gap: 10px; padding: 12px; flex-wrap: nowrap; }
+            .option-preview { width: 80px; height: 58px; padding: 5px; flex-shrink: 0; }
+            .preview-poster { width: 24px; height: 40px; }
+            .option-name { font-size: 0.88rem; }
+            .option-desc { font-size: 0.74rem; }
         }
     </style>
 
@@ -309,8 +421,85 @@
             });
         });
 
+        // Currently Watching toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentlyWatchingToggle = document.getElementById('currentlyWatchingToggle');
+            
+            // Load saved setting (enabled by default)
+            const isEnabled = localStorage.getItem('currentlyWatchingEnabled') !== 'false';
+            currentlyWatchingToggle.checked = isEnabled;
+            
+            // Save setting when changed
+            currentlyWatchingToggle.addEventListener('change', function() {
+                localStorage.setItem('currentlyWatchingEnabled', this.checked.toString());
+                showToast();
+            });
+        });
+
         // Init
         applySelection(getCurrentMode());
     </script>
 </body>
 </html>
+    <script>
+        // Hamburger menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            const siteBlur = document.getElementById('siteBlur');
+            
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = hamburger.classList.contains('open');
+                    
+                    if (isOpen) {
+                        closeMenu();
+                    } else {
+                        openMenu();
+                    }
+                });
+                
+                // Close menu when clicking blur overlay
+                if (siteBlur) {
+                    siteBlur.addEventListener('click', closeMenu);
+                }
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                        closeMenu();
+                    }
+                });
+                
+                // Close menu when clicking a nav link
+                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        closeMenu();
+                    });
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && hamburger.classList.contains('open')) {
+                        closeMenu();
+                    }
+                });
+                
+                // Menu control functions
+                function openMenu() {
+                    hamburger.classList.add('open');
+                    navLinks.classList.add('open');
+                    if (siteBlur) siteBlur.classList.add('active');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                }
+                
+                function closeMenu() {
+                    hamburger.classList.remove('open');
+                    navLinks.classList.remove('open');
+                    if (siteBlur) siteBlur.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+    </script>

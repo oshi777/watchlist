@@ -8,21 +8,30 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@0.453.0/font/lucide.css">
     <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-brand" style="font-size:0.75rem;">Watchly</div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link" style="font-size:0.7rem;">Home</a>
-            <a href="search.html" class="nav-link active-nav" style="font-size:0.7rem;">Browse</a>
-            <a href="leaderboard.html" class="nav-link" style="font-size:0.7rem;">Leaderboard</a>
-            <a href="backup.html" class="nav-link" style="font-size:0.7rem;">Backup</a>
-            <a href="guide.html" class="nav-link" style="font-size:0.7rem;">Guide</a>
-            <a href="history.html" class="nav-link" style="font-size:0.7rem;">History</a>
-            <a href="settings.html" class="nav-link" style="font-size:0.7rem;">Settings</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <div class="nav-menu-container">
+                <a href="index.html" class="nav-link" style="font-size:0.7rem;">Home</a>
+                <a href="search.html" class="nav-link active-nav" style="font-size:0.7rem;">Browse</a>
+                <a href="leaderboard.html" class="nav-link" style="font-size:0.7rem;">Leaderboard</a>
+                <a href="backup.html" class="nav-link" style="font-size:0.7rem;">Backup</a>
+                <a href="guide.html" class="nav-link" style="font-size:0.7rem;">Guide</a>
+                <a href="history.html" class="nav-link" style="font-size:0.7rem;">History</a>
+                <a href="settings.html" class="nav-link" style="font-size:0.7rem;">Settings</a>
+            </div>
         </div>
     </nav>
+
+    <!-- Site blur overlay -->
+    <div class="site-blur-overlay" id="siteBlur"></div>
 
     <div class="container">
         <header>
@@ -89,7 +98,6 @@
     <!-- Item Detail Modal -->
     <div id="browseDetailModal" class="modal">
         <div class="bd-modal-wrap">
-            <button class="bd-close-btn" id="browseDetailClose">← Close</button>
             <div class="bd-layout">
                 <!-- Poster -->
                 <div class="bd-poster-col">
@@ -100,22 +108,24 @@
                 </div>
                 <!-- Info -->
                 <div class="bd-info-col">
-                    <div class="bd-badges">
-                        <span id="bdTypeBadge" class="bd-badge"></span>
-                        <span id="bdYear" class="bd-year"></span>
+                    <div class="bd-topbar">
+                        <div class="bd-topbar-badges">
+                            <span id="bdTypeBadge" class="bd-badge"></span>
+                            <span id="bdYear" class="bd-year"></span>
+                        </div>
+                        <button class="bd-close-btn" id="browseDetailClose">← Close</button>
                     </div>
                     <h2 id="bdTitle" class="bd-title"></h2>
                     <p id="bdMeta" class="bd-meta"></p>
                     <p id="bdOverview" class="bd-overview"></p>
                     <div id="bdGenres" class="bd-genres"></div>
-                    <!-- Quick add buttons — always visible, no confirm step -->
                     <div class="bd-add-row">
                         <span class="bd-add-label">Add as:</span>
-                        <button class="bd-add-btn" data-status="pending">📋 To Watch</button>
-                        <button class="bd-add-btn" data-status="watched">✓ Watched</button>
-                        <button class="bd-add-btn" data-status="upcoming">→ Upcoming</button>
+                        <button class="bd-add-btn" data-status="pending">To Watch</button>
+                        <button class="bd-add-btn" data-status="watched">Watched</button>
+                        <button class="bd-add-btn" data-status="upcoming">Upcoming</button>
                     </div>
-                    <div id="bdAlreadyAdded" class="bd-already" style="display:none;">✓ Already in your watchlist</div>
+                    <div id="bdAlreadyAdded" class="bd-already" style="display:none;">Already in your watchlist</div>
                 </div>
             </div>
         </div>
@@ -342,7 +352,7 @@
             border: 1px solid rgba(195,199,206,0.12);
             border-radius: 20px;
             width: 90%;
-            max-width: 800px;
+            max-width: 1200px;
             max-height: 88vh;
             overflow: hidden;
             position: relative;
@@ -352,10 +362,20 @@
             flex-direction: column;
         }
         @keyframes bdSlideIn { from{transform:translateY(-40px);opacity:0} to{transform:translateY(0);opacity:1} }
+        /* top bar: close btn left, badges right */
+        .bd-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .bd-topbar-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
         .bd-close-btn {
-            position: absolute !important;
-            top: 12px !important; right: 14px !important;
-            z-index: 10;
             background: rgba(255,255,255,0.08) !important;
             border: 1px solid rgba(255,255,255,0.14) !important;
             color: rgba(255,255,255,0.7) !important;
@@ -373,6 +393,7 @@
             transform: none !important;
             box-shadow: none !important;
             line-height: 1.5 !important;
+            flex-shrink: 0;
         }
         .bd-close-btn:hover {
             background: rgba(255,255,255,0.18) !important;
@@ -386,7 +407,7 @@
         }
         .bd-poster-col {
             flex-shrink: 0;
-            width: 260px;
+            width: calc(82vh * 0.667);
             background: #0d0e12;
             border-radius: 20px 0 0 20px;
             overflow: hidden;
@@ -407,7 +428,7 @@
         }
         .bd-info-col {
             flex: 1; min-width: 0;
-            padding: 28px 26px 22px;
+            padding: 22px 26px 22px;
             overflow-y: auto;
             display: flex; flex-direction: column; gap: 10px;
         }
@@ -436,10 +457,16 @@
         .bd-add-btn {
             all: unset; box-sizing: border-box; cursor: pointer;
             padding: 8px 14px; border-radius: 8px;
-            font-size: 0.82rem; font-weight: 600; font-family: inherit;
+            font-size: 0.82rem; font-weight: 600;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             border: 1px solid rgba(255,255,255,0.18);
             background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85);
             transition: background 0.18s, color 0.18s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .bd-add-btn i {
+            font-family: 'lucide' !important;
+            font-size: 0.9rem; line-height: 1;
         }
         .bd-add-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
         .bd-add-btn[data-status="watched"] { border-color: rgba(40,167,69,0.5); }
@@ -451,13 +478,100 @@
             padding: 8px 12px; background: rgba(40,167,69,0.1);
             border-radius: 8px; border: 1px solid rgba(40,167,69,0.25);
         }
-        @media (max-width: 600px) {
-            .bd-layout { flex-direction: column; height: auto; max-height: none; }
-            .bd-poster-col { width: 100%; height: 240px; border-radius: 20px 20px 0 0; }
-            .bd-modal-wrap { margin: 0; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; width: 100%; max-height: 92vh; }
-            .bd-info-col { padding: 18px 16px 24px; }
-            .bd-title { font-size: 1.25rem; }
-            .browse-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+        @media (max-width: 768px) {
+            /* Browse detail modal */
+            .bd-layout { flex-direction: column; height: 100vh; max-height: 100vh; min-height: 100vh; }
+            .bd-poster-col { 
+                width: 100%; 
+                height: auto; 
+                aspect-ratio: 2/3; 
+                max-height: 45vh; 
+                border-radius: 0; 
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+            .bd-poster-img {
+                width: 100%; 
+                height: 100%; 
+                object-fit: contain; 
+                object-position: center;
+            }
+            .bd-poster-ph {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .bd-modal-wrap { 
+                margin: 0; 
+                border-radius: 0; 
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                right: 0; 
+                bottom: 0;
+                width: 100%; 
+                height: 100vh;
+                max-height: 100vh; 
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            .bd-info-col { 
+                padding: 16px 14px 0; 
+                flex: 1;
+                overflow-y: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                background: #13151a;
+            }
+            .bd-title { font-size: 1.2rem; }
+            .bd-add-row { 
+                flex-wrap: wrap; 
+                gap: 6px; 
+                margin-top: auto;
+                padding: 16px 0 20px;
+                flex-shrink: 0;
+            }
+            .bd-add-btn { flex: 1; min-width: 80px; text-align: center; justify-content: center; }
+            /* Browse controls */
+            .browse-search-row { flex-direction: column; }
+            .browse-search-row input { width: 100%; }
+            .browse-filters { gap: 10px; }
+            .filter-group { width: calc(50% - 5px); }
+            .filter-group select,
+            .filter-group input[type="number"] { width: 100%; }
+            .browse-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+            .browse-pagination { gap: 6px; }
+            .browse-pagination button { padding: 6px 12px; font-size: 0.8rem; }
+        }
+        
+        @media (max-width: 480px) {
+            .bd-modal-wrap { 
+                margin: 0; 
+                height: 100vh;
+                max-height: 100vh; 
+            }
+            .bd-poster-col { 
+                max-height: 40vh;
+            }
+            .bd-info-col { 
+                padding: 14px 12px 0; 
+            }
+            .bd-add-row { 
+                padding: 14px 0 18px;
+            }
+        }
+        @media (max-width: 480px) {
+            .bd-poster-col { height: 200px; }
+            .bd-title { font-size: 1rem; }
+            .filter-group { width: 100%; }
+            .browse-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .pill { padding: 5px 10px; font-size: 0.75rem; }
         }
     </style>
 
@@ -575,7 +689,7 @@
                 ${r.poster_path
                     ? `<img src="${IMG_BASE}${r.poster_path}" alt="${escapeHtml(title)}" loading="lazy">`
                     : `<div class="browse-card-placeholder">${escapeHtml(title.charAt(0))}</div>`}
-                ${isAdded ? '<div class="browse-card-added">✓ Added</div>' : ''}
+                ${isAdded ? '<div class="browse-card-added">Added</div>' : ''}
                 <div class="browse-card-footer">
                     <div class="browse-card-title">${escapeHtml(title)}</div>
                     <div class="browse-card-meta">
@@ -595,7 +709,7 @@
         if (totalPages <= 1) return;
 
         const prev = document.createElement('button');
-        prev.textContent = '← Prev';
+        prev.innerHTML = '&larr; Prev';
         prev.disabled = currentPage <= 1;
         prev.addEventListener('click', () => { currentPage--; doSearch(); window.scrollTo(0,0); });
         pg.appendChild(prev);
@@ -612,7 +726,7 @@
         }
 
         const next = document.createElement('button');
-        next.textContent = 'Next →';
+        next.innerHTML = 'Next &rarr;';
         next.disabled = currentPage >= totalPages;
         next.addEventListener('click', () => { currentPage++; doSearch(); window.scrollTo(0,0); });
         pg.appendChild(next);
@@ -658,7 +772,7 @@
                 if (d.runtime) metaParts.push(`${d.runtime} min`);
                 if (d.number_of_seasons) metaParts.push(`${d.number_of_seasons} seasons`);
                 if (d.status) metaParts.push(d.status);
-                document.getElementById('bdMeta').textContent = metaParts.join(' · ');
+                document.getElementById('bdMeta').innerHTML = metaParts.join(' · ');
                 document.getElementById('bdOverview').textContent = d.overview || '';
 
                 const genresEl = document.getElementById('bdGenres');
@@ -784,6 +898,70 @@
             if (e.target.id === 'addConfirmModal') e.target.style.display = 'none';
         });
     });
+    </script>
+</body>
+</html>
+    <script>
+        // Hamburger menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            const siteBlur = document.getElementById('siteBlur');
+            
+            if (hamburger && navLinks) {
+                hamburger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isOpen = hamburger.classList.contains('open');
+                    
+                    if (isOpen) {
+                        closeMenu();
+                    } else {
+                        openMenu();
+                    }
+                });
+                
+                // Close menu when clicking blur overlay
+                if (siteBlur) {
+                    siteBlur.addEventListener('click', closeMenu);
+                }
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
+                        closeMenu();
+                    }
+                });
+                
+                // Close menu when clicking a nav link
+                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        closeMenu();
+                    });
+                });
+                
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && hamburger.classList.contains('open')) {
+                        closeMenu();
+                    }
+                });
+                
+                // Menu control functions
+                function openMenu() {
+                    hamburger.classList.add('open');
+                    navLinks.classList.add('open');
+                    if (siteBlur) siteBlur.classList.add('active');
+                    hamburger.setAttribute('aria-expanded', 'true');
+                }
+                
+                function closeMenu() {
+                    hamburger.classList.remove('open');
+                    navLinks.classList.remove('open');
+                    if (siteBlur) siteBlur.classList.remove('active');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
     </script>
 </body>
 </html>

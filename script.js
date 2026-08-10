@@ -119,7 +119,7 @@ function showTmdbDropdown(results) {
     browseAll.className = 'tmdb-browse-all';
     const query = document.getElementById('newTitle').value.trim();
     browseAll.href = `search.html${query ? '?q=' + encodeURIComponent(query) : ''}`;
-    browseAll.innerHTML = `<span>Browse all results on TMDB →</span>`;
+    browseAll.innerHTML = `<span>Browse all results on TMDB &rarr;</span>`;
     dropdown.appendChild(browseAll);
 
     dropdown.style.display = 'block';
@@ -268,6 +268,7 @@ function initializeApp() {
     populateGenreFilter();
     updateStats();
     renderWatchlist();
+    renderCurrentlyWatching();
     setupEventListeners();
     setupTmdbSearch();
     checkAutoBackup();
@@ -365,8 +366,12 @@ function sortItemsByDate(items) {
 function createItemElement(item, index) {
     const div = document.createElement('div');
     const itemIndex = index !== undefined ? index : watchlistData.indexOf(item);
-    const statusClass = item.status === 'watched' ? 'watched' : item.status === 'upcoming' ? 'upcoming' : 'pending';
-    const statusLabel = item.status === 'watched' ? '✓ Watched' : item.status === 'upcoming' ? '→ Upcoming' : '○ To Watch';
+    const statusClass = item.status === 'watched' ? 'watched' : 
+                       item.status === 'upcoming' ? 'upcoming' : 
+                       item.status === 'currently-watching' ? 'currently-watching' : 'pending';
+    const statusLabel = item.status === 'watched' ? 'Watched' : 
+                       item.status === 'upcoming' ? 'Upcoming' : 
+                       item.status === 'currently-watching' ? 'Currently Watching' : 'To Watch';
 
     const footerHtml = `
         <div class="item-poster-footer">
@@ -400,8 +405,12 @@ function openDetailModal(index) {
     const item = watchlistData[index];
     if (!item) return;
 
-    const statusClass = item.status === 'watched' ? 'watched' : item.status === 'upcoming' ? 'upcoming' : 'pending';
-    const statusLabel = item.status === 'watched' ? '✓ Watched' : item.status === 'upcoming' ? '→ Upcoming' : '○ To Watch';
+    const statusClass = item.status === 'watched' ? 'watched' : 
+                       item.status === 'upcoming' ? 'upcoming' : 
+                       item.status === 'currently-watching' ? 'currently-watching' : 'pending';
+    const statusLabel = item.status === 'watched' ? 'Watched' : 
+                       item.status === 'upcoming' ? 'Upcoming' : 
+                       item.status === 'currently-watching' ? 'Currently Watching' : 'To Watch';
 
     // poster / placeholder
     const img = document.getElementById('detailPosterImg');
@@ -490,8 +499,8 @@ function refreshDetailModal(index) {
 function getStatusIcon(status) {
     switch (status) {
         case 'watched': return '✓';
-        case 'upcoming': return '→';
-        default: return '○';
+        case 'upcoming': return '·';
+        default: return '·';
     }
 }
 
@@ -694,6 +703,15 @@ function handleAddShow(e) {
         isMovie,
         seasons: []
     };
+    
+    // Handle currently watching status
+    if (status === 'currently-watching') {
+        itemData.currentlyWatching = true;
+        if (!isMovie) {
+            itemData.currentEpisode = 1;
+            itemData.currentSeason = 1;
+        }
+    }
     
     if (note) itemData.note = note;
     if (year) itemData.year = year;
@@ -1016,4 +1034,103 @@ document.addEventListener('DOMContentLoaded', function() {
             applyFilters();
         }
     });
+});
+// ─── Currently Watching Functionality ────────────────────────────────────────
+
+function renderCurrentlyWatching() {
+    const isEnabled = localStorage.getItem('currentlyWatchingEnabled') !== 'false';
+    const section = document.getElementById('currentlyWatchingSection');
+    
+    if (!section) return;
+    
+    if (!isEnabled) {
+        section.style.display = 'none';
+        return;
+    }
+    
+    section.style.display = 'block';
+    
+    const grid = document.getElementById('currentlyWatchingGrid');
+    const emptyState = document.getElementById('currentlyWatchingEmpty');
+    
+    // Get items with "currently watching" status
+    const currentlyWatchingItems = watchlistData.filter(item => 
+        item.currentlyWatching === true || item.status === 'currently-watching'
+    );
+    
+    if (currentlyWatchingItems.length === 0) {
+        grid.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+    }
+    
+    grid.style.display = 'grid';
+    emptyState.style.display = 'none';
+    
+    grid.innerHTML = currentlyWatchingItems.map(item => `
+        <div class="currently-watching-item" data-id="${item.id}">
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-progress">
+                ${item.currentEpisode ? `Episode ${item.currentEpisode}${item.currentSeason ? ` (Season ${item.currentSeason})` : ''}` : 'In Progress'}
+            </div>
+            <div class="item-actions">
+                <button class="action-btn" onclick="markEpisodeWatched('${item.id}')">
+                    <i class="lucide-plus"></i> Next Episode
+                </button>
+                <button class="action-btn" onclick="removeFromCurrentlyWatching('${item.id}')">
+                    <i class="lucide-check"></i> Finished
+                </button>
+                <button class="action-btn" onclick="showDetail('${item.id}')">
+                    <i class="lucide-info"></i> Details
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addToCurrentlyWatching(itemId) {
+    const item = watchlistData.find(i => i.id === itemId);
+    if (item) {
+        item.currentlyWatching = true;
+        if (!item.currentEpisode && !item.isMovie) item.currentEpisode = 1;
+        if (!item.currentSeason && !item.isMovie) item.currentSeason = 1;
+        saveToStorage();
+        renderCurrentlyWatching();
+        renderWatchlist();
+    }
+}
+
+function removeFromCurrentlyWatching(itemId) {
+    const item = watchlistData.find(i => i.id === itemId);
+    if (item) {
+        item.currentlyWatching = false;
+        item.status = 'watched';
+        saveToStorage();
+        renderCurrentlyWatching();
+        renderWatchlist();
+        updateStats();
+    }
+}
+
+function markEpisodeWatched(itemId) {
+    const item = watchlistData.find(i => i.id === itemId);
+    if (item) {
+        if (item.isMovie) {
+            removeFromCurrentlyWatching(itemId);
+        } else {
+            item.currentEpisode = (item.currentEpisode || 1) + 1;
+        }
+        saveToStorage();
+        renderCurrentlyWatching();
+    }
+}
+// Add event listener for the "Add Currently Watching" button in empty state
+document.addEventListener('DOMContentLoaded', function() {
+    const addCurrentlyWatchingBtn = document.getElementById('addCurrentlyWatchingBtn');
+    if (addCurrentlyWatchingBtn) {
+        addCurrentlyWatchingBtn.addEventListener('click', function() {
+            // Trigger the main add show button
+            document.getElementById('addShowBtn').click();
+        });
+    }
 });
