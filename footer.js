@@ -14,7 +14,6 @@
         links: [
             { text: 'Home', url: 'index.html' },
             { text: 'Browse', url: 'search.html' },
-            { text: 'Discover', url: 'discover.html' },
             { text: 'Leaderboard', url: 'leaderboard.html' },
             { text: 'Backup', url: 'backup.html' },
             { text: 'Guide', url: 'guide.html' },
