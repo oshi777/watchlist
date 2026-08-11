@@ -32,6 +32,12 @@ body {
     line-height: 1.6;
     min-height: 100vh;
     padding-top: 70px;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+html {
+    overscroll-behavior-y: none;
 }
 
 /* Custom Scrollbar */
@@ -66,6 +72,10 @@ body {
 }
 
 header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
     text-align: center;
     margin-bottom: 40px;
     padding: 40px 20px;

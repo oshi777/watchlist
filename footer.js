@@ -75,9 +75,10 @@
                 background: linear-gradient(135deg, #0d0e12 0%, #1a1d23 100%);
                 border-top: 1px solid rgba(195,199,206,0.1);
                 margin-top: 60px;
-                padding: 40px 0 20px;
+                padding: 40px 0 0;
                 color: var(--silver);
                 font-size: 0.85rem;
+                margin-bottom: 0;
             }
 
             .footer-container {
@@ -183,9 +184,10 @@
             }
 
             .footer-bottom {
-                padding-top: 20px;
+                padding: 20px 0;
                 border-top: 1px solid rgba(195,199,206,0.1);
                 text-align: center;
+                margin: 0;
             }
 
             .footer-bottom p {
@@ -215,7 +217,7 @@
 
                 .universal-footer {
                     margin-top: 40px;
-                    padding: 30px 0 16px;
+                    padding: 30px 0 0;
                 }
             }
 
