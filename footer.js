@@ -277,39 +277,20 @@
 
     // Scroll Prevention System
     function initScrollPrevention() {
-        // Add CSS for preventing scroll
-        const scrollPreventionCSS = document.createElement('style');
-        scrollPreventionCSS.textContent = `
-            .modal-open {
-                overflow: hidden !important;
-                position: fixed !important;
-                width: 100% !important;
-                height: 100% !important;
-                top: 0 !important;
-                left: 0 !important;
-            }
-            
-            .modal-open .container {
-                position: static !important;
-            }
-        `;
-        document.head.appendChild(scrollPreventionCSS);
-
         // Track scroll position
         let scrollPosition = 0;
         
         // Function to prevent scrolling
         function preventScroll() {
             scrollPosition = window.pageYOffset;
-            document.body.style.top = `-${scrollPosition}px`;
-            document.body.classList.add('modal-open');
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
         }
         
         // Function to restore scrolling
         function restoreScroll() {
-            document.body.classList.remove('modal-open');
-            document.body.style.top = '';
-            window.scrollTo(0, scrollPosition);
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
         }
         
         // Monitor for modal changes
