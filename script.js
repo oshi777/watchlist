@@ -351,7 +351,7 @@ function renderWatchlist() {
         return;
     }
     
-    const groupingMode = localStorage.getItem('listGroupingMode') || 'with-separators';
+    const groupingMode = localStorage.getItem('listGroupingMode') || 'continuous';
     
     if (groupingMode === 'continuous') {
         // Continuous list without section headers
