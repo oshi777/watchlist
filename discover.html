@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Watchly - Discover</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/lucide-static@0.453.0/font/lucide.css">
+    <link rel="stylesheet" href="styles.css?v=7">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand" style="font-size: 0.75rem;">Watchly</div>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" id="navLinks">
+            <div class="nav-menu-container">
+                <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
+                <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
+                <a href="discover.html" class="nav-link active-nav" style="font-size: 0.7rem;">Discover</a>
+                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+                <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
+                <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
+                <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
+                <a href="settings.html" class="nav-link" style="font-size: 0.7rem;">Settings</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Site blur overlay -->
+    <div class="site-blur-overlay" id="siteBlur"></div>
+
+    <div class="container">
+        <header>
+            <h1>Discover</h1>
+            <p>Trending releases, hot content, and personalized recommendations</p>
+        </header>
+
+        <main>
+            <!-- Personalized Recommendations Section -->
+            <section class="discover-section" id="recommendedSection" style="display:none;">
+                <div class="section-header-modern">
+                    <h2>🎯 Recommended For You</h2>
+                    <p class="section-subtitle">Based on your watchlist and viewing habits</p>
+                </div>
+                <div class="discover-grid" id="recommendedGrid"></div>
+            </section>
+
+            <!-- Trending Today Section -->
+            <section class="discover-section">
+                <div class="section-header-modern">
+                    <h2>🔥 Trending Today</h2>
+                    <p class="section-subtitle">What everyone's watching right now</p>
+                </div>
+                <div class="discover-grid" id="trendingGrid"></div>
+            </section>
+
+            <!-- Popular This Week Section -->
+            <section class="discover-section">
+                <div class="section-header-modern">
+                    <h2>⭐ Popular This Week</h2>
+                    <p class="section-subtitle">Highest rated and most watched</p>
+                </div>
+                <div class="discover-grid" id="popularGrid"></div>
+            </section>
+
+            <!-- New Releases Section -->
+            <section class="discover-section">
+                <div class="section-header-modern">
+                    <h2>🆕 New Releases</h2>
+                    <p class="section-subtitle">Fresh content just added</p>
+                </div>
+                <div class="discover-grid" id="newReleasesGrid"></div>
+            </section>
+
+            <!-- Coming Soon Section -->
+            <section class="discover-section">
+                <div class="section-header-modern">
+                    <h2>📅 Coming Soon</h2>
+                    <p class="section-subtitle">Upcoming releases to anticipate</p>
+                </div>
+                <div class="discover-grid" id="comingSoonGrid"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Item Detail Modal (reused from search.html pattern) -->
+    <div id="discoverDetailModal" class="modal">
+        <div class="bd-modal-wrap">
+            <div class="bd-layout">
+                <div class="bd-poster-col">
+                    <img id="ddPosterImg" src="" alt="" class="bd-poster-img">
+                    <div id="ddPosterPlaceholder" class="bd-poster-ph">
+                        <span id="ddPosterLetter"></span>
+                    </div>
+                </div>
+                <div class="bd-info-col">
+                    <div class="bd-topbar">
+                        <div class="bd-topbar-badges">
+                            <span id="ddTypeBadge" class="bd-badge"></span>
+                            <span id="ddYear" class="bd-year"></span>
+                        </div>
+                        <button class="bd-close-btn" id="discoverDetailClose">← Close</button>
+                    </div>
+                    <h2 id="ddTitle" class="bd-title"></h2>
+                    <p id="ddMeta" class="bd-meta"></p>
+                    <p id="ddOverview" class="bd-overview"></p>
+                    <div id="ddWatchedDate" class="bd-watched-date" style="display:none;"></div>
+                    <div id="ddGenres" class="bd-genres"></div>
+                    <div class="bd-add-row">
+                        <span class="bd-add-label">Add as:</span>
+                        <button class="bd-add-btn" data-status="pending">To Watch</button>
+                        <button class="bd-add-btn" data-status="watched">Watched</button>
+                        <button class="bd-add-btn" data-status="upcoming">Upcoming</button>
+                    </div>
+                    <div id="ddAlreadyAdded" class="bd-already" style="display:none;">Already in your watchlist</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="discoverToast" style="
+        position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+        background:var(--surface);color:var(--light);border:1px solid var(--silver);
+        padding:10px 24px;border-radius:8px;font-weight:600;font-size:0.9rem;
+        transition:transform 0.3s,opacity 0.3s;opacity:0;z-index:9999;">
+    </div>
+
+    <style>
+        .active-nav {
+            background: var(--muted);
+            color: var(--light) !important;
+        }
+
+        .discover-section {
+            margin-bottom: 50px;
+        }
+
+        .section-header-modern {
+            margin-bottom: 24px;
+        }
+
+        .section-header-modern h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 6px;
+        }
+
+        .section-subtitle {
+            font-size: 0.9rem;
+            color: var(--silver);
+            margin: 0;
+        }
+
+        .discover-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 18px;
+        }
+
+        .discover-card {
+            position: relative;
+            aspect-ratio: 2/3;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--surface);
+            cursor: pointer;
+            border: 1px solid rgba(195,199,206,0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .discover-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        }
+
+        .discover-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+            transition: transform 0.35s ease;
+        }
+
+        .discover-card:hover img {
+            transform: scale(1.04);
+        }
+
+        .discover-card-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1d23, #2a2d35);
+            font-size: 3rem;
+            font-weight: 800;
+            color: rgba(195,199,206,0.15);
+        }
+
+        .discover-card-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 36px 10px 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 55%, transparent);
+            pointer-events: none;
+        }
+
+        .discover-card-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+
+        .discover-card-meta {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.55);
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .discover-card-type {
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+        }
+
+        .discover-card-rating {
+            font-size: 0.68rem;
+            color: #f5c518;
+            font-weight: 700;
+        }
+
+        .discover-card-added {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 2;
+            background: rgba(40,167,69,0.9);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        /* Modal styles (reuse from search.html) */
+        .bd-modal-wrap {
+            background: #13151a;
+            margin: 3% auto;
+            border: 1px solid rgba(195,199,206,0.12);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 88vh;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.75);
+            animation: bdSlideIn 0.25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes bdSlideIn {
+            from {
+                transform: translateY(-40px);
+                opacity: 0
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .bd-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .bd-topbar-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bd-close-btn {
+            background: rgba(255,255,255,0.08) !important;
+            border: 1px solid rgba(255,255,255,0.14) !important;
+            color: rgba(255,255,255,0.7) !important;
+            padding: 5px 13px !important;
+            border-radius: 20px !important;
+            font-size: 0.72rem !important;
+            font-weight: 600 !important;
+            font-family: inherit !important;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            width: auto !important;
+            margin: 0 !important;
+            text-transform: uppercase;
+            transition: background 0.2s !important;
+            transform: none !important;
+            box-shadow: none !important;
+            line-height: 1.5 !important;
+            flex-shrink: 0;
+        }
+
+        .bd-close-btn:hover {
+            background: rgba(255,255,255,0.18) !important;
+            color: #fff !important;
+            transform: none !important;
+        }
+
+        .bd-layout {
+            display: flex;
+            height: 82vh;
+            max-height: 82vh;
+        }
+
+        .bd-poster-col {
+            flex-shrink: 0;
+            width: calc(82vh * 0.667);
+            background: #0d0e12;
+            border-radius: 20px 0 0 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .bd-poster-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+        }
+
+        .bd-poster-ph {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1d23, #2a2d35);
+        }
+
+        .bd-poster-ph span {
+            font-size: 7rem;
+            font-weight: 800;
+            color: rgba(195,199,206,0.12);
+        }
+
+        .bd-info-col {
+            flex: 1;
+            padding: 22px 28px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .bd-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(195,199,206,0.15);
+            color: var(--silver);
+        }
+
+        .bd-year {
+            font-size: 0.75rem;
+            color: var(--silver);
+        }
+
+        .bd-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .bd-meta {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .bd-overview {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.78);
+            line-height: 1.65;
+        }
+
+        .bd-watched-date {
+            font-size: 0.88rem;
+            color: rgba(40,167,69,0.95);
+            background: rgba(40,167,69,0.12);
+            border: 1px solid rgba(40,167,69,0.25);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 4px 0;
+        }
+
+        .bd-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .bd-genres .genre-tag {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.8);
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .bd-add-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 8px;
+        }
+
+        .bd-add-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--silver);
+        }
+
+        .bd-add-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .bd-add-btn:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-1px);
+        }
+
+        .bd-already {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(40,167,69,0.9);
+            padding: 8px 12px;
+            background: rgba(40,167,69,0.1);
+            border-radius: 8px;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .discover-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 12px;
+            }
+
+            .bd-layout {
+                flex-direction: column;
+                height: 100vh;
+                max-height: 100vh;
+            }
+
+            .bd-poster-col {
+                width: 100%;
+                height: auto;
+                aspect-ratio: 2/3;
+                max-height: 45vh;
+                border-radius: 0;
+                background: #0d0e12;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+            }
+
+            .bd-poster-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                object-position: center;
+            }
+
+            .bd-modal-wrap {
+                margin: 0;
+                border-radius: 0;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .bd-info-col {
+                padding: 18px 16px 0;
+                gap: 10px;
+                flex: 1;
+                overflow-y: auto;
+                min-height: 0;
+                display: flex;
+                flex-direction: column;
+                background: #13151a;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .discover-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .section-header-modern h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+
+    <script>
+    const TMDB_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2M2IxMTllZTk3M2U3MjkwYzM0MDYxNmI5Y2QxNzg5NSIsIm5iZiI6MTc0OTk1NDQ3Ni44MTcsInN1YiI6IjY4NGUyZmFjNGEzZTQ0Y2Y2ODI5NGM2OSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.J0w9eSTX8VZLmPrmwlWFJxl7HE9FntXVu8VDaCdcV4w';
+    const IMG_BASE = 'https://image.tmdb.org/t/p/w342';
+    const IMG_FULL = 'https://image.tmdb.org/t/p/w500';
+
+    let pendingAddResult = null;
+
+    const escapeHtml = (text) => {
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    };
+
+    // Get watchlist index for "already added" checking
+    function getWatchlistIndex() {
+        try {
+            const data = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+            const posters = new Set();
+            const titleYear = new Set();
+            data.forEach(i => {
+                if (i.poster) {
+                    const path = i.poster.replace(IMG_BASE, '').replace(IMG_FULL, '');
+                    posters.add(path);
+                } else {
+                    titleYear.add((i.title + '|' + (i.year || '')).toLowerCase());
+                }
+            });
+            return { posters, titleYear };
+        } catch { return { posters: new Set(), titleYear: new Set() }; }
+    }
+
+    function isInWatchlist(posterPath, title, year) {
+        const { posters, titleYear } = getWatchlistIndex();
+        if (posterPath) return posters.has(posterPath);
+        return titleYear.has((title + '|' + (year || '')).toLowerCase());
+    }
+
+    // Get watched date for an item if it's in watchlist and marked as watched
+    function getWatchedDate(posterPath, title, year) {
+        try {
+            const data = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+            let matchedItem = null;
+
+            // Find matching item
+            if (posterPath) {
+                matchedItem = data.find(i => {
+                    if (!i.poster) return false;
+                    const path = i.poster.replace(IMG_BASE, '').replace(IMG_FULL, '');
+                    return path === posterPath;
+                });
+            } else {
+                const searchKey = (title + '|' + (year || '')).toLowerCase();
+                matchedItem = data.find(i => {
+                    if (i.poster) return false;
+                    return (i.title + '|' + (i.year || '')).toLowerCase() === searchKey;
+                });
+            }
+
+            // Return date if status is watched and date exists
+            if (matchedItem && matchedItem.status === 'watched' && matchedItem.date) {
+                return matchedItem.date;
+            }
+            return null;
+        } catch {
+            return null;
+        }
+    }
+
+    function formatWatchedDate(dateStr) {
+        if (!dateStr) return null;
+        const s = String(dateStr).trim();
+        
+        // If it's just a year
+        if (/^\d{4}$/.test(s)) {
+            return s;
+        }
+        
+        // Try to parse and format the date nicely
+        try {
+            const date = new Date(s);
+            if (!isNaN(date.getTime())) {
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            }
+        } catch (e) {
+            // Fall back to original string
+        }
+        
+        return s;
+    }
+
+    // Analyze user's watchlist to extract preferences
+    function analyzeWatchlistPreferences() {
+        try {
+            const data = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+            if (data.length === 0) return null;
+
+            const genreCount = {};
+            const yearCount = {};
+            let movieCount = 0;
+            let tvCount = 0;
+            let watchedCount = 0;
+
+            data.forEach(item => {
+                // Count genres
+                if (item.genres && Array.isArray(item.genres)) {
+                    item.genres.forEach(genre => {
+                        genreCount[genre] = (genreCount[genre] || 0) + 1;
+                    });
+                }
+
+                // Count years
+                if (item.year) {
+                    yearCount[item.year] = (yearCount[item.year] || 0) + 1;
+                }
+
+                // Count type
+                if (item.isMovie) movieCount++;
+                else tvCount++;
+
+                // Count status
+                if (item.status === 'watched') watchedCount++;
+            });
+
+            // Get top 3 genres
+            const topGenres = Object.entries(genreCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 3)
+                .map(([genre]) => genre);
+
+            // Determine preferred type
+            const preferredType = movieCount > tvCount ? 'movie' : 'tv';
+
+            return {
+                topGenres,
+                preferredType,
+                totalItems: data.length,
+                watchedItems: watchedCount
+            };
+        } catch {
+            return null;
+        }
+    }
+
+    // Fetch personalized recommendations
+    async function fetchRecommendations() {
+        const prefs = analyzeWatchlistPreferences();
+        if (!prefs || prefs.totalItems < 3) return []; // Need at least 3 items for recommendations
+
+        const endpoint = `https://api.themoviedb.org/3/discover/${prefs.preferredType}?sort_by=vote_average.desc&vote_count.gte=100${prefs.topGenres.length > 0 ? '&with_genres=' + prefs.topGenres.join(',') : ''}&page=1`;
+
+        try {
+            const response = await fetch(endpoint, {
+                headers: { 'Authorization': `Bearer ${TMDB_TOKEN}` }
+            });
+            const data = await response.json();
+            return (data.results || []).slice(0, 12);
+        } catch {
+            return [];
+        }
+    }
+
+    // Fetch trending content
+    async function fetchTrending() {
+        try {
+            const response = await fetch('https://api.themoviedb.org/3/trending/all/day?page=1', {
+                headers: { 'Authorization': `Bearer ${TMDB_TOKEN}` }
+            });
+            const data = await response.json();
+            return (data.results || []).filter(r => r.media_type !== 'person').slice(0, 12);
+        } catch {
+            return [];
+        }
+    }
+
+    // Fetch popular this week
+    async function fetchPopular() {
+        try {
+            const response = await fetch('https://api.themoviedb.org/3/trending/all/week?page=1', {
+                headers: { 'Authorization': `Bearer ${TMDB_TOKEN}` }
+            });
+            const data = await response.json();
+            return (data.results || []).filter(r => r.media_type !== 'person').slice(0, 12);
+        } catch {
+            return [];
+        }
+    }
+
+    // Fetch new releases
+    async function fetchNewReleases() {
+        const today = new Date().toISOString().split('T')[0];
+        const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+        try {
+            const response = await fetch(`https://api.themoviedb.org/3/discover/movie?sort_by=release_date.desc&release_date.gte=${monthAgo}&release_date.lte=${today}&page=1`, {
+                headers: { 'Authorization': `Bearer ${TMDB_TOKEN}` }
+            });
+            const data = await response.json();
+            return (data.results || []).slice(0, 12);
+        } catch {
+            return [];
+        }
+    }
+
+    // Fetch coming soon
+    async function fetchComingSoon() {
+        const today = new Date().toISOString().split('T')[0];
+        const threeMonthsLater = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+        try {
+            const response = await fetch(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&release_date.gte=${today}&release_date.lte=${threeMonthsLater}&page=1`, {
+                headers: { 'Authorization': `Bearer ${TMDB_TOKEN}` }
+            });
+            const data = await response.json();
+            return (data.results || []).slice(0, 12);
+        } catch {
+            return [];
+        }
+    }
+
+    // Render a grid of results
+    function renderGrid(results, gridId) {
+        const grid = document.getElementById(gridId);
+        grid.innerHTML = '';
+
+        results.forEach(r => {
+            const title = r.title || r.name || '';
+            const year = (r.release_date || r.first_air_date || '').slice(0, 4);
+            const type = r.media_type === 'tv' || (r.name && !r.title) ? 'tv' : 'movie';
+            const rating = r.vote_average ? r.vote_average.toFixed(1) : '';
+            const isAdded = isInWatchlist(r.poster_path || null, title, year);
+
+            const card = document.createElement('div');
+            card.className = 'discover-card';
+            card.innerHTML = `
+                ${r.poster_path
+                    ? `<img src="${IMG_BASE}${r.poster_path}" alt="${escapeHtml(title)}" loading="lazy">`
+                    : `<div class="discover-card-placeholder">${escapeHtml(title.charAt(0))}</div>`}
+                ${isAdded ? '<div class="discover-card-added">Added</div>' : ''}
+                <div class="discover-card-footer">
+                    <div class="discover-card-title">${escapeHtml(title)}</div>
+                    <div class="discover-card-meta">
+                        <span class="discover-card-type">${type === 'movie' ? 'Movie' : 'TV'}</span>
+                        ${year ? `<span>${year}</span>` : ''}
+                        ${rating ? `<span class="discover-card-rating">★ ${rating}</span>` : ''}
+                    </div>
+                </div>
+            `;
+            card.addEventListener('click', () => openDetail(r.id, type));
+            grid.appendChild(card);
+        });
+    }
+
+    // Open detail modal
+    function openDetail(id, type) {
+        const endpoint = type === 'movie'
+            ? `https://api.themoviedb.org/3/movie/${id}`
+            : `https://api.themoviedb.org/3/tv/${id}`;
+
+        fetch(endpoint, { headers: { 'Authorization': `Bearer ${TMDB_TOKEN}` } })
+            .then(r => r.json())
+            .then(d => {
+                pendingAddResult = { details: d, type };
+
+                // Set poster
+                const img = document.getElementById('ddPosterImg');
+                const ph = document.getElementById('ddPosterPlaceholder');
+                const mode = localStorage.getItem('posterDisplayMode') || 'cover';
+                
+                if (d.poster_path) {
+                    img.style.opacity = '0';
+                    img.style.objectFit = mode;
+                    img.style.objectPosition = mode === 'cover' ? 'center top' : 'center';
+                    img.style.display = 'block';
+                    ph.style.display = 'none';
+                    img.onload = () => { img.style.opacity = '1'; };
+                    img.src = IMG_FULL + d.poster_path;
+                } else {
+                    img.style.display = 'none';
+                    ph.style.display = 'flex';
+                    ph.querySelector('span').textContent = (d.title || d.name || '?').charAt(0).toUpperCase();
+                }
+
+                // Set text content
+                const title = d.title || d.name || '';
+                const year = (d.release_date || d.first_air_date || '').slice(0, 4);
+                document.getElementById('ddTypeBadge').textContent = type === 'movie' ? 'Movie' : 'TV Show';
+                document.getElementById('ddYear').textContent = year;
+                document.getElementById('ddTitle').textContent = title;
+
+                const metaParts = [];
+                if (d.vote_average) metaParts.push(`★ ${d.vote_average.toFixed(1)}`);
+                if (d.runtime) metaParts.push(`${d.runtime} min`);
+                if (d.number_of_seasons) metaParts.push(`${d.number_of_seasons} seasons`);
+                if (d.status) metaParts.push(d.status);
+                document.getElementById('ddMeta').innerHTML = metaParts.join(' · ');
+                document.getElementById('ddOverview').textContent = d.overview || '';
+
+                const genresEl = document.getElementById('ddGenres');
+                genresEl.innerHTML = (d.genres || []).map(g => `<span class="genre-tag">${escapeHtml(g.name)}</span>`).join('');
+
+                // Check if already added and get watched date
+                const alreadyEl = document.getElementById('ddAlreadyAdded');
+                const addRow = document.querySelector('.bd-add-row');
+                const watchedDateEl = document.getElementById('ddWatchedDate');
+                const isAdded = isInWatchlist(d.poster_path || null, title, year);
+                
+                if (isAdded) {
+                    alreadyEl.style.display = 'block';
+                    addRow.style.display = 'none';
+                    
+                    // Check for watched date
+                    const watchedDate = getWatchedDate(d.poster_path || null, title, year);
+                    if (watchedDate) {
+                        const formattedDate = formatWatchedDate(watchedDate);
+                        watchedDateEl.innerHTML = `<strong>Watched:</strong> ${formattedDate}`;
+                        watchedDateEl.style.display = 'block';
+                    } else {
+                        watchedDateEl.style.display = 'none';
+                    }
+                } else {
+                    alreadyEl.style.display = 'none';
+                    addRow.style.display = 'flex';
+                    watchedDateEl.style.display = 'none';
+                }
+
+                document.getElementById('discoverDetailModal').style.display = 'block';
+            })
+            .catch(() => {});
+    }
+
+    // Add to watchlist
+    function addToWatchlist(status) {
+        if (!pendingAddResult) return;
+        const { details: d, type } = pendingAddResult;
+        const title = d.title || d.name || '';
+        const year = (d.release_date || d.first_air_date || '').slice(0, 4);
+        const genres = (d.genres || []).map(g => g.name);
+        const poster = d.poster_path ? IMG_BASE + d.poster_path : null;
+        const overview = d.overview || '';
+        const isMovie = type === 'movie';
+        const section = title.charAt(0).toUpperCase();
+        const sectionKey = /[0-9]/.test(section) ? '0-9' : section;
+
+        const item = {
+            id: 'item_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            title,
+            status,
+            genres: genres.sort(),
+            section: sectionKey,
+            isMovie,
+            seasons: [],
+            year: year || undefined,
+            overview: overview || undefined,
+            poster: poster || undefined
+        };
+
+        const watchlist = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+        watchlist.push(item);
+        localStorage.setItem('watchlistData', JSON.stringify(watchlist));
+        localStorage.setItem('dataChanged', 'true');
+
+        showToast(`"${title}" added to watchlist`);
+        document.getElementById('discoverDetailModal').style.display = 'none';
+        pendingAddResult = null;
+        
+        // Refresh all grids to update "Added" badges
+        initDiscover();
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('discoverToast');
+        toast.textContent = msg;
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        toast.style.opacity = '1';
+        setTimeout(() => {
+            toast.style.transform = 'translateX(-50%) translateY(60px)';
+            toast.style.opacity = '0';
+        }, 2500);
+    }
+
+    // Initialize discover page
+    async function initDiscover() {
+        // Fetch all content
+        const [recommended, trending, popular, newReleases, comingSoon] = await Promise.all([
+            fetchRecommendations(),
+            fetchTrending(),
+            fetchPopular(),
+            fetchNewReleases(),
+            fetchComingSoon()
+        ]);
+
+        // Show recommendations only if we have them
+        const recommendedSection = document.getElementById('recommendedSection');
+        if (recommended.length > 0) {
+            recommendedSection.style.display = 'block';
+            renderGrid(recommended, 'recommendedGrid');
+        } else {
+            recommendedSection.style.display = 'none';
+        }
+
+        renderGrid(trending, 'trendingGrid');
+        renderGrid(popular, 'popularGrid');
+        renderGrid(newReleases, 'newReleasesGrid');
+        renderGrid(comingSoon, 'comingSoonGrid');
+    }
+
+    // Event listeners
+    document.getElementById('discoverDetailClose').addEventListener('click', () => {
+        document.getElementById('discoverDetailModal').style.display = 'none';
+    });
+
+    document.querySelectorAll('.bd-add-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            addToWatchlist(btn.getAttribute('data-status'));
+        });
+    });
+
+    // Close modal on background click
+    document.getElementById('discoverDetailModal').addEventListener('click', (e) => {
+        if (e.target.id === 'discoverDetailModal') {
+            document.getElementById('discoverDetailModal').style.display = 'none';
+        }
+    });
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', initDiscover);
+    
+    </script>
+
+    <!-- Hamburger Menu Script -->
+    <script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+    const siteBlur = document.getElementById('siteBlur');
+
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        hamburger.classList.toggle('active');
+        siteBlur.classList.toggle('active');
+    });
+
+    siteBlur.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        hamburger.classList.remove('active');
+        siteBlur.classList.remove('active');
+    });
+    </script>
+
+    <!-- Universal Footer -->
+    <script src="footer.js"></script>
+</body>
+</html>

@@ -49,14 +49,45 @@ function setupTmdbSearch() {
     const dropdown = document.getElementById('tmdbDropdown');
 
     titleInput.addEventListener('input', function () {
-        const query = this.value.trim();
         clearTimeout(tmdbSearchTimer);
         dropdown.innerHTML = '';
         dropdown.style.display = 'none';
 
+        const query = this.value.trim();
         if (!getTmdbToken() || query.length < 2) return;
 
-        tmdbSearchTimer = setTimeout(() => searchTmdb(query), 400);
+        // Read value fresh inside the timeout — avoids stale closure when typing fast
+        tmdbSearchTimer = setTimeout(() => {
+            const currentQuery = titleInput.value.trim();
+            if (currentQuery.length >= 2) {
+                searchTmdb(currentQuery);
+            }
+        }, 400);
+    });
+
+    // Also trigger on keyup to catch cases input event misses (e.g. browser autofill, IME)
+    titleInput.addEventListener('keyup', function (e) {
+        // Skip modifier-only keys
+        const skip = ['Shift','Control','Alt','Meta','CapsLock','Tab','Escape',
+                      'ArrowUp','ArrowDown','ArrowLeft','ArrowRight'];
+        if (skip.includes(e.key)) return;
+
+        const query = this.value.trim();
+        if (!getTmdbToken() || query.length < 2) {
+            dropdown.style.display = 'none';
+            return;
+        }
+
+        // Only re-trigger if the dropdown is currently empty but there's a valid query
+        if (dropdown.style.display === 'none' || dropdown.innerHTML === '') {
+            clearTimeout(tmdbSearchTimer);
+            tmdbSearchTimer = setTimeout(() => {
+                const currentQuery = titleInput.value.trim();
+                if (currentQuery.length >= 2) {
+                    searchTmdb(currentQuery);
+                }
+            }, 400);
+        }
     });
 
     // Hide dropdown when clicking outside
@@ -69,10 +100,8 @@ function setupTmdbSearch() {
 
 function searchTmdb(query) {
     const token = getTmdbToken();
-    const isMovie = document.getElementById('isMovie').checked;
-    const endpoint = isMovie
-        ? `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&page=1`
-        : `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&page=1`;
+    // Always use multi search to show both movies and TV shows in dropdown
+    const endpoint = `https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(query)}&page=1`;
 
     fetch(endpoint, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -92,7 +121,11 @@ function showTmdbDropdown(results) {
     dropdown.innerHTML = '';
 
     if (results.length === 0) {
-        dropdown.style.display = 'none';
+        const noResults = document.createElement('div');
+        noResults.className = 'tmdb-no-results';
+        noResults.textContent = 'No results found';
+        dropdown.appendChild(noResults);
+        dropdown.style.display = 'block';
         return;
     }
 
@@ -121,6 +154,12 @@ function showTmdbDropdown(results) {
     browseAll.href = `search.html${query ? '?q=' + encodeURIComponent(query) : ''}`;
     browseAll.innerHTML = `<span>Browse all results on TMDB &rarr;</span>`;
     dropdown.appendChild(browseAll);
+
+    // Add TMDB attribution at bottom of dropdown
+    const attribution = document.createElement('div');
+    attribution.className = 'tmdb-attribution-dropdown';
+    attribution.innerHTML = 'Movie & TV data provided by <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">TMDB</a>';
+    dropdown.appendChild(attribution);
 
     dropdown.style.display = 'block';
 }
@@ -312,30 +351,58 @@ function renderWatchlist() {
         return;
     }
     
-    const groupedData = groupBySection(filteredData);
+    const groupingMode = localStorage.getItem('listGroupingMode') || 'with-separators';
     
-    Object.keys(groupedData).sort().forEach(section => {
-        if (currentSection !== 'all' && section !== currentSection) return;
-        
-        const sectionDiv = document.createElement('div');
-        sectionDiv.className = 'section';
-        
-        const header = document.createElement('div');
-        header.className = 'section-header';
-        header.textContent = section;
-        sectionDiv.appendChild(header);
-        
+    if (groupingMode === 'continuous') {
+        // Continuous list without section headers
         const grid = document.createElement('div');
         grid.className = 'items-grid';
         
-        sortItemsByDate(groupedData[section]).forEach((item, idx) => {
+        // Sort all items alphabetically but without grouping
+        const sortedData = filteredData.sort((a, b) => {
+            // Sort by section first (0-9, then A-Z), then by title
+            if (a.section !== b.section) {
+                if (a.section === '0-9') return -1;
+                if (b.section === '0-9') return 1;
+                return a.section.localeCompare(b.section);
+            }
+            return a.title.localeCompare(b.title);
+        });
+        
+        sortedData.forEach((item, idx) => {
+            if (currentSection !== 'all' && item.section !== currentSection) return;
             const itemDiv = createItemElement(item, watchlistData.indexOf(item));
             grid.appendChild(itemDiv);
         });
         
-        sectionDiv.appendChild(grid);
-        container.appendChild(sectionDiv);
-    });
+        container.appendChild(grid);
+    } else {
+        // Original grouped display with section headers
+        const groupedData = groupBySection(filteredData);
+        
+        Object.keys(groupedData).sort().forEach(section => {
+            if (currentSection !== 'all' && section !== currentSection) return;
+            
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'section';
+            
+            const header = document.createElement('div');
+            header.className = 'section-header';
+            header.textContent = section;
+            sectionDiv.appendChild(header);
+            
+            const grid = document.createElement('div');
+            grid.className = 'items-grid';
+            
+            sortItemsByDate(groupedData[section]).forEach((item, idx) => {
+                const itemDiv = createItemElement(item, watchlistData.indexOf(item));
+                grid.appendChild(itemDiv);
+            });
+            
+            sectionDiv.appendChild(grid);
+            container.appendChild(sectionDiv);
+        });
+    }
 }
 
 function groupBySection(data) {

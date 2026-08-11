@@ -21,6 +21,7 @@
             <div class="nav-menu-container">
                 <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
                 <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
+                <a href="discover.html" class="nav-link" style="font-size: 0.7rem;">Discover</a>
                 <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
                 <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
                 <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
@@ -63,11 +64,63 @@
                     </div>
                 </div>
 
+                <!-- List Grouping -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>List Grouping</h3>
+                        <p>Choose how your watchlist items are organized on the main page</p>
+                    </div>
+                    
+                    <div class="display-options">
+                        <!-- Option 1: With Separators (default) -->
+                        <label class="display-option" id="optionWithSeparators">
+                            <input type="radio" name="listGrouping" value="with-separators" checked>
+                            <div class="option-preview grouping-preview">
+                                <div class="preview-group">
+                                    <div class="preview-separator">A</div>
+                                    <div class="preview-items">
+                                        <div class="preview-item"></div>
+                                        <div class="preview-item"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-group">
+                                    <div class="preview-separator">B</div>
+                                    <div class="preview-items">
+                                        <div class="preview-item"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">With Section Headers</span>
+                                <span class="option-desc">Show alphabetical separators like "0-9", "A", "B", etc. to organize your list</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Continuous List -->
+                        <label class="display-option" id="optionContinuous">
+                            <input type="radio" name="listGrouping" value="continuous">
+                            <div class="option-preview grouping-preview">
+                                <div class="preview-continuous">
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Continuous List</span>
+                                <span class="option-desc">Hide section headers for a clean, uninterrupted list (items still sorted alphabetically)</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Card Display Mode -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <h3>Poster Display Mode</h3>
-                        <p>Choose how movie/show posters appear in the expanded detail view</p>
+                        <p>Choose how movie and show posters are displayed in detail views</p>
                     </div>
 
                     <div class="display-options">
@@ -89,8 +142,8 @@
                                 </div>
                             </div>
                             <div class="option-label">
-                                <span class="option-name">Fill (Default)</span>
-                                <span class="option-desc">Poster fills the full height — top of image anchored, sides slightly trimmed on very wide formats</span>
+                                <span class="option-name">Crop to Fill (Default)</span>
+                                <span class="option-desc">Poster fills entire space, may crop top/bottom or sides to maintain aspect ratio</span>
                             </div>
                         </label>
 
@@ -111,8 +164,8 @@
                                 </div>
                             </div>
                             <div class="option-label">
-                                <span class="option-name">Full Poster</span>
-                                <span class="option-desc">Entire poster visible — dark bars fill empty space above and below</span>
+                                <span class="option-name">Show Full Poster</span>
+                                <span class="option-desc">Entire poster visible with no cropping, dark bars may appear above/below or on sides</span>
                             </div>
                         </label>
 
@@ -333,6 +386,63 @@
         .w80 { width: 80%; }
         .w95 { width: 95%; }
 
+        /* Grouping preview styles */
+        .grouping-preview {
+            flex-direction: column;
+            gap: 4px;
+            padding: 6px;
+        }
+
+        .preview-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .preview-separator {
+            font-size: 8px;
+            font-weight: bold;
+            color: var(--silver);
+            padding: 2px 0 1px 0;
+            background: transparent;
+            border-bottom: 1px solid rgba(195,199,206,0.3);
+            border-radius: 0;
+            width: 100%;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .preview-items {
+            display: grid;
+            grid-template-columns: repeat(3, 15px);
+            gap: 2px;
+            margin-top: 3px;
+            justify-content: flex-start;
+        }
+
+        .preview-item {
+            width: 15px;
+            height: 22px;
+            background: linear-gradient(135deg, rgba(195,199,206,0.4) 0%, rgba(195,199,206,0.2) 100%);
+            border-radius: 2px;
+            border: 1px solid rgba(195,199,206,0.2);
+            flex-shrink: 0;
+        }
+
+        .preview-continuous {
+            display: grid;
+            grid-template-columns: repeat(4, 15px);
+            gap: 3px;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+
+        .preview-continuous .preview-item {
+            width: 15px;
+            height: 22px;
+        }
+
         .option-label {
             display: flex;
             flex-direction: column;
@@ -436,9 +546,33 @@
             });
         });
 
+        // List Grouping functionality
+        function getCurrentGrouping() {
+            return localStorage.getItem('listGroupingMode') || 'with-separators';
+        }
+
+        function applyGroupingSelection(mode) {
+            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            const radio = document.querySelector(`input[name="listGrouping"][value="${mode}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.closest('.display-option').classList.add('selected');
+            }
+        }
+
+        document.querySelectorAll('input[name="listGrouping"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                localStorage.setItem('listGroupingMode', this.value);
+                applyGroupingSelection(this.value);
+                showToast();
+            });
+        });
+
         // Init
         applySelection(getCurrentMode());
+        applyGroupingSelection(getCurrentGrouping());
     </script>
+    <script src="footer.js"></script>
 </body>
 </html>
     <script>

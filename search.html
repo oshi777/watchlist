@@ -21,6 +21,7 @@
             <div class="nav-menu-container">
                 <a href="index.html" class="nav-link" style="font-size:0.7rem;">Home</a>
                 <a href="search.html" class="nav-link active-nav" style="font-size:0.7rem;">Browse</a>
+                <a href="discover.html" class="nav-link" style="font-size:0.7rem;">Discover</a>
                 <a href="leaderboard.html" class="nav-link" style="font-size:0.7rem;">Leaderboard</a>
                 <a href="backup.html" class="nav-link" style="font-size:0.7rem;">Backup</a>
                 <a href="guide.html" class="nav-link" style="font-size:0.7rem;">Guide</a>
@@ -37,6 +38,9 @@
         <header>
             <h1>Browse</h1>
             <p>Search TMDB and add anything to your watchlist</p>
+            <div class="tmdb-search-attribution">
+                Movie & TV data provided by <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">The Movie Database (TMDB)</a>
+            </div>
         </header>
 
         <main>
@@ -573,6 +577,21 @@
             .browse-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .pill { padding: 5px 10px; font-size: 0.75rem; }
         }
+
+        /* TMDB search attribution */
+        .tmdb-search-attribution {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-align: center;
+        }
+        .tmdb-search-attribution a {
+            color: var(--silver);
+            text-decoration: none;
+        }
+        .tmdb-search-attribution a:hover {
+            color: var(--light);
+        }
     </style>
 
     <script>
@@ -629,6 +648,33 @@
         } catch { return new Set(); }
     }
 
+    // Returns a Set of poster URLs and a Map of title+year for posterless items
+    function getWatchlistIndex() {
+        try {
+            const data = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+            const posters = new Set();
+            const titleYear = new Set();
+            data.forEach(i => {
+                if (i.poster) {
+                    // Store just the path portion (everything after the base URL)
+                    const path = i.poster.replace(IMG_BASE, '').replace(IMG_FULL, '');
+                    posters.add(path);
+                } else {
+                    // No poster — fall back to title+year as a tighter key than title alone
+                    titleYear.add((i.title + '|' + (i.year || '')).toLowerCase());
+                }
+            });
+            return { posters, titleYear };
+        } catch { return { posters: new Set(), titleYear: new Set() }; }
+    }
+
+    function isInWatchlist(posterPath, title, year) {
+        const { posters, titleYear } = getWatchlistIndex();
+        if (posterPath) return posters.has(posterPath);
+        // No poster on this TMDB result — only match if title+year both match
+        return titleYear.has((title + '|' + (year || '')).toLowerCase());
+    }
+
     function buildEndpoint() {
         const token = TMDB_TOKEN;
         if (currentQuery.trim()) {
@@ -673,7 +719,6 @@
 
     function renderGrid(results) {
         const grid = document.getElementById('browseGrid');
-        const added = getWatchlistTitles();
         grid.innerHTML = '';
 
         results.forEach(r => {
@@ -681,7 +726,7 @@
             const year = (r.release_date || r.first_air_date || '').slice(0, 4);
             const type = r.media_type === 'tv' || r.name && !r.title ? 'tv' : 'movie';
             const rating = r.vote_average ? r.vote_average.toFixed(1) : '';
-            const isAdded = added.has(title.toLowerCase());
+            const isAdded = isInWatchlist(r.poster_path || null, title, year);
 
             const card = document.createElement('div');
             card.className = 'browse-card';
@@ -779,10 +824,9 @@
                 genresEl.innerHTML = (d.genres || []).map(g => `<span class="genre-tag">${escapeHtml(g.name)}</span>`).join('');
 
                 // already added check
-                const added = getWatchlistTitles();
                 const alreadyEl = document.getElementById('bdAlreadyAdded');
                 const addRow = document.querySelector('.bd-add-row');
-                if (added.has(title.toLowerCase())) {
+                if (isInWatchlist(d.poster_path || null, title, year)) {
                     alreadyEl.style.display = 'block';
                     addRow.style.display = 'none';
                 } else {
@@ -899,6 +943,7 @@
         });
     });
     </script>
+    <script src="footer.js"></script>
 </body>
 </html>
     <script>

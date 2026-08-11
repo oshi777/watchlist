@@ -22,6 +22,7 @@
             <div class="nav-menu-container">
                 <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
                 <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
+                <a href="discover.html" class="nav-link" style="font-size: 0.7rem;">Discover</a>
                 <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
                 <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
                 <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
@@ -328,6 +329,31 @@
         }
         .tmdb-browse-all:hover {
             background: var(--muted);
+            color: var(--light);
+        }
+
+        .tmdb-no-results {
+            padding: 14px 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        /* TMDB attribution in dropdown */
+        .tmdb-attribution-dropdown {
+            padding: 6px 12px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--muted);
+            border-top: 1px solid rgba(195,199,206,0.05);
+            background: rgba(0,0,0,0.2);
+        }
+        .tmdb-attribution-dropdown a {
+            color: var(--silver);
+            text-decoration: none;
+        }
+        .tmdb-attribution-dropdown a:hover {
             color: var(--light);
         }
 
@@ -723,12 +749,8 @@
         .tmdb-attribution a { color: var(--silver); }
     </style>
 
-    <!-- TMDB Attribution (required by TMDB terms) -->
-    <div class="tmdb-attribution">
-        Movie &amp; TV data provided by <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">TMDB</a>
-    </div>
-
     <script src="script.js"></script>
+    <script src="footer.js"></script>
     <script>
         // Hamburger menu toggle
         document.addEventListener('DOMContentLoaded', function() {
