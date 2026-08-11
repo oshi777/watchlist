@@ -68,23 +68,8 @@ body {
 header {
     text-align: center;
     margin-bottom: 40px;
-    padding: 60px 20px;
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    position: relative;
-    border: 1px solid rgba(195,199,206,0.1);
-}
-
-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 60% 40%, rgba(30,33,38,0.5) 0%, transparent 70%);
-    pointer-events: none;
-    border-radius: 15px;
+    padding: 40px 20px;
+    border-bottom: 2px solid rgba(195,199,206,0.15);
 }
 
 header h1 {
@@ -92,10 +77,6 @@ header h1 {
     margin-bottom: 10px;
     color: var(--light);
     font-weight: 700;
-    background: linear-gradient(135deg, var(--light) 0%, var(--silver) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 header p {
@@ -118,19 +99,16 @@ header p {
     font-size: 1rem;
     border: 1px solid rgba(195,199,206,0.2);
     border-radius: 10px;
-    background-color: rgba(30,33,38,0.6);
+    background-color: var(--surface);
     color: var(--light);
     margin-bottom: 20px;
     transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
 }
 
 #searchInput:focus {
     outline: none;
     border-color: var(--silver);
-    background-color: var(--surface);
-    box-shadow: 0 0 20px rgba(195,199,206,0.15);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px rgba(195,199,206,0.1);
 }
 
 #searchInput::placeholder {
@@ -150,19 +128,16 @@ header p {
     padding: 10px 16px;
     border: 1px solid rgba(195,199,206,0.2);
     border-radius: 8px;
-    background-color: rgba(30,33,38,0.6);
+    background-color: var(--surface);
     color: var(--light);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
     font-family: 'Inter', sans-serif;
 }
 
 .filters select:hover {
-    background-color: var(--muted);
     border-color: var(--silver);
-    transform: translateY(-1px);
 }
 
 .add-btn {
@@ -214,13 +189,8 @@ header p {
     justify-content: center;
     gap: 40px;
     margin-bottom: 40px;
-    padding: 28px;
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(195,199,206,0.1);
-    border-radius: 14px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    padding: 28px 20px;
+    border-bottom: 2px solid rgba(195,199,206,0.15);
 }
 
 .stat-item {
@@ -251,30 +221,13 @@ header p {
 /* Currently Watching Section */
 .currently-watching-section {
     margin-bottom: 40px;
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(195,199,206,0.1);
-    border-radius: 15px;
-    padding: 30px;
-    position: relative;
-    overflow: hidden;
-}
-
-.currently-watching-section::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 50% 30%, rgba(30,33,38,0.3) 0%, transparent 70%);
-    pointer-events: none;
-    border-radius: 15px;
+    padding: 30px 20px;
+    border-bottom: 2px solid rgba(195,199,206,0.15);
 }
 
 .currently-watching-section .section-header {
     text-align: center;
     margin-bottom: 30px;
-    position: relative;
-    z-index: 2;
 }
 
 .currently-watching-section .section-header h2 {
