@@ -531,7 +531,7 @@ header p {
 }
 
 .qa-remove-btn {
-    width: 70px;
+    width: 20px;
     height: 68px;
     background: rgba(255,68,68,0.1);
     color: #ff4444;
@@ -548,6 +548,8 @@ header p {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
 }
 
 .qa-remove-btn:hover {
