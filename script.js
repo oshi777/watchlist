@@ -1342,7 +1342,7 @@ function addToCurrentlyWatchingFromList(itemId) {
     addToCurrentlyWatching(itemId);
     
     // Show success message
-    showConfirmation('Added to Currently Watching!');
+    showConfirmation('Added to Quick Access!');
     
     // Refresh the list to remove the added item from available shows
     const eligibleShows = watchlistData.filter(item => 
