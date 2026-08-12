@@ -106,9 +106,18 @@
     <div id="addFromListModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Add to Quick Access</h2>
-            <p style="margin-bottom: 20px; color: var(--silver);">Select shows from your list to pin for quick access. Only unwatched shows are shown here. Watched shows are automatically removed from Quick Access.</p>
+            <h2>Manage Quick Access</h2>
+            <p style="margin-bottom: 20px; color: var(--silver);">Reorder or remove items. Add more shows from your list below.</p>
             
+            <!-- Current Quick Access Items -->
+            <div id="currentQuickAccessList" style="margin-bottom: 25px;">
+                <h3 style="font-size: 1rem; color: var(--silver); margin-bottom: 10px;">Current Quick Access Items</h3>
+                <div id="currentQuickAccessItems"></div>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid rgba(195,199,206,0.15); margin: 25px 0;">
+            
+            <h3 style="font-size: 1rem; color: var(--silver); margin-bottom: 15px;">Add More Shows</h3>
             <div class="search-filter">
                 <input type="text" id="listSearchInput" placeholder="Search your watchlist..." style="margin-bottom: 15px;">
             </div>

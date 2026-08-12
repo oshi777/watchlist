@@ -284,66 +284,6 @@ header p {
     transition: transform 0.3s ease;
 }
 
-.currently-watching-card.drag-over-qa {
-    border: 2px solid var(--light);
-    box-shadow: 0 0 15px rgba(195,199,206,0.3);
-}
-
-.quick-access-remove {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0,0,0,0.8);
-    color: var(--light);
-    border: none;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    font-size: 1.5rem;
-    line-height: 1;
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s ease, background 0.2s ease;
-    padding: 0;
-}
-
-.currently-watching-card:hover .quick-access-remove {
-    opacity: 1;
-}
-
-.quick-access-remove:hover {
-    background: #ff4444;
-    transform: scale(1.1);
-}
-
-.drag-handle-qa {
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background: rgba(0,0,0,0.8);
-    color: var(--silver);
-    border-radius: 4px;
-    padding: 4px 6px;
-    font-size: 1rem;
-    cursor: grab;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    user-select: none;
-}
-
-.currently-watching-card:hover .drag-handle-qa {
-    opacity: 1;
-}
-
-.drag-handle-qa:active {
-    cursor: grabbing;
-}
-
 .currently-watching-item {
     background: rgba(30,33,38,0.6);
     border: 1px solid rgba(195,199,206,0.1);
@@ -508,6 +448,86 @@ header p {
     background: var(--silver);
     color: var(--bg);
     transform: translateY(-1px);
+}
+
+/* Quick Access Modal Management Styles */
+#currentQuickAccessItems {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 5px;
+}
+
+.qa-modal-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(30,33,38,0.6);
+    border: 1px solid rgba(195,199,206,0.1);
+    border-radius: 8px;
+    cursor: move;
+    transition: all 0.2s ease;
+}
+
+.qa-modal-item:hover {
+    background: rgba(30,33,38,0.8);
+    border-color: rgba(195,199,206,0.2);
+}
+
+.qa-modal-item.drag-over {
+    border-color: var(--light);
+    box-shadow: 0 0 10px rgba(195,199,206,0.2);
+}
+
+.qa-drag-handle {
+    color: var(--silver);
+    font-size: 1.2rem;
+    cursor: grab;
+    user-select: none;
+    opacity: 0.6;
+}
+
+.qa-drag-handle:active {
+    cursor: grabbing;
+}
+
+.qa-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.qa-item-title {
+    font-weight: 600;
+    color: var(--light);
+    font-size: 0.95rem;
+}
+
+.qa-item-meta {
+    font-size: 0.8rem;
+    color: var(--silver);
+}
+
+.qa-remove-btn {
+    padding: 6px 12px;
+    background: rgba(255,68,68,0.1);
+    color: #ff4444;
+    border: 1px solid rgba(255,68,68,0.3);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.qa-remove-btn:hover {
+    background: #ff4444;
+    color: var(--light);
+    border-color: #ff4444;
 }
 
 .search-filter input {

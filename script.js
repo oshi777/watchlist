@@ -1228,10 +1228,8 @@ function renderCurrentlyWatching() {
     grid.innerHTML = sortedItems.map(item => {
         const itemIndex = watchlistData.indexOf(item);
         
-        // Create thumbnail card with remove button and drag handle
+        // Create thumbnail card - clean, no controls
         const footerHtml = `
-            <button class="quick-access-remove" onclick="event.stopPropagation(); removeFromQuickAccess('${item.id}')" title="Remove from Quick Access">×</button>
-            <div class="drag-handle-qa" title="Drag to reorder">⋮⋮</div>
             <div class="item-poster-footer">
                 <div class="item-poster-title">${escapeHtml(item.title)}</div>
                 <div class="item-poster-meta">
@@ -1242,14 +1240,14 @@ function renderCurrentlyWatching() {
 
         if (item.poster) {
             return `
-                <div class="item has-poster currently-watching-card" data-id="${item.id}" draggable="true" onclick="openDetailModal(${itemIndex})">
+                <div class="item has-poster currently-watching-card" data-id="${item.id}" onclick="openDetailModal(${itemIndex})">
                     <img src="${item.poster}" alt="${escapeHtml(item.title)}" class="item-poster-bg" loading="lazy">
                     ${footerHtml}
                 </div>`;
         } else {
             const letter = item.title.charAt(0).toUpperCase();
             return `
-                <div class="item no-poster currently-watching-card" data-id="${item.id}" draggable="true" onclick="openDetailModal(${itemIndex})">
+                <div class="item no-poster currently-watching-card" data-id="${item.id}" onclick="openDetailModal(${itemIndex})">
                     <div class="item-poster-placeholder">
                         <div class="item-poster-placeholder-letter">${escapeHtml(letter)}</div>
                     </div>
@@ -1257,72 +1255,6 @@ function renderCurrentlyWatching() {
                 </div>`;
         }
     }).join('');
-    
-    // Add drag and drop event listeners
-    setupQuickAccessDragAndDrop();
-}
-
-function setupQuickAccessDragAndDrop() {
-    const grid = document.getElementById('currentlyWatchingGrid');
-    const cards = grid.querySelectorAll('.currently-watching-card');
-    let draggedElement = null;
-    
-    cards.forEach(card => {
-        card.addEventListener('dragstart', function(e) {
-            draggedElement = this;
-            this.style.opacity = '0.5';
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.innerHTML);
-        });
-        
-        card.addEventListener('dragend', function(e) {
-            this.style.opacity = '1';
-            cards.forEach(c => c.classList.remove('drag-over-qa'));
-        });
-        
-        card.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            if (draggedElement !== this) {
-                this.classList.add('drag-over-qa');
-            }
-        });
-        
-        card.addEventListener('dragleave', function(e) {
-            this.classList.remove('drag-over-qa');
-        });
-        
-        card.addEventListener('drop', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (draggedElement !== this) {
-                // Get current order
-                const allCards = Array.from(grid.querySelectorAll('.currently-watching-card'));
-                const draggedIndex = allCards.indexOf(draggedElement);
-                const targetIndex = allCards.indexOf(this);
-                
-                // Reorder in DOM
-                if (draggedIndex < targetIndex) {
-                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
-                } else {
-                    this.parentNode.insertBefore(draggedElement, this);
-                }
-                
-                // Save new order
-                saveQuickAccessOrder();
-            }
-            
-            this.classList.remove('drag-over-qa');
-        });
-    });
-}
-
-function saveQuickAccessOrder() {
-    const grid = document.getElementById('currentlyWatchingGrid');
-    const cards = Array.from(grid.querySelectorAll('.currently-watching-card'));
-    const order = cards.map(card => card.dataset.id);
-    localStorage.setItem('quickAccessOrder', JSON.stringify(order));
 }
 
 function removeFromQuickAccess(itemId) {
@@ -1399,6 +1331,9 @@ function openAddFromListModal() {
     const noShowsMessage = document.getElementById('noShowsMessage');
     const searchInput = document.getElementById('listSearchInput');
     
+    // Render current Quick Access items first
+    renderCurrentQuickAccessInModal();
+    
     // Get shows that are not currently watching and not watched
     const eligibleShows = watchlistData.filter(item => 
         !item.currentlyWatching && 
@@ -1418,6 +1353,127 @@ function openAddFromListModal() {
     searchInput.value = '';
     
     modal.style.display = 'block';
+}
+
+function renderCurrentQuickAccessInModal() {
+    const container = document.getElementById('currentQuickAccessItems');
+    
+    // Get saved order
+    let quickAccessOrder = JSON.parse(localStorage.getItem('quickAccessOrder') || '[]');
+    
+    // Get current Quick Access items
+    const currentItems = watchlistData.filter(item => 
+        item.currentlyWatching === true || item.status === 'currently-watching'
+    );
+    
+    if (currentItems.length === 0) {
+        container.innerHTML = '<p style="color: var(--silver); text-align: center; padding: 20px;">No items in Quick Access yet.</p>';
+        return;
+    }
+    
+    // Sort by saved order
+    const sortedItems = [...currentItems].sort((a, b) => {
+        const indexA = quickAccessOrder.indexOf(a.id);
+        const indexB = quickAccessOrder.indexOf(b.id);
+        if (indexA === -1 && indexB === -1) return 0;
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+    });
+    
+    container.innerHTML = sortedItems.map(item => `
+        <div class="qa-modal-item" data-id="${item.id}" draggable="true">
+            <div class="qa-drag-handle">⋮⋮</div>
+            <div class="qa-item-info">
+                <div class="qa-item-title">${escapeHtml(item.title)}</div>
+                <div class="qa-item-meta">
+                    ${item.year ? `${escapeHtml(item.year)}` : ''}
+                    ${item.genres ? ` • ${item.genres.slice(0, 2).join(', ')}` : ''}
+                </div>
+            </div>
+            <button class="qa-remove-btn" onclick="removeFromQuickAccessModal('${item.id}')">Remove</button>
+        </div>
+    `).join('');
+    
+    // Setup drag and drop
+    setupModalDragAndDrop();
+}
+
+function setupModalDragAndDrop() {
+    const container = document.getElementById('currentQuickAccessItems');
+    const items = container.querySelectorAll('.qa-modal-item');
+    let draggedElement = null;
+    
+    items.forEach(item => {
+        item.addEventListener('dragstart', function(e) {
+            draggedElement = this;
+            this.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+        });
+        
+        item.addEventListener('dragend', function(e) {
+            this.style.opacity = '1';
+            items.forEach(i => i.classList.remove('drag-over'));
+        });
+        
+        item.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            if (draggedElement !== this) {
+                this.classList.add('drag-over');
+            }
+        });
+        
+        item.addEventListener('dragleave', function(e) {
+            this.classList.remove('drag-over');
+        });
+        
+        item.addEventListener('drop', function(e) {
+            e.preventDefault();
+            
+            if (draggedElement !== this) {
+                const allItems = Array.from(container.querySelectorAll('.qa-modal-item'));
+                const draggedIndex = allItems.indexOf(draggedElement);
+                const targetIndex = allItems.indexOf(this);
+                
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedElement, this);
+                }
+                
+                // Save new order
+                const newOrder = Array.from(container.querySelectorAll('.qa-modal-item')).map(i => i.dataset.id);
+                localStorage.setItem('quickAccessOrder', JSON.stringify(newOrder));
+                
+                // Re-render main Quick Access section
+                renderCurrentlyWatching();
+            }
+            
+            this.classList.remove('drag-over');
+        });
+    });
+}
+
+function removeFromQuickAccessModal(itemId) {
+    removeFromQuickAccess(itemId);
+    renderCurrentQuickAccessInModal();
+    
+    // Refresh available shows
+    const eligibleShows = watchlistData.filter(item => 
+        !item.currentlyWatching && 
+        item.status !== 'watched'
+    );
+    
+    if (eligibleShows.length === 0) {
+        document.getElementById('availableShows').style.display = 'none';
+        document.getElementById('noShowsMessage').style.display = 'block';
+    } else {
+        const searchTerm = document.getElementById('listSearchInput').value.toLowerCase();
+        const filteredShows = searchTerm 
+            ? eligibleShows.filter(item => item.title.toLowerCase().includes(searchTerm))
+            : eligibleShows;
+        renderAvailableShows(filteredShows);
+    }
 }
 
 function renderAvailableShows(shows) {
@@ -1447,6 +1503,9 @@ function addToCurrentlyWatchingFromList(itemId) {
     
     // Show success message
     showConfirmation('Added to Quick Access!');
+    
+    // Refresh the current Quick Access list in modal
+    renderCurrentQuickAccessInModal();
     
     // Refresh the list to remove the added item from available shows
     const eligibleShows = watchlistData.filter(item => 
