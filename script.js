@@ -1228,12 +1228,20 @@ function renderCurrentlyWatching() {
     grid.innerHTML = sortedItems.map(item => {
         const itemIndex = watchlistData.indexOf(item);
         
-        // Create thumbnail card - clean, no controls
+        // Get status info
+        const statusClass = item.status === 'watched' ? 'watched' : 
+                           item.status === 'upcoming' ? 'upcoming' : 
+                           item.status === 'currently-watching' ? 'currently-watching' : 'pending';
+        const statusLabel = item.status === 'watched' ? 'Watched' : 
+                           item.status === 'upcoming' ? 'Upcoming' : 
+                           item.status === 'currently-watching' ? 'Currently Watching' : 'To Watch';
+        
+        // Create thumbnail card matching main watchlist style
         const footerHtml = `
             <div class="item-poster-footer">
                 <div class="item-poster-title">${escapeHtml(item.title)}</div>
                 <div class="item-poster-meta">
-                    ${item.currentEpisode ? `<span>S${item.currentSeason || 1}E${item.currentEpisode}</span>` : ''}
+                    <span class="item-poster-status ${statusClass}">${statusLabel}</span>
                     ${item.year ? `<span>${escapeHtml(item.year)}</span>` : ''}
                 </div>
             </div>`;
