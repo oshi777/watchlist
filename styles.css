@@ -72,10 +72,6 @@ html {
 }
 
 header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--bg);
     text-align: center;
     margin-bottom: 40px;
     padding: 40px 20px;
@@ -1611,6 +1607,8 @@ header p {
     padding: 0 20px;
     z-index: 1000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .nav-brand {
