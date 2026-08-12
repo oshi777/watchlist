@@ -480,10 +480,11 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    width: 70px;
 }
 
 .qa-move-btn {
-    width: 32px;
+    width: 70px;
     height: 32px;
     background: rgba(195,199,206,0.1);
     color: var(--silver);
