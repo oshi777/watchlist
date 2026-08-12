@@ -531,14 +531,14 @@ header p {
 }
 
 .qa-remove-btn {
-    width: 20px;
-    height: 68px;
+    width: 60px;
+    height: 32px;
     background: rgba(255,68,68,0.1);
     color: #ff4444;
     border: 1px solid rgba(255,68,68,0.3);
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     transition: all 0.2s ease;
     padding: 0;
@@ -548,8 +548,6 @@ header p {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
 }
 
 .qa-remove-btn:hover {
