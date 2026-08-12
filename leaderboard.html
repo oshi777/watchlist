@@ -43,10 +43,7 @@
         <main>
             <div class="leaderboard-container">
                 <div class="add-to-ranking">
-                    <select id="itemSelect">
-                        <option value="">Select item to add to leaderboard...</option>
-                    </select>
-                    <button id="addToRanking" class="add-btn">Add to Ranking</button>
+                    <button id="addToRankingBtn" class="add-btn">+ Add to Leaderboard</button>
                 </div>
                 <div class="ranking-list" id="rankingList"></div>
             </div>
@@ -62,6 +59,29 @@
             <div class="modal-actions">
                 <button id="confirmRemove" class="delete-btn">Remove</button>
                 <button id="cancelRemove" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add to Leaderboard Modal -->
+    <div id="addToLeaderboardModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add to Leaderboard</h2>
+            <p style="margin-bottom: 20px; color: var(--silver);">Select shows from your watchlist to add to leaderboard</p>
+            
+            <div class="search-filter">
+                <input type="text" id="leaderboardSearchInput" placeholder="Search your watchlist..." style="margin-bottom: 15px; width: 100%; padding: 12px; background: var(--bg); color: var(--light); border: 1px solid var(--muted); border-radius: 8px;">
+            </div>
+            
+            <div class="available-shows-grid" id="availableShowsGrid">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <div class="no-shows-message" id="noShowsLeaderboard" style="display: none;">
+                <p style="text-align: center; color: var(--silver); padding: 40px;">
+                    No shows available to add. All shows are already in your leaderboard!
+                </p>
             </div>
         </div>
     </div>
@@ -162,16 +182,7 @@
             gap: 15px;
             margin-bottom: 30px;
             align-items: center;
-        }
-
-        .add-to-ranking select {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid var(--muted);
-            border-radius: 8px;
-            background-color: var(--surface);
-            color: var(--light);
-            font-size: 1rem;
+            justify-content: center;
         }
 
         .add-to-ranking button {
@@ -182,6 +193,87 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .available-shows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .leaderboard-show-card {
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .leaderboard-show-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .leaderboard-show-card.has-poster {
+            aspect-ratio: 2/3;
+        }
+
+        .leaderboard-show-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .leaderboard-show-card .item-poster-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+            padding: 30px 12px 12px;
+        }
+
+        .leaderboard-show-card .item-poster-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--light);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .leaderboard-show-card .item-poster-meta {
+            font-size: 0.7rem;
+            color: var(--silver);
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .leaderboard-show-card.no-poster {
+            aspect-ratio: 2/3;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .leaderboard-show-card .item-poster-placeholder-letter {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--light);
+            margin-bottom: 10px;
+        }
+
+        .leaderboard-show-card.no-poster .item-poster-title {
+            font-size: 0.9rem;
+            color: var(--light);
             font-weight: 600;
         }
 
@@ -202,6 +294,11 @@
     <script>
         let watchlistData = [];
         let rankingIds = [];
+        
+        // Redirect to home if leaderboard is disabled
+        if (localStorage.getItem('leaderboardEnabled') === 'false') {
+            window.location.href = 'index.html';
+        }
 
         function loadData() {
             const saved = localStorage.getItem('watchlistData');
@@ -246,33 +343,104 @@
             } else {
                 rankingIds = [];
             }
-            populateItemSelect();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function openAddToLeaderboardModal() {
+            const modal = document.getElementById('addToLeaderboardModal');
+            const grid = document.getElementById('availableShowsGrid');
+            const noShowsMsg = document.getElementById('noShowsLeaderboard');
+            const searchInput = document.getElementById('leaderboardSearchInput');
+            
+            // Get shows not in leaderboard
+            const availableShows = watchlistData.filter(item => !rankingIds.includes(item.id));
+            
+            if (availableShows.length === 0) {
+                grid.style.display = 'none';
+                noShowsMsg.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                noShowsMsg.style.display = 'none';
+                renderAvailableShows(availableShows);
+            }
+            
+            searchInput.value = '';
+            modal.style.display = 'block';
+        }
+
+        function renderAvailableShows(shows) {
+            const grid = document.getElementById('availableShowsGrid');
+            
+            grid.innerHTML = shows.map(item => {
+                const letter = item.title.charAt(0).toUpperCase();
+                
+                if (item.poster) {
+                    return `
+                        <div class="leaderboard-show-card has-poster" onclick="addShowToLeaderboard('${item.id}')">
+                            <img src="${item.poster}" alt="${escapeHtml(item.title)}" loading="lazy">
+                            <div class="item-poster-footer">
+                                <div class="item-poster-title">${escapeHtml(item.title)}</div>
+                                <div class="item-poster-meta">
+                                    ${item.year ? `<span>${escapeHtml(item.year)}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>`;
+                } else {
+                    return `
+                        <div class="leaderboard-show-card no-poster" onclick="addShowToLeaderboard('${item.id}')">
+                            <div class="item-poster-placeholder-letter">${escapeHtml(letter)}</div>
+                            <div class="item-poster-title">${escapeHtml(item.title)}</div>
+                        </div>`;
+                }
+            }).join('');
+        }
+
+        function addShowToLeaderboard(itemId) {
+            if (!rankingIds.includes(itemId)) {
+                rankingIds.push(itemId);
+                saveRankings();
+                renderLeaderboard();
+                
+                // Refresh the modal content
+                const availableShows = watchlistData.filter(item => !rankingIds.includes(item.id));
+                if (availableShows.length === 0) {
+                    document.getElementById('availableShowsGrid').style.display = 'none';
+                    document.getElementById('noShowsLeaderboard').style.display = 'block';
+                } else {
+                    const searchTerm = document.getElementById('leaderboardSearchInput').value.toLowerCase();
+                    const filteredShows = searchTerm 
+                        ? availableShows.filter(item => item.title.toLowerCase().includes(searchTerm))
+                        : availableShows;
+                    renderAvailableShows(filteredShows);
+                }
+            }
+        }
+
+        function filterAvailableShows() {
+            const searchTerm = document.getElementById('leaderboardSearchInput').value.toLowerCase();
+            const availableShows = watchlistData.filter(item => 
+                !rankingIds.includes(item.id) &&
+                item.title.toLowerCase().includes(searchTerm)
+            );
+            
+            if (availableShows.length === 0) {
+                document.getElementById('availableShowsGrid').innerHTML = '<p style="text-align: center; color: var(--silver); padding: 40px; grid-column: 1/-1;">No matching shows found.</p>';
+            } else {
+                renderAvailableShows(availableShows);
+            }
         }
 
         function populateItemSelect() {
-            const select = document.getElementById('itemSelect');
-            select.innerHTML = '<option value="">Select item to add to leaderboard...</option>';
-            
-            watchlistData.forEach((item) => {
-                if (!rankingIds.includes(item.id)) {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.textContent = `${item.title} (${item.genres.join(', ')})`;
-                    select.appendChild(option);
-                }
-            });
+            // This function is no longer needed but kept for compatibility
         }
 
         function addToRanking() {
-            const select = document.getElementById('itemSelect');
-            const selectedId = select.value;
-            
-            if (selectedId !== '') {
-                rankingIds.push(selectedId);
-                saveRankings();
-                populateItemSelect();
-                renderLeaderboard();
-            }
+            // This function is no longer needed but kept for compatibility
         }
 
         let itemToRemove = null;
@@ -524,9 +692,12 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
-            document.getElementById('addToRanking').addEventListener('click', addToRanking);
+            document.getElementById('addToRankingBtn').addEventListener('click', openAddToLeaderboardModal);
             document.getElementById('confirmRemove').addEventListener('click', confirmRemove);
             document.getElementById('cancelRemove').addEventListener('click', cancelRemove);
+            
+            // Search functionality for modal
+            document.getElementById('leaderboardSearchInput').addEventListener('input', filterAvailableShows);
             
             // Re-render instantly when another tab saves changes
             window.addEventListener('storage', function(e) {
@@ -535,11 +706,18 @@
                 }
             });
             
-
-            
             // Close modal when clicking X
-            document.querySelector('.close').addEventListener('click', () => {
-                document.getElementById('removeModal').style.display = 'none';
+            document.querySelectorAll('.close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', function() {
+                    this.closest('.modal').style.display = 'none';
+                });
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
             });
         });
     </script>

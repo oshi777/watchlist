@@ -21,7 +21,7 @@
             <div class="nav-menu-container">
                 <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
                 <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
-                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;" id="leaderboardNavLink">Leaderboard</a>
                 <a href="backup.html" class="nav-link active-nav" style="font-size: 0.7rem;">Backup</a>
                 <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
                 <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
@@ -74,7 +74,7 @@
 
                     <div class="info-card">
                         <h4>Storage Limit</h4>
-                        <div id="storageLimit">100 MB (Gist)</div>
+                        <div id="storageLimit">100 MB (GitHub Gist Limit)</div>
                     </div>
 
                     <div class="info-card extra-wide-card">
@@ -157,11 +157,9 @@
         }
 
         .status-card {
-            background: var(--surface);
-            border: 1px solid rgba(195,199,206,0.1);
-            border-radius: 15px;
-            padding: 30px;
+            padding: 30px 0;
             text-align: center;
+            border-bottom: 2px solid rgba(195,199,206,0.15);
             margin-bottom: 30px;
         }
 
@@ -187,15 +185,19 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(195,199,206,0.15);
             margin-bottom: 30px;
         }
 
         .info-card {
-            background: var(--surface);
-            border: 1px solid rgba(195,199,206,0.1);
-            border-radius: 15px;
             padding: 20px;
             text-align: center;
+            border-right: 1px solid rgba(195,199,206,0.1);
+        }
+        
+        .info-card:last-child {
+            border-right: none;
         }
 
         .wide-card {
@@ -204,6 +206,10 @@
 
         .extra-wide-card {
             grid-column: span 5;
+            border-top: 1px solid rgba(195,199,206,0.1);
+            padding-top: 30px;
+            margin-top: 15px;
+            border-right: none;
         }
 
         .info-card h4 {
@@ -234,6 +240,7 @@
             display: flex;
             gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .actions button {
@@ -309,12 +316,12 @@
             if (usagePercentage > 80) {
                 const limitElement = document.getElementById('storageLimit');
                 if (usagePercentage > 90) {
-                    limitElement.innerHTML = '100 MB (Gist)<br><small style="color: #dc3545;">⚠️ Near limit!</small>';
+                    limitElement.innerHTML = '100 MB (GitHub Gist Limit)<br><small style="color: #dc3545;">⚠️ Near limit!</small>';
                 } else {
-                    limitElement.innerHTML = '100 MB (Gist)<br><small style="color: #ffc107;">⚠️ 80%+ used</small>';
+                    limitElement.innerHTML = '100 MB (GitHub Gist Limit)<br><small style="color: #ffc107;">⚠️ 80%+ used</small>';
                 }
             } else {
-                document.getElementById('storageLimit').innerHTML = '100 MB (Gist)';
+                document.getElementById('storageLimit').innerHTML = '100 MB (GitHub Gist Limit)';
             }
         }
 

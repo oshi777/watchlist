@@ -1340,10 +1340,28 @@ function renderAvailableShows(shows) {
 
 function addToCurrentlyWatchingFromList(itemId) {
     addToCurrentlyWatching(itemId);
-    document.getElementById('addFromListModal').style.display = 'none';
     
     // Show success message
     showConfirmation('Added to Currently Watching!');
+    
+    // Refresh the list to remove the added item from available shows
+    const eligibleShows = watchlistData.filter(item => 
+        !item.currentlyWatching && 
+        item.status !== 'watched'
+    );
+    
+    // Apply current search filter if any
+    const searchTerm = document.getElementById('listSearchInput').value.toLowerCase();
+    const filteredShows = searchTerm 
+        ? eligibleShows.filter(item => item.title.toLowerCase().includes(searchTerm))
+        : eligibleShows;
+    
+    if (filteredShows.length === 0) {
+        document.getElementById('availableShows').style.display = 'none';
+        document.getElementById('noShowsMessage').style.display = 'block';
+    } else {
+        renderAvailableShows(filteredShows);
+    }
 }
 
 function filterAvailableShows() {
@@ -1378,10 +1396,18 @@ function showDetail(itemId) {
 }
 // Add event listeners for Currently Watching functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Add from List button event listener
+    // Add from List button event listeners (both in empty state and header)
     const addFromListBtn = document.getElementById('addFromListBtn');
+    const addFromListBtnTop = document.getElementById('addFromListBtnTop');
+    
     if (addFromListBtn) {
         addFromListBtn.addEventListener('click', function() {
+            openAddFromListModal();
+        });
+    }
+    
+    if (addFromListBtnTop) {
+        addFromListBtnTop.addEventListener('click', function() {
             openAddFromListModal();
         });
     }

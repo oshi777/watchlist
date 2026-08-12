@@ -21,7 +21,7 @@
             <div class="nav-menu-container">
                 <a href="index.html" class="nav-link" style="font-size: 0.7rem;">Home</a>
                 <a href="search.html" class="nav-link" style="font-size: 0.7rem;">Browse</a>
-                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;">Leaderboard</a>
+                <a href="leaderboard.html" class="nav-link" style="font-size: 0.7rem;" id="leaderboardNavLink">Leaderboard</a>
                 <a href="backup.html" class="nav-link" style="font-size: 0.7rem;">Backup</a>
                 <a href="guide.html" class="nav-link" style="font-size: 0.7rem;">Guide</a>
                 <a href="history.html" class="nav-link" style="font-size: 0.7rem;">History</a>
@@ -58,6 +58,27 @@
                             <div class="toggle-text">
                                 <span class="toggle-title">Show Currently Watching Section</span>
                                 <span class="toggle-desc">Display a dedicated section on the home page for currently watching items</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Settings -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Leaderboard</h3>
+                        <p>Enable or disable the leaderboard feature for ranking your favorite shows and movies</p>
+                    </div>
+                    
+                    <div class="toggle-setting">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="leaderboardToggle" checked>
+                            <div class="toggle-switch">
+                                <div class="toggle-slider"></div>
+                            </div>
+                            <div class="toggle-text">
+                                <span class="toggle-title">Enable Leaderboard</span>
+                                <span class="toggle-desc">Show leaderboard in navigation and allow ranking items. Your rankings are preserved if you disable this.</span>
                             </div>
                         </label>
                     </div>
@@ -533,6 +554,7 @@
         // Currently Watching toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const currentlyWatchingToggle = document.getElementById('currentlyWatchingToggle');
+            const leaderboardToggle = document.getElementById('leaderboardToggle');
             
             // Load saved setting (enabled by default)
             const isEnabled = localStorage.getItem('currentlyWatchingEnabled') !== 'false';
@@ -541,6 +563,15 @@
             // Save setting when changed
             currentlyWatchingToggle.addEventListener('change', function() {
                 localStorage.setItem('currentlyWatchingEnabled', this.checked.toString());
+                showToast();
+            });
+            
+            // Leaderboard toggle functionality
+            const leaderboardEnabled = localStorage.getItem('leaderboardEnabled') !== 'false';
+            leaderboardToggle.checked = leaderboardEnabled;
+            
+            leaderboardToggle.addEventListener('change', function() {
+                localStorage.setItem('leaderboardEnabled', this.checked.toString());
                 showToast();
             });
         });

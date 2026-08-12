@@ -14,13 +14,14 @@
         links: [
             { text: 'Home', url: 'index.html' },
             { text: 'Browse', url: 'search.html' },
-            { text: 'Leaderboard', url: 'leaderboard.html' },
+            { text: 'Leaderboard', url: 'leaderboard.html', hideable: true },
             { text: 'Backup', url: 'backup.html' },
             { text: 'Guide', url: 'guide.html' },
             { text: 'Settings', url: 'settings.html' }
         ],
         showYear: true,
-        showTMDB: false
+        showTMDB: false,
+        showVersion: false
     };
 
     function createFooter() {
@@ -28,6 +29,15 @@
         footer.className = 'universal-footer';
         
         const currentYear = new Date().getFullYear();
+        const leaderboardEnabled = localStorage.getItem('leaderboardEnabled') !== 'false';
+        
+        // Filter links based on settings
+        const visibleLinks = FOOTER_CONFIG.links.filter(link => {
+            if (link.hideable && !leaderboardEnabled) {
+                return false;
+            }
+            return true;
+        });
         
         footer.innerHTML = `
             <div class="footer-container">
@@ -40,7 +50,7 @@
                     <div class="footer-links">
                         <h4>Quick Links</h4>
                         <ul>
-                            ${FOOTER_CONFIG.links.map(link => 
+                            ${visibleLinks.map(link => 
                                 `<li><a href="${link.url}">${link.text}</a></li>`
                             ).join('')}
                         </ul>
@@ -54,9 +64,9 @@
                         </ul>
                     </div>
                     
-                    <div class="footer-info">
+                    ${FOOTER_CONFIG.showVersion ? `<div class="footer-info">
                         <div class="footer-version">v${FOOTER_CONFIG.version}</div>
-                    </div>
+                    </div>` : ''}
                 </div>
                 
                 ${FOOTER_CONFIG.showYear ? `<div class="footer-bottom">
@@ -74,7 +84,7 @@
             .universal-footer {
                 background: linear-gradient(135deg, #0d0e12 0%, #1a1d23 100%);
                 border-top: 1px solid rgba(195,199,206,0.1);
-                margin-top: 60px;
+                margin-top: auto;
                 padding: 40px 0 0;
                 color: var(--silver);
                 font-size: 0.85rem;
@@ -372,6 +382,23 @@
         document.addEventListener('DOMContentLoaded', initFooter);
     } else {
         initFooter();
+    }
+    
+    // Hide leaderboard nav link if feature is disabled
+    function checkLeaderboardVisibility() {
+        const leaderboardEnabled = localStorage.getItem('leaderboardEnabled') !== 'false';
+        const leaderboardNavLink = document.getElementById('leaderboardNavLink');
+        
+        if (leaderboardNavLink) {
+            leaderboardNavLink.style.display = leaderboardEnabled ? '' : 'none';
+        }
+    }
+    
+    // Run on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkLeaderboardVisibility);
+    } else {
+        checkLeaderboardVisibility();
     }
 
 })();

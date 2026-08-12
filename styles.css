@@ -34,10 +34,13 @@ body {
     padding-top: 70px;
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
 }
 
 html {
     overscroll-behavior-y: none;
+    background-color: var(--bg);
 }
 
 /* Custom Scrollbar */
@@ -232,8 +235,13 @@ header p {
 }
 
 .currently-watching-section .section-header {
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .currently-watching-section .section-header h2 {
@@ -245,6 +253,8 @@ header p {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    flex-basis: 100%;
+    text-align: center;
 }
 
 .section-subtitle {
@@ -252,6 +262,8 @@ header p {
     color: var(--silver);
     font-weight: 400;
     opacity: 0.9;
+    flex-basis: 100%;
+    text-align: center;
 }
 
 .currently-watching-grid {
