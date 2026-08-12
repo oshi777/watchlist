@@ -480,19 +480,17 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: 100px;
-    flex-shrink: 0;
 }
 
 .qa-move-btn {
-    width: 100px;
+    width: 40px;
     height: 32px;
     background: rgba(195,199,206,0.1);
     color: var(--silver);
     border: 1px solid rgba(195,199,206,0.2);
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -533,8 +531,8 @@ header p {
 }
 
 .qa-remove-btn {
-    width: 100px;
-    height: 70px;
+    width: 80px;
+    height: 68px;
     background: rgba(255,68,68,0.1);
     color: #ff4444;
     border: 1px solid rgba(255,68,68,0.3);
