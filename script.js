@@ -1194,6 +1194,9 @@ function renderCurrentlyWatching() {
     const grid = document.getElementById('currentlyWatchingGrid');
     const emptyState = document.getElementById('currentlyWatchingEmpty');
     
+    // Get saved order from localStorage
+    let quickAccessOrder = JSON.parse(localStorage.getItem('quickAccessOrder') || '[]');
+    
     // Get items with "currently watching" status
     const currentlyWatchingItems = watchlistData.filter(item => 
         item.currentlyWatching === true || item.status === 'currently-watching'
@@ -1205,14 +1208,30 @@ function renderCurrentlyWatching() {
         return;
     }
     
+    // Sort items based on saved order
+    const sortedItems = [...currentlyWatchingItems].sort((a, b) => {
+        const indexA = quickAccessOrder.indexOf(a.id);
+        const indexB = quickAccessOrder.indexOf(b.id);
+        if (indexA === -1 && indexB === -1) return 0;
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+        return indexA - indexB;
+    });
+    
+    // Update order to include any new items
+    quickAccessOrder = sortedItems.map(item => item.id);
+    localStorage.setItem('quickAccessOrder', JSON.stringify(quickAccessOrder));
+    
     grid.style.display = 'grid';
     emptyState.style.display = 'none';
     
-    grid.innerHTML = currentlyWatchingItems.map(item => {
+    grid.innerHTML = sortedItems.map(item => {
         const itemIndex = watchlistData.indexOf(item);
         
-        // Create thumbnail card similar to main watchlist but without status badge
+        // Create thumbnail card with remove button and drag handle
         const footerHtml = `
+            <button class="quick-access-remove" onclick="event.stopPropagation(); removeFromQuickAccess('${item.id}')" title="Remove from Quick Access">×</button>
+            <div class="drag-handle-qa" title="Drag to reorder">⋮⋮</div>
             <div class="item-poster-footer">
                 <div class="item-poster-title">${escapeHtml(item.title)}</div>
                 <div class="item-poster-meta">
@@ -1223,14 +1242,14 @@ function renderCurrentlyWatching() {
 
         if (item.poster) {
             return `
-                <div class="item has-poster currently-watching-card" data-id="${item.id}" onclick="openDetailModal(${itemIndex})">
+                <div class="item has-poster currently-watching-card" data-id="${item.id}" draggable="true" onclick="openDetailModal(${itemIndex})">
                     <img src="${item.poster}" alt="${escapeHtml(item.title)}" class="item-poster-bg" loading="lazy">
                     ${footerHtml}
                 </div>`;
         } else {
             const letter = item.title.charAt(0).toUpperCase();
             return `
-                <div class="item no-poster currently-watching-card" data-id="${item.id}" onclick="openDetailModal(${itemIndex})">
+                <div class="item no-poster currently-watching-card" data-id="${item.id}" draggable="true" onclick="openDetailModal(${itemIndex})">
                     <div class="item-poster-placeholder">
                         <div class="item-poster-placeholder-letter">${escapeHtml(letter)}</div>
                     </div>
@@ -1238,6 +1257,91 @@ function renderCurrentlyWatching() {
                 </div>`;
         }
     }).join('');
+    
+    // Add drag and drop event listeners
+    setupQuickAccessDragAndDrop();
+}
+
+function setupQuickAccessDragAndDrop() {
+    const grid = document.getElementById('currentlyWatchingGrid');
+    const cards = grid.querySelectorAll('.currently-watching-card');
+    let draggedElement = null;
+    
+    cards.forEach(card => {
+        card.addEventListener('dragstart', function(e) {
+            draggedElement = this;
+            this.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        });
+        
+        card.addEventListener('dragend', function(e) {
+            this.style.opacity = '1';
+            cards.forEach(c => c.classList.remove('drag-over-qa'));
+        });
+        
+        card.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            if (draggedElement !== this) {
+                this.classList.add('drag-over-qa');
+            }
+        });
+        
+        card.addEventListener('dragleave', function(e) {
+            this.classList.remove('drag-over-qa');
+        });
+        
+        card.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (draggedElement !== this) {
+                // Get current order
+                const allCards = Array.from(grid.querySelectorAll('.currently-watching-card'));
+                const draggedIndex = allCards.indexOf(draggedElement);
+                const targetIndex = allCards.indexOf(this);
+                
+                // Reorder in DOM
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedElement, this);
+                }
+                
+                // Save new order
+                saveQuickAccessOrder();
+            }
+            
+            this.classList.remove('drag-over-qa');
+        });
+    });
+}
+
+function saveQuickAccessOrder() {
+    const grid = document.getElementById('currentlyWatchingGrid');
+    const cards = Array.from(grid.querySelectorAll('.currently-watching-card'));
+    const order = cards.map(card => card.dataset.id);
+    localStorage.setItem('quickAccessOrder', JSON.stringify(order));
+}
+
+function removeFromQuickAccess(itemId) {
+    const item = watchlistData.find(i => i.id === itemId);
+    if (item) {
+        item.currentlyWatching = false;
+        // Don't change status - keep it as is
+        
+        // Remove from order
+        let quickAccessOrder = JSON.parse(localStorage.getItem('quickAccessOrder') || '[]');
+        quickAccessOrder = quickAccessOrder.filter(id => id !== itemId);
+        localStorage.setItem('quickAccessOrder', JSON.stringify(quickAccessOrder));
+        
+        saveToStorage();
+        renderCurrentlyWatching();
+        renderWatchlist();
+        updateStats();
+        applyFilters();
+    }
 }
 
 function addToCurrentlyWatching(itemId) {

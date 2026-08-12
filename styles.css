@@ -276,11 +276,72 @@ header p {
 
 .currently-watching-card {
     cursor: pointer;
+    position: relative;
 }
 
 .currently-watching-card:hover {
     transform: translateY(-2px);
     transition: transform 0.3s ease;
+}
+
+.currently-watching-card.drag-over-qa {
+    border: 2px solid var(--light);
+    box-shadow: 0 0 15px rgba(195,199,206,0.3);
+}
+
+.quick-access-remove {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.8);
+    color: var(--light);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease, background 0.2s ease;
+    padding: 0;
+}
+
+.currently-watching-card:hover .quick-access-remove {
+    opacity: 1;
+}
+
+.quick-access-remove:hover {
+    background: #ff4444;
+    transform: scale(1.1);
+}
+
+.drag-handle-qa {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: rgba(0,0,0,0.8);
+    color: var(--silver);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 1rem;
+    cursor: grab;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    user-select: none;
+}
+
+.currently-watching-card:hover .drag-handle-qa {
+    opacity: 1;
+}
+
+.drag-handle-qa:active {
+    cursor: grabbing;
 }
 
 .currently-watching-item {
