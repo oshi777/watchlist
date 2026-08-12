@@ -468,7 +468,6 @@ header p {
     background: rgba(30,33,38,0.6);
     border: 1px solid rgba(195,199,206,0.1);
     border-radius: 8px;
-    cursor: move;
     transition: all 0.2s ease;
 }
 
@@ -477,21 +476,37 @@ header p {
     border-color: rgba(195,199,206,0.2);
 }
 
-.qa-modal-item.drag-over {
-    border-color: var(--light);
-    box-shadow: 0 0 10px rgba(195,199,206,0.2);
+.qa-reorder-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.qa-drag-handle {
+.qa-move-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(195,199,206,0.1);
     color: var(--silver);
-    font-size: 1.2rem;
-    cursor: grab;
-    user-select: none;
-    opacity: 0.6;
+    border: 1px solid rgba(195,199,206,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
 }
 
-.qa-drag-handle:active {
-    cursor: grabbing;
+.qa-move-btn:hover:not(:disabled) {
+    background: var(--silver);
+    color: var(--bg);
+    border-color: var(--silver);
+}
+
+.qa-move-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 .qa-item-info {
@@ -513,7 +528,8 @@ header p {
 }
 
 .qa-remove-btn {
-    padding: 6px 12px;
+    width: 70px;
+    height: 70px;
     background: rgba(255,68,68,0.1);
     color: #ff4444;
     border: 1px solid rgba(255,68,68,0.3);
@@ -522,6 +538,10 @@ header p {
     font-size: 0.85rem;
     font-weight: 600;
     transition: all 0.2s ease;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .qa-remove-btn:hover {

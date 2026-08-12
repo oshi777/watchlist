@@ -1389,9 +1389,12 @@ function renderCurrentQuickAccessInModal() {
         return indexA - indexB;
     });
     
-    container.innerHTML = sortedItems.map(item => `
-        <div class="qa-modal-item" data-id="${item.id}" draggable="true">
-            <div class="qa-drag-handle">⋮⋮</div>
+    container.innerHTML = sortedItems.map((item, index) => `
+        <div class="qa-modal-item" data-id="${item.id}">
+            <div class="qa-reorder-buttons">
+                <button class="qa-move-btn" onclick="moveQuickAccessItem('${item.id}', -1)" ${index === 0 ? 'disabled' : ''} title="Move up">▲</button>
+                <button class="qa-move-btn" onclick="moveQuickAccessItem('${item.id}', 1)" ${index === sortedItems.length - 1 ? 'disabled' : ''} title="Move down">▼</button>
+            </div>
             <div class="qa-item-info">
                 <div class="qa-item-title">${escapeHtml(item.title)}</div>
                 <div class="qa-item-meta">
@@ -1402,64 +1405,28 @@ function renderCurrentQuickAccessInModal() {
             <button class="qa-remove-btn" onclick="removeFromQuickAccessModal('${item.id}')">Remove</button>
         </div>
     `).join('');
-    
-    // Setup drag and drop
-    setupModalDragAndDrop();
 }
 
-function setupModalDragAndDrop() {
-    const container = document.getElementById('currentQuickAccessItems');
-    const items = container.querySelectorAll('.qa-modal-item');
-    let draggedElement = null;
+function moveQuickAccessItem(itemId, direction) {
+    let quickAccessOrder = JSON.parse(localStorage.getItem('quickAccessOrder') || '[]');
+    const currentIndex = quickAccessOrder.indexOf(itemId);
     
-    items.forEach(item => {
-        item.addEventListener('dragstart', function(e) {
-            draggedElement = this;
-            this.style.opacity = '0.5';
-            e.dataTransfer.effectAllowed = 'move';
-        });
-        
-        item.addEventListener('dragend', function(e) {
-            this.style.opacity = '1';
-            items.forEach(i => i.classList.remove('drag-over'));
-        });
-        
-        item.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            if (draggedElement !== this) {
-                this.classList.add('drag-over');
-            }
-        });
-        
-        item.addEventListener('dragleave', function(e) {
-            this.classList.remove('drag-over');
-        });
-        
-        item.addEventListener('drop', function(e) {
-            e.preventDefault();
-            
-            if (draggedElement !== this) {
-                const allItems = Array.from(container.querySelectorAll('.qa-modal-item'));
-                const draggedIndex = allItems.indexOf(draggedElement);
-                const targetIndex = allItems.indexOf(this);
-                
-                if (draggedIndex < targetIndex) {
-                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
-                } else {
-                    this.parentNode.insertBefore(draggedElement, this);
-                }
-                
-                // Save new order
-                const newOrder = Array.from(container.querySelectorAll('.qa-modal-item')).map(i => i.dataset.id);
-                localStorage.setItem('quickAccessOrder', JSON.stringify(newOrder));
-                
-                // Re-render main Quick Access section
-                renderCurrentlyWatching();
-            }
-            
-            this.classList.remove('drag-over');
-        });
-    });
+    if (currentIndex === -1) return;
+    
+    const newIndex = currentIndex + direction;
+    
+    // Check bounds
+    if (newIndex < 0 || newIndex >= quickAccessOrder.length) return;
+    
+    // Swap items
+    [quickAccessOrder[currentIndex], quickAccessOrder[newIndex]] = [quickAccessOrder[newIndex], quickAccessOrder[currentIndex]];
+    
+    // Save new order
+    localStorage.setItem('quickAccessOrder', JSON.stringify(quickAccessOrder));
+    
+    // Re-render
+    renderCurrentQuickAccessInModal();
+    renderCurrentlyWatching();
 }
 
 function removeFromQuickAccessModal(itemId) {
