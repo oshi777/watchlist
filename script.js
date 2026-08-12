@@ -1402,7 +1402,7 @@ function renderCurrentQuickAccessInModal() {
                     ${item.genres ? ` • ${item.genres.slice(0, 2).join(', ')}` : ''}
                 </div>
             </div>
-            <button class="qa-remove-btn" onclick="removeFromQuickAccessModal('${item.id}')">Remove</button>
+            <button class="qa-remove-btn" onclick="removeFromQuickAccessModal('${item.id}')" title="Remove">×</button>
         </div>
     `).join('');
 }
