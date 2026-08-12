@@ -480,11 +480,12 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: 70px;
+    width: 100px;
+    flex-shrink: 0;
 }
 
 .qa-move-btn {
-    width: 70px;
+    width: 100px;
     height: 32px;
     background: rgba(195,199,206,0.1);
     color: var(--silver);
@@ -497,6 +498,8 @@ header p {
     justify-content: center;
     transition: all 0.2s ease;
     padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .qa-move-btn:hover:not(:disabled) {
@@ -515,6 +518,7 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    min-width: 0;
 }
 
 .qa-item-title {
@@ -529,7 +533,7 @@ header p {
 }
 
 .qa-remove-btn {
-    width: 70px;
+    width: 100px;
     height: 70px;
     background: rgba(255,68,68,0.1);
     color: #ff4444;
@@ -540,9 +544,12 @@ header p {
     font-weight: 600;
     transition: all 0.2s ease;
     padding: 0;
+    margin: 0;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .qa-remove-btn:hover {
