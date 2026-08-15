@@ -49,22 +49,15 @@
                         <p>Show a dedicated section for pinned shows and movies at the top of your home page</p>
                     </div>
                     
-                    <div class="display-options">
-                        <!-- Option 1: Enabled (default) -->
-                        <label class="display-option selected" id="optionQuickAccessEnabled">
-                            <input type="radio" name="quickAccess" value="enabled" checked>
-                            <div class="option-label">
-                                <span class="option-name">Enabled (Default)</span>
-                                <span class="option-desc">Display a dedicated section on the home page for pinned items. Shows are automatically removed when marked as watched.</span>
+                    <div class="toggle-setting">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="currentlyWatchingToggle" checked>
+                            <div class="toggle-switch">
+                                <div class="toggle-slider"></div>
                             </div>
-                        </label>
-
-                        <!-- Option 2: Disabled -->
-                        <label class="display-option" id="optionQuickAccessDisabled">
-                            <input type="radio" name="quickAccess" value="disabled">
-                            <div class="option-label">
-                                <span class="option-name">Disabled</span>
-                                <span class="option-desc">Hide the Quick Access section from the home page. Your pinned items are preserved if you re-enable it later.</span>
+                            <div class="toggle-text">
+                                <span class="toggle-title">Show Quick Access Section</span>
+                                <span class="toggle-desc">Display a dedicated section on the home page for pinned items. Shows are automatically removed when marked as watched.</span>
                             </div>
                         </label>
                     </div>
@@ -77,22 +70,15 @@
                         <p>Enable or disable the leaderboard feature for ranking your favorite shows and movies</p>
                     </div>
                     
-                    <div class="display-options">
-                        <!-- Option 1: Enabled (default) -->
-                        <label class="display-option selected" id="optionLeaderboardEnabled">
-                            <input type="radio" name="leaderboard" value="enabled" checked>
-                            <div class="option-label">
-                                <span class="option-name">Enabled (Default)</span>
-                                <span class="option-desc">Show leaderboard in navigation and allow ranking items. Your rankings are preserved if you disable this.</span>
+                    <div class="toggle-setting">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="leaderboardToggle" checked>
+                            <div class="toggle-switch">
+                                <div class="toggle-slider"></div>
                             </div>
-                        </label>
-
-                        <!-- Option 2: Disabled -->
-                        <label class="display-option" id="optionLeaderboardDisabled">
-                            <input type="radio" name="leaderboard" value="disabled">
-                            <div class="option-label">
-                                <span class="option-name">Disabled</span>
-                                <span class="option-desc">Hide leaderboard from navigation and pages. Your ranked list is preserved if you re-enable it later.</span>
+                            <div class="toggle-text">
+                                <span class="toggle-title">Enable Leaderboard</span>
+                                <span class="toggle-desc">Show leaderboard in navigation and allow ranking items. Your rankings are preserved if you disable this.</span>
                             </div>
                         </label>
                     </div>
@@ -307,6 +293,79 @@
         .settings-card-header p {
             font-size: 0.88rem;
             color: var(--silver);
+        }
+
+        /* Toggle Setting Styles */
+        .toggle-setting {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .toggle-label:hover {
+            background: rgba(195,199,206,0.03);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--muted);
+            border-radius: 12px;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--light);
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .toggle-label input[type="checkbox"]:checked + .toggle-switch {
+            background: var(--silver);
+        }
+
+        .toggle-label input[type="checkbox"]:checked + .toggle-switch .toggle-slider {
+            transform: translateX(20px);
+        }
+
+        .toggle-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .toggle-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--light);
+        }
+
+        .toggle-desc {
+            font-size: 0.85rem;
+            color: var(--silver);
+            line-height: 1.4;
         }
 
         .display-options {
@@ -560,59 +619,29 @@
             });
         });
 
-        // Currently Watching toggle functionality
+        // Toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Quick Access functionality
-            function getCurrentQuickAccess() {
-                const enabled = localStorage.getItem('currentlyWatchingEnabled');
-                return enabled === 'false' ? 'disabled' : 'enabled';
-            }
-
-            function applyQuickAccessSelection(mode) {
-                document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
-                const radio = document.querySelector(`input[name="quickAccess"][value="${mode}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    radio.closest('.display-option').classList.add('selected');
-                }
-            }
-
-            document.querySelectorAll('input[name="quickAccess"]').forEach(radio => {
-                radio.addEventListener('change', function () {
-                    const enabled = this.value === 'enabled';
-                    localStorage.setItem('currentlyWatchingEnabled', enabled.toString());
-                    applyQuickAccessSelection(this.value);
-                    showToast();
-                });
-            });
-
-            applyQuickAccessSelection(getCurrentQuickAccess());
+            const currentlyWatchingToggle = document.getElementById('currentlyWatchingToggle');
+            const leaderboardToggle = document.getElementById('leaderboardToggle');
             
-            // Leaderboard functionality
-            function getCurrentLeaderboard() {
-                const enabled = localStorage.getItem('leaderboardEnabled');
-                return enabled === 'false' ? 'disabled' : 'enabled';
-            }
-
-            function applyLeaderboardSelection(mode) {
-                document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
-                const radio = document.querySelector(`input[name="leaderboard"][value="${mode}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    radio.closest('.display-option').classList.add('selected');
-                }
-            }
-
-            document.querySelectorAll('input[name="leaderboard"]').forEach(radio => {
-                radio.addEventListener('change', function () {
-                    const enabled = this.value === 'enabled';
-                    localStorage.setItem('leaderboardEnabled', enabled.toString());
-                    applyLeaderboardSelection(this.value);
-                    showToast();
-                });
+            // Load saved setting (enabled by default)
+            const isEnabled = localStorage.getItem('currentlyWatchingEnabled') !== 'false';
+            currentlyWatchingToggle.checked = isEnabled;
+            
+            // Save setting when changed
+            currentlyWatchingToggle.addEventListener('change', function() {
+                localStorage.setItem('currentlyWatchingEnabled', this.checked.toString());
+                showToast();
             });
-
-            applyLeaderboardSelection(getCurrentLeaderboard());
+            
+            // Leaderboard toggle functionality
+            const leaderboardEnabled = localStorage.getItem('leaderboardEnabled') !== 'false';
+            leaderboardToggle.checked = leaderboardEnabled;
+            
+            leaderboardToggle.addEventListener('change', function() {
+                localStorage.setItem('leaderboardEnabled', this.checked.toString());
+                showToast();
+            });
         });
 
         // List Grouping functionality
