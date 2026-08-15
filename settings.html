@@ -37,6 +37,7 @@
         <header>
             <h1>Settings</h1>
             <p>Customize your Watchly experience</p>
+            <button id="resetToDefaults" class="add-btn" style="margin-top: 15px;">Reset to Defaults</button>
         </header>
 
         <main>
@@ -593,7 +594,10 @@
         }
 
         function applySelection(mode) {
-            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            // Remove selected from posterMode options only
+            document.querySelectorAll('input[name="posterMode"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
             const radio = document.querySelector(`input[name="posterMode"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -646,7 +650,10 @@
         }
 
         function applyGroupingSelection(mode) {
-            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            // Remove selected from listGrouping options only
+            document.querySelectorAll('input[name="listGrouping"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
             const radio = document.querySelector(`input[name="listGrouping"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -672,7 +679,10 @@
         }
 
         function applySyncModeSelection(mode) {
-            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            // Remove selected from syncMode options only
+            document.querySelectorAll('input[name="syncMode"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
             const radio = document.querySelector(`input[name="syncMode"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -689,6 +699,33 @@
         });
 
         applySyncModeSelection(getCurrentSyncMode());
+
+        // Reset to Defaults button
+        document.getElementById('resetToDefaults').addEventListener('click', function() {
+            if (confirm('Reset all settings to default values?')) {
+                // Reset Quick Access
+                localStorage.setItem('currentlyWatchingEnabled', 'true');
+                document.getElementById('currentlyWatchingToggle').checked = true;
+                
+                // Reset Leaderboard
+                localStorage.setItem('leaderboardEnabled', 'true');
+                document.getElementById('leaderboardToggle').checked = true;
+                
+                // Reset Sync Mode to Merge
+                localStorage.setItem('backupSyncMode', 'merge');
+                applySyncModeSelection('merge');
+                
+                // Reset List Grouping to with-separators
+                localStorage.setItem('listGroupingMode', 'with-separators');
+                applyGroupingSelection('with-separators');
+                
+                // Reset Poster Mode to cover
+                localStorage.setItem('posterDisplayMode', 'cover');
+                applySelection('cover');
+                
+                showToast();
+            }
+        });
     </script>
     <script src="footer.js"></script>
 </body>
