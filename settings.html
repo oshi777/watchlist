@@ -597,7 +597,9 @@
         }
 
         function applySelection(mode) {
-            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('input[name="posterMode"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
             const radio = document.querySelector(`input[name="posterMode"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -650,7 +652,9 @@
         }
 
         function applyGroupingSelection(mode) {
-            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('input[name="listGrouping"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
             const radio = document.querySelector(`input[name="listGrouping"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -676,7 +680,9 @@
         }
 
         function applySyncModeSelection(mode) {
-            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('input[name="syncMode"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
             const radio = document.querySelector(`input[name="syncMode"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
