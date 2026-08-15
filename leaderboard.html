@@ -93,22 +93,23 @@
         }
 
         .ranking-item {
-            background: var(--surface);
-            border: 1px solid rgba(195,199,206,0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 20px 0;
+            margin-bottom: 0;
             display: flex;
             align-items: center;
             gap: 20px;
             cursor: default;
             transition: all 0.3s ease;
             position: relative;
+            border-bottom: 1px solid rgba(195,199,206,0.15);
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
         }
 
         .ranking-item:hover {
-            border-color: var(--muted);
-            transform: translateY(-2px);
+            background: rgba(195,199,206,0.03);
         }
 
         .ranking-item.dragging {
@@ -172,9 +173,6 @@
             padding: 60px 20px;
             color: var(--silver);
             font-size: 1.2rem;
-            background: var(--surface);
-            border-radius: 15px;
-            border: 1px solid rgba(195,199,206,0.1);
         }
 
         .add-to-ranking {
