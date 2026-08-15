@@ -11,14 +11,14 @@
 
 /* Light theme variables */
 [data-theme="light"] {
-    --bg: #F8F9FA;
-    --surface: #FFFFFF;
+    --bg: #F0F2F5;
+    --surface: #F8F9FA;
     --muted: #E9ECEF;
     --silver: #6C757D;
     --light: #212529;
     --accent: #495057;
     --accent-hi: #212529;
-    --glass: rgba(255,255,255,0.85);
+    --glass: rgba(248,249,250,0.85);
 }
 
 /* Dark theme (explicit) */
@@ -1758,7 +1758,7 @@ header p {
 
 /* Light theme navbar */
 [data-theme="light"] .navbar {
-    background: #FFFFFF;
+    background: #F8F9FA;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
