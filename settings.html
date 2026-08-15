@@ -42,7 +42,7 @@
         <main>
             <div class="settings-container">
                 
-                <!-- Quick Access Settings -->
+                <!-- Currently Watching Settings -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <h3>Quick Access</h3>
@@ -92,21 +92,21 @@
                     </div>
                     
                     <div class="display-options">
-                        <!-- Option 1: Merge Mode (default) -->
-                        <label class="display-option selected" id="optionMerge">
-                            <input type="radio" name="syncMode" value="merge" checked>
+                        <!-- Option 1: Replace Mode (default) -->
+                        <label class="display-option" id="optionReplace">
+                            <input type="radio" name="syncMode" value="replace" checked>
                             <div class="option-label">
-                                <span class="option-name">Merge Mode (Smart Sync) - Default</span>
-                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
+                                <span class="option-name">Replace Mode (Default)</span>
+                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss.</span>
                             </div>
                         </label>
 
-                        <!-- Option 2: Replace Mode -->
-                        <label class="display-option" id="optionReplace">
-                            <input type="radio" name="syncMode" value="replace">
+                        <!-- Option 2: Merge Mode -->
+                        <label class="display-option" id="optionMerge">
+                            <input type="radio" name="syncMode" value="merge">
                             <div class="option-label">
-                                <span class="option-name">Replace Mode</span>
-                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss. Best when using one primary device.</span>
+                                <span class="option-name">Merge Mode (Smart Sync)</span>
+                                <span class="option-desc">Intelligently merges data from both devices. New shows added on either device are combined. Deletions are synced across devices. Best for multi-device usage.</span>
                             </div>
                         </label>
                     </div>
@@ -154,7 +154,7 @@
                     
                     <div class="display-options">
                         <!-- Option 1: With Separators (default) -->
-                        <label class="display-option selected" id="optionWithSeparators">
+                        <label class="display-option" id="optionWithSeparators">
                             <input type="radio" name="listGrouping" value="with-separators" checked>
                             <div class="option-preview grouping-preview">
                                 <div class="preview-group">
@@ -207,7 +207,7 @@
                     <div class="display-options">
 
                         <!-- Option 1: Cover (default) -->
-                        <label class="display-option selected" id="optionCover">
+                        <label class="display-option" id="optionCover">
                             <input type="radio" name="posterMode" value="cover" checked>
                             <div class="option-preview cover-preview">
                                 <div class="preview-poster cover-poster">
@@ -369,10 +369,6 @@
         }
 
         .display-options {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -597,9 +593,7 @@
         }
 
         function applySelection(mode) {
-            document.querySelectorAll('input[name="posterMode"]').forEach(radio => {
-                radio.closest('.display-option').classList.remove('selected');
-            });
+            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
             const radio = document.querySelector(`input[name="posterMode"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -621,7 +615,7 @@
             });
         });
 
-        // Toggle functionality
+        // Currently Watching toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
             const currentlyWatchingToggle = document.getElementById('currentlyWatchingToggle');
             const leaderboardToggle = document.getElementById('leaderboardToggle');
@@ -652,9 +646,7 @@
         }
 
         function applyGroupingSelection(mode) {
-            document.querySelectorAll('input[name="listGrouping"]').forEach(radio => {
-                radio.closest('.display-option').classList.remove('selected');
-            });
+            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
             const radio = document.querySelector(`input[name="listGrouping"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
@@ -676,13 +668,11 @@
 
         // Sync Mode functionality
         function getCurrentSyncMode() {
-            return localStorage.getItem('backupSyncMode') || 'merge';
+            return localStorage.getItem('backupSyncMode') || 'replace';
         }
 
         function applySyncModeSelection(mode) {
-            document.querySelectorAll('input[name="syncMode"]').forEach(radio => {
-                radio.closest('.display-option').classList.remove('selected');
-            });
+            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
             const radio = document.querySelector(`input[name="syncMode"][value="${mode}"]`);
             if (radio) {
                 radio.checked = true;
