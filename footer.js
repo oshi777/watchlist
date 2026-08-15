@@ -14,8 +14,8 @@
         links: [
             { text: 'Home', url: 'index.html' },
             { text: 'Browse', url: 'search.html' },
-            { text: 'Backup', url: 'backup.html' },
             { text: 'Leaderboard', url: 'leaderboard.html', hideable: true },
+            { text: 'Backup', url: 'backup.html' },
             { text: 'Guide', url: 'guide.html' },
             { text: 'Settings', url: 'settings.html' }
         ],
@@ -126,6 +126,7 @@
                 font-weight: 700;
                 color: var(--light);
                 margin-bottom: 12px;
+                padding-left: 40px;
             }
 
             .footer-links ul {
