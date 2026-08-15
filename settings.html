@@ -92,21 +92,21 @@
                     </div>
                     
                     <div class="display-options">
-                        <!-- Option 1: Replace Mode (default) -->
-                        <label class="display-option" id="optionReplace">
-                            <input type="radio" name="syncMode" value="replace" checked>
+                        <!-- Option 1: Merge Mode (default) -->
+                        <label class="display-option selected" id="optionMerge">
+                            <input type="radio" name="syncMode" value="merge" checked>
                             <div class="option-label">
-                                <span class="option-name">Replace Mode (Default)</span>
-                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss.</span>
+                                <span class="option-name">Merge Mode (Smart Sync) - Default</span>
+                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
                             </div>
                         </label>
 
-                        <!-- Option 2: Merge Mode -->
-                        <label class="display-option" id="optionMerge">
-                            <input type="radio" name="syncMode" value="merge">
+                        <!-- Option 2: Replace Mode -->
+                        <label class="display-option" id="optionReplace">
+                            <input type="radio" name="syncMode" value="replace">
                             <div class="option-label">
-                                <span class="option-name">Merge Mode (Smart Sync)</span>
-                                <span class="option-desc">Intelligently merges data from both devices. New shows added on either device are combined. Deletions are synced across devices. Best for multi-device usage.</span>
+                                <span class="option-name">Replace Mode</span>
+                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss. Best when using one primary device.</span>
                             </div>
                         </label>
                     </div>
@@ -154,7 +154,7 @@
                     
                     <div class="display-options">
                         <!-- Option 1: With Separators (default) -->
-                        <label class="display-option" id="optionWithSeparators">
+                        <label class="display-option selected" id="optionWithSeparators">
                             <input type="radio" name="listGrouping" value="with-separators" checked>
                             <div class="option-preview grouping-preview">
                                 <div class="preview-group">
@@ -207,7 +207,7 @@
                     <div class="display-options">
 
                         <!-- Option 1: Cover (default) -->
-                        <label class="display-option" id="optionCover">
+                        <label class="display-option selected" id="optionCover">
                             <input type="radio" name="posterMode" value="cover" checked>
                             <div class="option-preview cover-preview">
                                 <div class="preview-poster cover-poster">
@@ -668,7 +668,7 @@
 
         // Sync Mode functionality
         function getCurrentSyncMode() {
-            return localStorage.getItem('backupSyncMode') || 'replace';
+            return localStorage.getItem('backupSyncMode') || 'merge';
         }
 
         function applySyncModeSelection(mode) {
