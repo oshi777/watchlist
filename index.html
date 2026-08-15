@@ -631,6 +631,50 @@
             background: rgba(40,167,69,0.25);
         }
 
+        /* Netflix theme detail modal buttons */
+        [data-theme="netflix"] .detail-modal-content {
+            background: #1F1F1F;
+        }
+
+        [data-theme="netflix"] .detail-close {
+            background: rgba(229,9,20,0.15) !important;
+            border: 1px solid rgba(229,9,20,0.3) !important;
+        }
+
+        [data-theme="netflix"] .detail-close:hover {
+            background: rgba(229,9,20,0.3) !important;
+        }
+
+        [data-theme="netflix"] .detail-actions .action-btn {
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            color: var(--light);
+        }
+
+        [data-theme="netflix"] .detail-actions .action-btn:hover {
+            background: var(--accent-hi);
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.5);
+        }
+
+        [data-theme="netflix"] .detail-actions .action-btn.watched {
+            background: rgba(40,167,69,0.8);
+            border-color: #28a745;
+        }
+
+        [data-theme="netflix"] .detail-actions .action-btn.watched:hover {
+            background: rgba(40,167,69,1);
+        }
+
+        [data-theme="netflix"] .detail-genres .genre-tag {
+            background: rgba(229,9,20,0.15);
+            border-color: rgba(229,9,20,0.3);
+        }
+
+        [data-theme="netflix"] .detail-genres .genre-tag:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
         @media (max-width: 768px) {
             [data-theme="light"] .detail-info-col {
                 background: #F5F5F5;
