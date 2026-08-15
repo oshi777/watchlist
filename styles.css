@@ -21,6 +21,18 @@
     --glass: rgba(245,245,245,0.85);
 }
 
+/* Netflix theme variables */
+[data-theme="netflix"] {
+    --bg: #141414;
+    --surface: #1F1F1F;
+    --muted: #2F2F2F;
+    --silver: #B3B3B3;
+    --light: #E5E5E5;
+    --accent: #E50914;
+    --accent-hi: #F40612;
+    --glass: rgba(31,31,31,0.85);
+}
+
 /* Dark theme (explicit) */
 [data-theme="dark"] {
     --bg: #0B0C0E;
@@ -1832,6 +1844,13 @@ header p {
     background: #F5F5F5;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Netflix theme navbar */
+[data-theme="netflix"] .navbar {
+    background: #141414;
+    border-bottom: 1px solid rgba(229, 9, 20, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.7);
 }
 
 .nav-brand {

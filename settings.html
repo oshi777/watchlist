@@ -49,7 +49,7 @@
                     <li>List Grouping: With Section Headers</li>
                     <li>Poster Display: Crop to Fill</li>
                 </ul>
-                <p style="color: var(--silver); font-size: 0.9rem;">This action cannot be undone.</p>
+                <p style="color: var(--silver); font-size: 0.9rem;">Netflix and Light themes will be reset to Dark.</p>
             </div>
             <div class="modal-footer">
                 <button id="cancelReset" class="modal-btn cancel-btn">Cancel</button>
@@ -109,6 +109,24 @@
                             <div class="option-label">
                                 <span class="option-name">Light</span>
                                 <span class="option-desc">Light background with dark text. Better for bright environments and daytime use.</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 3: Netflix Theme -->
+                        <label class="display-option" id="optionNetflixTheme">
+                            <input type="radio" name="theme" value="netflix">
+                            <div class="option-preview theme-preview netflix-preview">
+                                <div class="theme-demo">
+                                    <div class="theme-header"></div>
+                                    <div class="theme-content">
+                                        <div class="theme-card"></div>
+                                        <div class="theme-card"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Netflix</span>
+                                <span class="option-desc">Inspired by Netflix with deep blacks and red accents. Perfect for a cinematic feel.</span>
                             </div>
                         </label>
                     </div>
@@ -694,6 +712,21 @@
         .light-preview .theme-card {
             background: #F5F5F5;
             border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* Netflix theme preview */
+        .netflix-preview .theme-demo {
+            background: #141414;
+        }
+
+        .netflix-preview .theme-header {
+            background: #141414;
+            border-bottom: 1px solid rgba(229, 9, 20, 0.3);
+        }
+
+        .netflix-preview .theme-card {
+            background: #1F1F1F;
+            border: 1px solid rgba(229, 9, 20, 0.2);
         }
 
         /* Modal Styles */
