@@ -13,11 +13,11 @@
         description: 'Your Personal Movie & TV Tracking Platform',
         links: [
             { text: 'Home', url: 'index.html' },
-            { text: 'Leaderboard', url: 'leaderboard.html', hideable: true },
-            { text: 'Settings', url: 'settings.html' },
             { text: 'Browse', url: 'search.html' },
             { text: 'Backup', url: 'backup.html' },
-            { text: 'Guide', url: 'guide.html' }
+            { text: 'Leaderboard', url: 'leaderboard.html', hideable: true },
+            { text: 'Guide', url: 'guide.html' },
+            { text: 'Settings', url: 'settings.html' }
         ],
         showYear: true,
         showTMDB: false,
@@ -133,8 +133,9 @@
                 padding: 0;
                 margin: 0;
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px 12px;
+                grid-template-columns: repeat(2, 1fr);
+                grid-auto-flow: column;
+                gap: 10px 20px;
             }
 
             .footer-links a {
@@ -216,7 +217,8 @@
 
                 .footer-links ul {
                     display: grid;
-                    grid-template-columns: repeat(3, 1fr);
+                    grid-template-columns: repeat(2, 1fr);
+                    grid-auto-flow: column;
                     gap: 12px 16px;
                     justify-items: center;
                 }
