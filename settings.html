@@ -43,22 +43,29 @@
         <main>
             <div class="settings-container">
                 
-                <!-- Currently Watching Settings -->
+                <!-- Quick Access Settings -->
                 <div class="settings-card">
                     <div class="settings-card-header">
                         <h3>Quick Access</h3>
                         <p>Show a dedicated section for pinned shows and movies at the top of your home page</p>
                     </div>
                     
-                    <div class="toggle-setting">
-                        <label class="toggle-label">
-                            <input type="checkbox" id="currentlyWatchingToggle" checked>
-                            <div class="toggle-switch">
-                                <div class="toggle-slider"></div>
+                    <div class="display-options">
+                        <!-- Option 1: Enabled (default) -->
+                        <label class="display-option selected" id="optionQuickAccessEnabled">
+                            <input type="radio" name="quickAccess" value="enabled" checked>
+                            <div class="option-label">
+                                <span class="option-name">Enabled (Default)</span>
+                                <span class="option-desc">Display a dedicated section on the home page for pinned items. Shows are automatically removed when marked as watched.</span>
                             </div>
-                            <div class="toggle-text">
-                                <span class="toggle-title">Show Quick Access Section</span>
-                                <span class="toggle-desc">Display a dedicated section on the home page for pinned items. Shows are automatically removed when marked as watched.</span>
+                        </label>
+
+                        <!-- Option 2: Disabled -->
+                        <label class="display-option" id="optionQuickAccessDisabled">
+                            <input type="radio" name="quickAccess" value="disabled">
+                            <div class="option-label">
+                                <span class="option-name">Disabled</span>
+                                <span class="option-desc">Hide the Quick Access section from the home page. Your pinned items are preserved if you re-enable it later.</span>
                             </div>
                         </label>
                     </div>
@@ -71,15 +78,22 @@
                         <p>Enable or disable the leaderboard feature for ranking your favorite shows and movies</p>
                     </div>
                     
-                    <div class="toggle-setting">
-                        <label class="toggle-label">
-                            <input type="checkbox" id="leaderboardToggle" checked>
-                            <div class="toggle-switch">
-                                <div class="toggle-slider"></div>
+                    <div class="display-options">
+                        <!-- Option 1: Enabled (default) -->
+                        <label class="display-option selected" id="optionLeaderboardEnabled">
+                            <input type="radio" name="leaderboard" value="enabled" checked>
+                            <div class="option-label">
+                                <span class="option-name">Enabled (Default)</span>
+                                <span class="option-desc">Show leaderboard in navigation and allow ranking items. Your rankings are preserved if you disable this.</span>
                             </div>
-                            <div class="toggle-text">
-                                <span class="toggle-title">Enable Leaderboard</span>
-                                <span class="toggle-desc">Show leaderboard in navigation and allow ranking items. Your rankings are preserved if you disable this.</span>
+                        </label>
+
+                        <!-- Option 2: Disabled -->
+                        <label class="display-option" id="optionLeaderboardDisabled">
+                            <input type="radio" name="leaderboard" value="disabled">
+                            <div class="option-label">
+                                <span class="option-name">Disabled</span>
+                                <span class="option-desc">Hide leaderboard from navigation and pages. Your ranked list is preserved if you re-enable it later.</span>
                             </div>
                         </label>
                     </div>
@@ -619,27 +633,54 @@
             });
         });
 
-        // Currently Watching toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentlyWatchingToggle = document.getElementById('currentlyWatchingToggle');
-            const leaderboardToggle = document.getElementById('leaderboardToggle');
-            
-            // Load saved setting (enabled by default)
-            const isEnabled = localStorage.getItem('currentlyWatchingEnabled') !== 'false';
-            currentlyWatchingToggle.checked = isEnabled;
-            
-            // Save setting when changed
-            currentlyWatchingToggle.addEventListener('change', function() {
-                localStorage.setItem('currentlyWatchingEnabled', this.checked.toString());
+        // Quick Access radio button functionality
+        function getCurrentQuickAccess() {
+            return localStorage.getItem('currentlyWatchingEnabled') !== 'false' ? 'enabled' : 'disabled';
+        }
+
+        function applyQuickAccessSelection(value) {
+            // Remove selected from quickAccess options only
+            document.querySelectorAll('input[name="quickAccess"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
+            const radio = document.querySelector(`input[name="quickAccess"][value="${value}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.closest('.display-option').classList.add('selected');
+            }
+        }
+
+        document.querySelectorAll('input[name="quickAccess"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const isEnabled = this.value === 'enabled';
+                localStorage.setItem('currentlyWatchingEnabled', isEnabled.toString());
+                applyQuickAccessSelection(this.value);
                 showToast();
             });
-            
-            // Leaderboard toggle functionality
-            const leaderboardEnabled = localStorage.getItem('leaderboardEnabled') !== 'false';
-            leaderboardToggle.checked = leaderboardEnabled;
-            
-            leaderboardToggle.addEventListener('change', function() {
-                localStorage.setItem('leaderboardEnabled', this.checked.toString());
+        });
+
+        // Leaderboard radio button functionality
+        function getCurrentLeaderboard() {
+            return localStorage.getItem('leaderboardEnabled') !== 'false' ? 'enabled' : 'disabled';
+        }
+
+        function applyLeaderboardSelection(value) {
+            // Remove selected from leaderboard options only
+            document.querySelectorAll('input[name="leaderboard"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
+            const radio = document.querySelector(`input[name="leaderboard"][value="${value}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.closest('.display-option').classList.add('selected');
+            }
+        }
+
+        document.querySelectorAll('input[name="leaderboard"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const isEnabled = this.value === 'enabled';
+                localStorage.setItem('leaderboardEnabled', isEnabled.toString());
+                applyLeaderboardSelection(this.value);
                 showToast();
             });
         });
@@ -669,9 +710,11 @@
             });
         });
 
-        // Init
+        // Init all settings on page load
         applySelection(getCurrentMode());
         applyGroupingSelection(getCurrentGrouping());
+        applyQuickAccessSelection(getCurrentQuickAccess());
+        applyLeaderboardSelection(getCurrentLeaderboard());
 
         // Sync Mode functionality
         function getCurrentSyncMode() {
@@ -703,13 +746,13 @@
         // Reset to Defaults button
         document.getElementById('resetToDefaults').addEventListener('click', function() {
             if (confirm('Reset all settings to default values?')) {
-                // Reset Quick Access
+                // Reset Quick Access to enabled
                 localStorage.setItem('currentlyWatchingEnabled', 'true');
-                document.getElementById('currentlyWatchingToggle').checked = true;
+                applyQuickAccessSelection('enabled');
                 
-                // Reset Leaderboard
+                // Reset Leaderboard to enabled
                 localStorage.setItem('leaderboardEnabled', 'true');
-                document.getElementById('leaderboardToggle').checked = true;
+                applyLeaderboardSelection('enabled');
                 
                 // Reset Sync Mode to Merge
                 localStorage.setItem('backupSyncMode', 'merge');
