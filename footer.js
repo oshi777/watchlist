@@ -91,6 +91,12 @@
                 margin-bottom: 0;
             }
 
+            /* Light theme footer */
+            [data-theme="light"] .universal-footer {
+                background: linear-gradient(135deg, #E9ECEF 0%, #DEE2E6 100%);
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
             .footer-container {
                 max-width: 1200px;
                 margin: 0 auto;
@@ -200,6 +206,10 @@
                 border-top: 1px solid rgba(195,199,206,0.1);
                 text-align: center;
                 margin: 0;
+            }
+
+            [data-theme="light"] .footer-bottom {
+                border-top: 1px solid rgba(0, 0, 0, 0.1);
             }
 
             .footer-bottom p {
