@@ -93,7 +93,7 @@
 
             /* Light theme footer */
             [data-theme="light"] .universal-footer {
-                background: linear-gradient(135deg, #E9ECEF 0%, #DEE2E6 100%);
+                background: linear-gradient(135deg, #F5F5F5 0%, #E5E5E5 100%);
                 border-top: 1px solid rgba(0, 0, 0, 0.1);
             }
 
