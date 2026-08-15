@@ -67,6 +67,114 @@
         <main>
             <div class="settings-container">
                 
+                <!-- Card Display Mode -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Poster Display Mode</h3>
+                        <p>Choose how movie and show posters are displayed in detail views</p>
+                    </div>
+
+                    <div class="display-options">
+
+                        <!-- Option 1: Cover (default) -->
+                        <label class="display-option selected" id="optionCover">
+                            <input type="radio" name="posterMode" value="cover" checked>
+                            <div class="option-preview cover-preview">
+                                <div class="preview-poster cover-poster">
+                                    <div class="preview-img-wrap cover-wrap">
+                                        <div class="preview-img-inner"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-lines">
+                                    <div class="preview-line w80"></div>
+                                    <div class="preview-line w50"></div>
+                                    <div class="preview-line w95"></div>
+                                    <div class="preview-line w70"></div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Crop to Fill (Default)</span>
+                                <span class="option-desc">Poster fills entire space, may crop top/bottom or sides to maintain aspect ratio</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Contain (full poster) -->
+                        <label class="display-option" id="optionContain">
+                            <input type="radio" name="posterMode" value="contain">
+                            <div class="option-preview contain-preview">
+                                <div class="preview-poster contain-poster">
+                                    <div class="preview-img-wrap contain-wrap">
+                                        <div class="preview-img-inner"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-lines">
+                                    <div class="preview-line w80"></div>
+                                    <div class="preview-line w50"></div>
+                                    <div class="preview-line w95"></div>
+                                    <div class="preview-line w70"></div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Show Full Poster</span>
+                                <span class="option-desc">Entire poster visible with no cropping, dark bars may appear above/below or on sides</span>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+
+                <!-- List Grouping -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>List Grouping</h3>
+                        <p>Choose how your watchlist items are organized on the main page</p>
+                    </div>
+                    
+                    <div class="display-options">
+                        <!-- Option 1: With Separators (default) -->
+                        <label class="display-option selected" id="optionWithSeparators">
+                            <input type="radio" name="listGrouping" value="with-separators" checked>
+                            <div class="option-preview grouping-preview">
+                                <div class="preview-group">
+                                    <div class="preview-separator">A</div>
+                                    <div class="preview-items">
+                                        <div class="preview-item"></div>
+                                        <div class="preview-item"></div>
+                                    </div>
+                                </div>
+                                <div class="preview-group">
+                                    <div class="preview-separator">B</div>
+                                    <div class="preview-items">
+                                        <div class="preview-item"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">With Section Headers</span>
+                                <span class="option-desc">Show alphabetical separators like "0-9", "A", "B", etc. to organize your list</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Continuous List -->
+                        <label class="display-option" id="optionContinuous">
+                            <input type="radio" name="listGrouping" value="continuous">
+                            <div class="option-preview grouping-preview">
+                                <div class="preview-continuous">
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                    <div class="preview-item"></div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Continuous List</span>
+                                <span class="option-desc">Hide section headers for a clean, uninterrupted list (items still sorted alphabetically)</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
                 <!-- Quick Access Settings -->
                 <div class="settings-card">
                     <div class="settings-card-header">
@@ -123,34 +231,6 @@
                     </div>
                 </div>
 
-                <!-- Backup Sync Mode -->
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <h3>Backup Sync Mode</h3>
-                        <p>Choose how data is synced between devices when using GitHub Gist backup</p>
-                    </div>
-                    
-                    <div class="display-options">
-                        <!-- Option 1: Merge Mode (default) -->
-                        <label class="display-option selected" id="optionMerge">
-                            <input type="radio" name="syncMode" value="merge" checked>
-                            <div class="option-label">
-                                <span class="option-name">Merge Mode (Smart Sync) - Default</span>
-                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
-                            </div>
-                        </label>
-
-                        <!-- Option 2: Replace Mode -->
-                        <label class="display-option" id="optionReplace">
-                            <input type="radio" name="syncMode" value="replace">
-                            <div class="option-label">
-                                <span class="option-name">Replace Mode</span>
-                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss. Best when using one primary device.</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
                 <!-- Trakt.tv Integration -->
                 <div class="settings-card">
                     <div class="settings-card-header">
@@ -184,111 +264,31 @@
                     </div>
                 </div>
 
-                <!-- List Grouping -->
+                <!-- Backup Sync Mode -->
                 <div class="settings-card">
                     <div class="settings-card-header">
-                        <h3>List Grouping</h3>
-                        <p>Choose how your watchlist items are organized on the main page</p>
+                        <h3>Backup Sync Mode</h3>
+                        <p>Choose how data is synced between devices when using GitHub Gist backup</p>
                     </div>
                     
                     <div class="display-options">
-                        <!-- Option 1: With Separators (default) -->
-                        <label class="display-option selected" id="optionWithSeparators">
-                            <input type="radio" name="listGrouping" value="with-separators" checked>
-                            <div class="option-preview grouping-preview">
-                                <div class="preview-group">
-                                    <div class="preview-separator">A</div>
-                                    <div class="preview-items">
-                                        <div class="preview-item"></div>
-                                        <div class="preview-item"></div>
-                                    </div>
-                                </div>
-                                <div class="preview-group">
-                                    <div class="preview-separator">B</div>
-                                    <div class="preview-items">
-                                        <div class="preview-item"></div>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Option 1: Merge Mode (default) -->
+                        <label class="display-option selected" id="optionMerge">
+                            <input type="radio" name="syncMode" value="merge" checked>
                             <div class="option-label">
-                                <span class="option-name">With Section Headers</span>
-                                <span class="option-desc">Show alphabetical separators like "0-9", "A", "B", etc. to organize your list</span>
+                                <span class="option-name">Merge Mode (Smart Sync) - Default</span>
+                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
                             </div>
                         </label>
 
-                        <!-- Option 2: Continuous List -->
-                        <label class="display-option" id="optionContinuous">
-                            <input type="radio" name="listGrouping" value="continuous">
-                            <div class="option-preview grouping-preview">
-                                <div class="preview-continuous">
-                                    <div class="preview-item"></div>
-                                    <div class="preview-item"></div>
-                                    <div class="preview-item"></div>
-                                    <div class="preview-item"></div>
-                                    <div class="preview-item"></div>
-                                </div>
-                            </div>
+                        <!-- Option 2: Replace Mode -->
+                        <label class="display-option" id="optionReplace">
+                            <input type="radio" name="syncMode" value="replace">
                             <div class="option-label">
-                                <span class="option-name">Continuous List</span>
-                                <span class="option-desc">Hide section headers for a clean, uninterrupted list (items still sorted alphabetically)</span>
+                                <span class="option-name">Replace Mode</span>
+                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss. Best when using one primary device.</span>
                             </div>
                         </label>
-                    </div>
-                </div>
-
-                <!-- Card Display Mode -->
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <h3>Poster Display Mode</h3>
-                        <p>Choose how movie and show posters are displayed in detail views</p>
-                    </div>
-
-                    <div class="display-options">
-
-                        <!-- Option 1: Cover (default) -->
-                        <label class="display-option selected" id="optionCover">
-                            <input type="radio" name="posterMode" value="cover" checked>
-                            <div class="option-preview cover-preview">
-                                <div class="preview-poster cover-poster">
-                                    <div class="preview-img-wrap cover-wrap">
-                                        <div class="preview-img-inner"></div>
-                                    </div>
-                                </div>
-                                <div class="preview-lines">
-                                    <div class="preview-line w80"></div>
-                                    <div class="preview-line w50"></div>
-                                    <div class="preview-line w95"></div>
-                                    <div class="preview-line w70"></div>
-                                </div>
-                            </div>
-                            <div class="option-label">
-                                <span class="option-name">Crop to Fill (Default)</span>
-                                <span class="option-desc">Poster fills entire space, may crop top/bottom or sides to maintain aspect ratio</span>
-                            </div>
-                        </label>
-
-                        <!-- Option 2: Contain (full poster) -->
-                        <label class="display-option" id="optionContain">
-                            <input type="radio" name="posterMode" value="contain">
-                            <div class="option-preview contain-preview">
-                                <div class="preview-poster contain-poster">
-                                    <div class="preview-img-wrap contain-wrap">
-                                        <div class="preview-img-inner"></div>
-                                    </div>
-                                </div>
-                                <div class="preview-lines">
-                                    <div class="preview-line w80"></div>
-                                    <div class="preview-line w50"></div>
-                                    <div class="preview-line w95"></div>
-                                    <div class="preview-line w70"></div>
-                                </div>
-                            </div>
-                            <div class="option-label">
-                                <span class="option-name">Show Full Poster</span>
-                                <span class="option-desc">Entire poster visible with no cropping, dark bars may appear above/below or on sides</span>
-                            </div>
-                        </label>
-
                     </div>
                 </div>
 
