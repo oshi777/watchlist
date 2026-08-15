@@ -45,6 +45,48 @@
     --glass: rgba(30,33,38,0.85);
 }
 
+/* Netflix theme styling for buttons and interactive elements */
+[data-theme="netflix"] .add-btn,
+[data-theme="netflix"] .reset-btn,
+[data-theme="netflix"] .add-to-currently-btn {
+    background: var(--accent);
+    color: var(--light);
+    border-color: var(--accent);
+}
+
+[data-theme="netflix"] .add-btn:hover,
+[data-theme="netflix"] .reset-btn:hover,
+[data-theme="netflix"] .add-to-currently-btn:hover {
+    background: var(--accent-hi);
+    color: var(--light);
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
+}
+
+[data-theme="netflix"] .add-btn.secondary:hover {
+    background: var(--accent);
+    color: var(--light);
+}
+
+[data-theme="netflix"] .action-btn:hover {
+    background: rgba(229, 9, 20, 0.15);
+    border-color: var(--accent);
+}
+
+[data-theme="netflix"] .genre-tag:hover {
+    background: var(--accent);
+    color: var(--light);
+    border-color: var(--accent);
+}
+
+[data-theme="netflix"] .modal button:hover {
+    background: var(--accent);
+    color: var(--light);
+}
+
+[data-theme="netflix"] .filters select:hover {
+    border-color: var(--accent);
+}
+
 /* Light theme hover and interactive states */
 [data-theme="light"] .item:hover {
     border-color: rgba(0, 0, 0, 0.2);

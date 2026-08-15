@@ -78,14 +78,33 @@
         .year-divider::before {
             content: '';
             position: absolute;
-            left: 10px;
+            left: 4px;
             top: 50%;
             width: 14px;
             height: 14px;
             background: var(--silver);
             border-radius: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateY(-50%);
             box-shadow: 0 0 12px rgba(195,199,206,0.5);
+        }
+
+        /* Netflix theme - red timeline and dots */
+        [data-theme="netflix"] .timeline::before {
+            background: linear-gradient(to bottom, var(--accent), transparent);
+        }
+
+        [data-theme="netflix"] .year-divider::before {
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(229, 9, 20, 0.6);
+        }
+
+        [data-theme="netflix"] .history-entry::before {
+            background: var(--accent);
+        }
+
+        [data-theme="netflix"] .history-entry:hover::before {
+            background: var(--accent-hi);
+            box-shadow: 0 0 8px rgba(229, 9, 20, 0.5);
         }
 
         .year-label {
