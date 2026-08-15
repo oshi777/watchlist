@@ -42,6 +42,7 @@
             <div class="modal-body">
                 <p>This will reset all settings to their default values:</p>
                 <ul style="margin: 15px 0; padding-left: 20px; color: var(--silver); line-height: 1.8;">
+                    <li>Theme: Dark</li>
                     <li>Quick Access: Enabled</li>
                     <li>Leaderboard: Enabled</li>
                     <li>Backup Sync Mode: Merge Mode</li>
@@ -66,6 +67,52 @@
 
         <main>
             <div class="settings-container">
+                
+                <!-- Theme Setting -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Theme</h3>
+                        <p>Choose your preferred color scheme for the entire application</p>
+                    </div>
+                    
+                    <div class="display-options">
+                        <!-- Option 1: Dark Theme (default) -->
+                        <label class="display-option selected" id="optionDarkTheme">
+                            <input type="radio" name="theme" value="dark" checked>
+                            <div class="option-preview theme-preview dark-preview">
+                                <div class="theme-demo">
+                                    <div class="theme-header"></div>
+                                    <div class="theme-content">
+                                        <div class="theme-card"></div>
+                                        <div class="theme-card"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Dark (Default)</span>
+                                <span class="option-desc">Dark background with light text. Easy on the eyes in low-light environments.</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Light Theme -->
+                        <label class="display-option" id="optionLightTheme">
+                            <input type="radio" name="theme" value="light">
+                            <div class="option-preview theme-preview light-preview">
+                                <div class="theme-demo">
+                                    <div class="theme-header"></div>
+                                    <div class="theme-content">
+                                        <div class="theme-card"></div>
+                                        <div class="theme-card"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Light</span>
+                                <span class="option-desc">Light background with dark text. Better for bright environments and daytime use.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
                 
                 <!-- Card Display Mode -->
                 <div class="settings-card">
@@ -586,6 +633,69 @@
             line-height: 1.45;
         }
 
+        /* Theme preview styles */
+        .theme-preview {
+            width: 130px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .theme-demo {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .theme-header {
+            height: 20%;
+            width: 100%;
+        }
+
+        .theme-content {
+            flex: 1;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .theme-card {
+            flex: 1;
+            border-radius: 3px;
+        }
+
+        /* Dark theme preview */
+        .dark-preview .theme-demo {
+            background: #0B0C0E;
+        }
+
+        .dark-preview .theme-header {
+            background: #1E2126;
+            border-bottom: 1px solid rgba(195, 199, 206, 0.1);
+        }
+
+        .dark-preview .theme-card {
+            background: #1E2126;
+            border: 1px solid rgba(195, 199, 206, 0.1);
+        }
+
+        /* Light theme preview */
+        .light-preview .theme-demo {
+            background: #F8F9FA;
+        }
+
+        .light-preview .theme-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .light-preview .theme-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
         /* Modal Styles */
         .modal-overlay {
             position: fixed;
@@ -893,6 +1003,34 @@
         applyGroupingSelection(getCurrentGrouping());
         applyQuickAccessSelection(getCurrentQuickAccess());
         applyLeaderboardSelection(getCurrentLeaderboard());
+        applyThemeSelection(getCurrentTheme());
+
+        // Theme functionality
+        function getCurrentTheme() {
+            return localStorage.getItem('appTheme') || 'dark';
+        }
+
+        function applyThemeSelection(theme) {
+            // Remove selected from theme options only
+            document.querySelectorAll('input[name="theme"]').forEach(radio => {
+                radio.closest('.display-option').classList.remove('selected');
+            });
+            const radio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.closest('.display-option').classList.add('selected');
+            }
+            // Apply theme to document
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        document.querySelectorAll('input[name="theme"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                localStorage.setItem('appTheme', this.value);
+                applyThemeSelection(this.value);
+                showToast();
+            });
+        });
 
         // Sync Mode functionality
         function getCurrentSyncMode() {
@@ -936,6 +1074,10 @@
         });
 
         confirmBtn.addEventListener('click', function() {
+            // Reset Theme to dark
+            localStorage.setItem('appTheme', 'dark');
+            applyThemeSelection('dark');
+            
             // Reset Quick Access to enabled
             localStorage.setItem('currentlyWatchingEnabled', 'true');
             applyQuickAccessSelection('enabled');

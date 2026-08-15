@@ -9,6 +9,30 @@
     --glass: rgba(30,33,38,0.85);
 }
 
+/* Light theme variables */
+[data-theme="light"] {
+    --bg: #F8F9FA;
+    --surface: #FFFFFF;
+    --muted: #E9ECEF;
+    --silver: #6C757D;
+    --light: #212529;
+    --accent: #495057;
+    --accent-hi: #212529;
+    --glass: rgba(255,255,255,0.85);
+}
+
+/* Dark theme (explicit) */
+[data-theme="dark"] {
+    --bg: #0B0C0E;
+    --surface: #1E2126;
+    --muted: #3A3F47;
+    --silver: #C3C7CE;
+    --light: #F8F8F9;
+    --accent: #C3C7CE;
+    --accent-hi: #F8F8F9;
+    --glass: rgba(30,33,38,0.85);
+}
+
 * {
     margin: 0;
     padding: 0;

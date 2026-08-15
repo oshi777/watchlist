@@ -387,6 +387,12 @@
         initFooter();
     }
     
+    // Apply saved theme on page load
+    (function applyTheme() {
+        const savedTheme = localStorage.getItem('appTheme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+    
     // Hide leaderboard nav link if feature is disabled
     function checkLeaderboardVisibility() {
         const leaderboardEnabled = localStorage.getItem('leaderboardEnabled') !== 'false';
