@@ -33,6 +33,30 @@
     <!-- Site blur overlay -->
     <div class="site-blur-overlay" id="siteBlur"></div>
 
+    <!-- Reset Confirmation Modal -->
+    <div class="modal-overlay" id="resetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Reset to Defaults?</h2>
+            </div>
+            <div class="modal-body">
+                <p>This will reset all settings to their default values:</p>
+                <ul style="margin: 15px 0; padding-left: 20px; color: var(--silver); line-height: 1.8;">
+                    <li>Quick Access: Enabled</li>
+                    <li>Leaderboard: Enabled</li>
+                    <li>Backup Sync Mode: Merge Mode</li>
+                    <li>List Grouping: With Section Headers</li>
+                    <li>Poster Display: Crop to Fill</li>
+                </ul>
+                <p style="color: var(--silver); font-size: 0.9rem;">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelReset" class="modal-btn cancel-btn">Cancel</button>
+                <button id="confirmReset" class="modal-btn confirm-btn">Reset to Defaults</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>Settings</h1>
@@ -559,6 +583,157 @@
             line-height: 1.45;
         }
 
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid rgba(195, 199, 206, 0.2);
+            border-radius: 12px;
+            padding: 0;
+            max-width: 480px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 24px 24px 16px 24px;
+            border-bottom: 1px solid rgba(195, 199, 206, 0.15);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--light);
+        }
+
+        .modal-body {
+            padding: 20px 24px;
+        }
+
+        .modal-body p {
+            margin: 0 0 10px 0;
+            color: var(--light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .modal-body ul {
+            margin: 15px 0;
+            padding-left: 20px;
+            color: var(--silver);
+            line-height: 1.8;
+        }
+
+        .modal-body ul li {
+            font-size: 0.9rem;
+        }
+
+        .modal-footer {
+            padding: 16px 24px 24px 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+        }
+
+        .cancel-btn {
+            background: transparent;
+            color: var(--silver);
+            border: 1px solid rgba(195, 199, 206, 0.2);
+        }
+
+        .cancel-btn:hover {
+            background: rgba(195, 199, 206, 0.05);
+            border-color: rgba(195, 199, 206, 0.3);
+        }
+
+        .confirm-btn {
+            background: var(--silver);
+            color: var(--dark);
+        }
+
+        .confirm-btn:hover {
+            background: var(--light);
+            transform: translateY(-1px);
+        }
+
+        .confirm-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+            }
+
+            .modal-header {
+                padding: 20px 20px 14px 20px;
+            }
+
+            .modal-header h2 {
+                font-size: 1.15rem;
+            }
+
+            .modal-body {
+                padding: 16px 20px;
+            }
+
+            .modal-footer {
+                padding: 14px 20px 20px 20px;
+                flex-direction: column-reverse;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+
         .saved-toast {
             position: fixed;
             bottom: 24px;
@@ -743,30 +918,56 @@
 
         applySyncModeSelection(getCurrentSyncMode());
 
-        // Reset to Defaults button
-        document.getElementById('resetToDefaults').addEventListener('click', function() {
-            if (confirm('Reset all settings to default values?')) {
-                // Reset Quick Access to enabled
-                localStorage.setItem('currentlyWatchingEnabled', 'true');
-                applyQuickAccessSelection('enabled');
-                
-                // Reset Leaderboard to enabled
-                localStorage.setItem('leaderboardEnabled', 'true');
-                applyLeaderboardSelection('enabled');
-                
-                // Reset Sync Mode to Merge
-                localStorage.setItem('backupSyncMode', 'merge');
-                applySyncModeSelection('merge');
-                
-                // Reset List Grouping to with-separators
-                localStorage.setItem('listGroupingMode', 'with-separators');
-                applyGroupingSelection('with-separators');
-                
-                // Reset Poster Mode to cover
-                localStorage.setItem('posterDisplayMode', 'cover');
-                applySelection('cover');
-                
-                showToast();
+        // Reset to Defaults button with custom modal
+        const resetModal = document.getElementById('resetModal');
+        const resetBtn = document.getElementById('resetToDefaults');
+        const cancelBtn = document.getElementById('cancelReset');
+        const confirmBtn = document.getElementById('confirmReset');
+
+        resetBtn.addEventListener('click', function() {
+            resetModal.classList.add('active');
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            resetModal.classList.remove('active');
+        });
+
+        confirmBtn.addEventListener('click', function() {
+            // Reset Quick Access to enabled
+            localStorage.setItem('currentlyWatchingEnabled', 'true');
+            applyQuickAccessSelection('enabled');
+            
+            // Reset Leaderboard to enabled
+            localStorage.setItem('leaderboardEnabled', 'true');
+            applyLeaderboardSelection('enabled');
+            
+            // Reset Sync Mode to Merge
+            localStorage.setItem('backupSyncMode', 'merge');
+            applySyncModeSelection('merge');
+            
+            // Reset List Grouping to with-separators
+            localStorage.setItem('listGroupingMode', 'with-separators');
+            applyGroupingSelection('with-separators');
+            
+            // Reset Poster Mode to cover
+            localStorage.setItem('posterDisplayMode', 'cover');
+            applySelection('cover');
+            
+            resetModal.classList.remove('active');
+            showToast();
+        });
+
+        // Close modal on overlay click
+        resetModal.addEventListener('click', function(e) {
+            if (e.target === resetModal) {
+                resetModal.classList.remove('active');
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && resetModal.classList.contains('active')) {
+                resetModal.classList.remove('active');
             }
         });
     </script>
