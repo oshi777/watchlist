@@ -432,7 +432,7 @@
         }
 
         [data-theme="light"] .item-poster-footer {
-            background: linear-gradient(to top, rgba(255,255,255,0.95) 55%, transparent);
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 55%, transparent);
         }
         .item-poster-title {
             font-size: 0.9rem;
@@ -573,6 +573,56 @@
 
         [data-theme="light"] .detail-poster-placeholder span {
             color: rgba(0, 0, 0, 0.12);
+        }
+
+        /* Light theme detail modal */
+        [data-theme="light"] .detail-modal-content {
+            background: #F5F5F5;
+        }
+
+        [data-theme="light"] .detail-close {
+            background: rgba(0,0,0,0.08) !important;
+            border: 1px solid rgba(0,0,0,0.14) !important;
+        }
+
+        [data-theme="light"] .detail-close:hover {
+            background: rgba(0,0,0,0.15) !important;
+        }
+
+        [data-theme="light"] .detail-meta {
+            color: rgba(0,0,0,0.6);
+        }
+
+        [data-theme="light"] .detail-overview {
+            color: rgba(0,0,0,0.85);
+        }
+
+        [data-theme="light"] .detail-note {
+            color: rgba(0,0,0,0.6);
+            border-left: 3px solid rgba(0,0,0,0.2);
+        }
+
+        [data-theme="light"] .detail-genres .genre-tag {
+            background: rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.15);
+        }
+
+        [data-theme="light"] .detail-seasons {
+            color: rgba(0,0,0,0.7);
+        }
+
+        [data-theme="light"] .detail-actions .action-btn {
+            color: var(--light);
+        }
+
+        [data-theme="light"] .detail-actions .action-btn:hover {
+            background: rgba(0,0,0,0.08);
+        }
+
+        @media (max-width: 768px) {
+            [data-theme="light"] .detail-info-col {
+                background: #F5F5F5;
+            }
         }
         .detail-info-col {
             flex: 1;
