@@ -133,9 +133,8 @@
                 padding: 0;
                 margin: 0;
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                grid-auto-flow: column;
-                gap: 10px 20px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px 12px;
             }
 
             .footer-links a {
@@ -217,8 +216,7 @@
 
                 .footer-links ul {
                     display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    grid-auto-flow: column;
+                    grid-template-columns: repeat(3, 1fr);
                     gap: 12px 16px;
                     justify-items: center;
                 }
