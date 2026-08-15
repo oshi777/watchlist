@@ -667,7 +667,7 @@
                 const remoteData = importedData.watchlistData || [];
                 
                 // Check sync mode setting
-                const syncMode = localStorage.getItem('backupSyncMode') || 'replace';
+                const syncMode = localStorage.getItem('backupSyncMode') || 'merge';
                 
                 if (syncMode === 'merge') {
                     // MERGE MODE: Intelligently merge local and remote data
