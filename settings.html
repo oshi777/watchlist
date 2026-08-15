@@ -84,6 +84,34 @@
                     </div>
                 </div>
 
+                <!-- Backup Sync Mode -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Backup Sync Mode</h3>
+                        <p>Choose how data is synced between devices when using GitHub Gist backup</p>
+                    </div>
+                    
+                    <div class="display-options">
+                        <!-- Option 1: Replace Mode (default) -->
+                        <label class="display-option" id="optionReplace">
+                            <input type="radio" name="syncMode" value="replace" checked>
+                            <div class="option-label">
+                                <span class="option-name">Replace Mode (Default)</span>
+                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss.</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Merge Mode -->
+                        <label class="display-option" id="optionMerge">
+                            <input type="radio" name="syncMode" value="merge">
+                            <div class="option-label">
+                                <span class="option-name">Merge Mode (Smart Sync)</span>
+                                <span class="option-desc">Intelligently merges data from both devices. New shows added on either device are combined. Deletions are synced across devices. Best for multi-device usage.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Trakt.tv Integration -->
                 <div class="settings-card">
                     <div class="settings-card-header">
@@ -637,6 +665,30 @@
         // Init
         applySelection(getCurrentMode());
         applyGroupingSelection(getCurrentGrouping());
+
+        // Sync Mode functionality
+        function getCurrentSyncMode() {
+            return localStorage.getItem('backupSyncMode') || 'replace';
+        }
+
+        function applySyncModeSelection(mode) {
+            document.querySelectorAll('.display-option').forEach(el => el.classList.remove('selected'));
+            const radio = document.querySelector(`input[name="syncMode"][value="${mode}"]`);
+            if (radio) {
+                radio.checked = true;
+                radio.closest('.display-option').classList.add('selected');
+            }
+        }
+
+        document.querySelectorAll('input[name="syncMode"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                localStorage.setItem('backupSyncMode', this.value);
+                applySyncModeSelection(this.value);
+                showToast();
+            });
+        });
+
+        applySyncModeSelection(getCurrentSyncMode());
     </script>
     <script src="footer.js"></script>
 </body>

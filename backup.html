@@ -666,8 +666,47 @@
                 const importedData = JSON.parse(fileContent);
                 const remoteData = importedData.watchlistData || [];
                 
-                // Straight replace — backup is the source of truth
-                localStorage.setItem('watchlistData', JSON.stringify(remoteData));
+                // Check sync mode setting
+                const syncMode = localStorage.getItem('backupSyncMode') || 'replace';
+                
+                if (syncMode === 'merge') {
+                    // MERGE MODE: Intelligently merge local and remote data
+                    const localData = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+                    
+                    // Create maps for efficient lookup
+                    const remoteMap = new Map();
+                    remoteData.forEach(item => {
+                        // Use poster path as primary key if available, otherwise title+year
+                        const key = item.poster ? item.poster : `${item.title}|${item.year || ''}`;
+                        remoteMap.set(key, item);
+                    });
+                    
+                    const localMap = new Map();
+                    localData.forEach(item => {
+                        const key = item.poster ? item.poster : `${item.title}|${item.year || ''}`;
+                        localMap.set(key, item);
+                    });
+                    
+                    // Merge: Start with remote data, add local items not in remote
+                    const mergedData = [...remoteData];
+                    const remoteKeys = new Set(remoteMap.keys());
+                    
+                    localData.forEach(localItem => {
+                        const key = localItem.poster ? localItem.poster : `${localItem.title}|${localItem.year || ''}`;
+                        if (!remoteKeys.has(key)) {
+                            // This item exists locally but not remotely - add it
+                            mergedData.push(localItem);
+                        }
+                    });
+                    
+                    localStorage.setItem('watchlistData', JSON.stringify(mergedData));
+                    
+                    showStatus('Success', `Merged successfully! ${mergedData.length} total items (${remoteData.length} from backup, ${mergedData.length - remoteData.length} kept from local).`);
+                } else {
+                    // REPLACE MODE: Straight replace — backup is the source of truth
+                    localStorage.setItem('watchlistData', JSON.stringify(remoteData));
+                    showStatus('Success', `Synced successfully! ${remoteData.length} items loaded from backup.`);
+                }
                 
                 // Import rankings
                 let rankings = importedData.rankings || [];
@@ -684,7 +723,6 @@
                 localStorage.setItem('watchlistRankings', JSON.stringify(rankingIds));
                 localStorage.removeItem('dataChanged');
                 
-                showStatus('Success', `Synced successfully! ${remoteData.length} items loaded from backup.`);
                 updateBackupStatus();
             }).catch(err => {
                 console.error('Sync error:', err);
