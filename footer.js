@@ -13,11 +13,11 @@
         description: 'Your Personal Movie & TV Tracking Platform',
         links: [
             { text: 'Home', url: 'index.html' },
-            { text: 'Browse', url: 'search.html' },
             { text: 'Leaderboard', url: 'leaderboard.html', hideable: true },
+            { text: 'Settings', url: 'settings.html' },
+            { text: 'Browse', url: 'search.html' },
             { text: 'Backup', url: 'backup.html' },
-            { text: 'Guide', url: 'guide.html' },
-            { text: 'Settings', url: 'settings.html' }
+            { text: 'Guide', url: 'guide.html' }
         ],
         showYear: true,
         showTMDB: false,
