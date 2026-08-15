@@ -270,37 +270,47 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            text-align: center;
         }
 
         .guide-section {
-            background: var(--surface);
-            border: 1px solid rgba(195,199,206,0.1);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(195,199,206,0.15);
+        }
+
+        .guide-section:last-child {
+            border-bottom: none;
         }
 
         .guide-section h2 {
             color: var(--light);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-bottom: 15px;
-            border-bottom: 2px solid var(--muted);
-            padding-bottom: 10px;
         }
 
         .guide-section p, .guide-section li {
             color: var(--silver);
             line-height: 1.6;
             margin-bottom: 10px;
+            text-align: left;
         }
 
         .guide-section ul {
             padding-left: 20px;
+            text-align: left;
         }
 
         .guide-section strong {
             color: var(--light);
+        }
+
+        .guide-section a {
+            color: var(--light);
+            text-decoration: none;
+        }
+
+        .guide-section a:hover {
+            text-decoration: underline;
         }
     </style>
     
