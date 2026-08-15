@@ -612,11 +612,23 @@
         }
 
         [data-theme="light"] .detail-actions .action-btn {
+            background: rgba(0,0,0,0.06);
+            border: 1px solid rgba(0,0,0,0.15);
             color: var(--light);
         }
 
         [data-theme="light"] .detail-actions .action-btn:hover {
-            background: rgba(0,0,0,0.08);
+            background: rgba(0,0,0,0.12);
+        }
+
+        [data-theme="light"] .detail-actions .action-btn.watched {
+            background: rgba(40,167,69,0.15);
+            border-color: rgba(40,167,69,0.4);
+            color: #28a745;
+        }
+
+        [data-theme="light"] .detail-actions .action-btn.watched:hover {
+            background: rgba(40,167,69,0.25);
         }
 
         @media (max-width: 768px) {
