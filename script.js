@@ -815,7 +815,8 @@ function handleAddShow(e) {
         genres: genres.sort(),
         section: sectionKey,
         isMovie,
-        seasons: []
+        seasons: [],
+        addedAt: Date.now() // Add timestamp for merge tracking
     };
     
     // Handle currently watching status
@@ -1055,6 +1056,16 @@ function deleteItem(index) {
 
 function confirmDelete() {
     if (itemToDelete !== null) {
+        const deletedItem = watchlistData[itemToDelete];
+        
+        // Track deletion for smart merge
+        const deletedLog = JSON.parse(localStorage.getItem('deletedItemsLog') || '[]');
+        const key = deletedItem.poster ? deletedItem.poster : `${deletedItem.title}|${deletedItem.year || ''}`;
+        if (!deletedLog.includes(key)) {
+            deletedLog.push(key);
+            localStorage.setItem('deletedItemsLog', JSON.stringify(deletedLog));
+        }
+        
         watchlistData.splice(itemToDelete, 1);
         saveToStorage();
         updateStats();

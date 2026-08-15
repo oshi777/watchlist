@@ -665,43 +665,91 @@
 
                 const importedData = JSON.parse(fileContent);
                 const remoteData = importedData.watchlistData || [];
+                const remoteTimestamp = new Date(importedData.timestamp || 0).getTime();
                 
                 // Check sync mode setting
                 const syncMode = localStorage.getItem('backupSyncMode') || 'merge';
                 
                 if (syncMode === 'merge') {
-                    // MERGE MODE: Intelligently merge local and remote data
+                    // MERGE MODE: Intelligently merge local and remote data with timestamp tracking
                     const localData = JSON.parse(localStorage.getItem('watchlistData') || '[]');
+                    const localTimestamp = parseInt(localStorage.getItem('watchlistTimestamp') || '0');
                     
-                    // Create maps for efficient lookup
+                    // Get deletion log (items deleted locally)
+                    const deletedItems = new Set(JSON.parse(localStorage.getItem('deletedItemsLog') || '[]'));
+                    
+                    // Create maps for efficient lookup with metadata
                     const remoteMap = new Map();
                     remoteData.forEach(item => {
-                        // Use poster path as primary key if available, otherwise title+year
                         const key = item.poster ? item.poster : `${item.title}|${item.year || ''}`;
-                        remoteMap.set(key, item);
+                        remoteMap.set(key, {
+                            item: item,
+                            timestamp: remoteTimestamp
+                        });
                     });
                     
                     const localMap = new Map();
                     localData.forEach(item => {
                         const key = item.poster ? item.poster : `${item.title}|${item.year || ''}`;
-                        localMap.set(key, item);
+                        // Use item's own timestamp if available, otherwise use last backup timestamp
+                        const itemTimestamp = item.addedAt || localTimestamp;
+                        localMap.set(key, {
+                            item: item,
+                            timestamp: itemTimestamp
+                        });
                     });
                     
-                    // Merge: Start with remote data, add local items not in remote
-                    const mergedData = [...remoteData];
-                    const remoteKeys = new Set(remoteMap.keys());
+                    // Merge logic: combine both sets, using newer version on conflicts
+                    const mergedMap = new Map();
                     
-                    localData.forEach(localItem => {
-                        const key = localItem.poster ? localItem.poster : `${localItem.title}|${localItem.year || ''}`;
-                        if (!remoteKeys.has(key)) {
-                            // This item exists locally but not remotely - add it
-                            mergedData.push(localItem);
+                    // Add all remote items (unless deleted locally)
+                    remoteMap.forEach((remoteEntry, key) => {
+                        if (!deletedItems.has(key)) {
+                            mergedMap.set(key, remoteEntry);
                         }
                     });
                     
+                    // Add or update with local items
+                    localMap.forEach((localEntry, key) => {
+                        if (deletedItems.has(key)) {
+                            // Item was deleted locally, don't include it
+                            return;
+                        }
+                        
+                        const remoteEntry = mergedMap.get(key);
+                        if (!remoteEntry) {
+                            // Item only exists locally, add it
+                            mergedMap.set(key, localEntry);
+                        } else {
+                            // Item exists in both - use newer version based on timestamp
+                            if (localEntry.timestamp > remoteEntry.timestamp) {
+                                mergedMap.set(key, localEntry);
+                            }
+                            // Otherwise keep remote version (already in map)
+                        }
+                    });
+                    
+                    // Convert map to array
+                    const mergedData = Array.from(mergedMap.values()).map(entry => {
+                        // Ensure each item has an addedAt timestamp
+                        const item = entry.item;
+                        if (!item.addedAt) {
+                            item.addedAt = entry.timestamp;
+                        }
+                        return item;
+                    });
+                    
+                    // Update timestamp to current time
+                    const currentTimestamp = Date.now();
+                    localStorage.setItem('watchlistTimestamp', currentTimestamp.toString());
+                    
+                    // Clear deletion log after successful merge
+                    localStorage.removeItem('deletedItemsLog');
+                    
                     localStorage.setItem('watchlistData', JSON.stringify(mergedData));
                     
-                    showStatus('Success', `Merged successfully! ${mergedData.length} total items (${remoteData.length} from backup, ${mergedData.length - remoteData.length} kept from local).`);
+                    const newItems = mergedData.length - remoteData.length;
+                    showStatus('Success', `Smart merge complete! ${mergedData.length} total items (${remoteData.length} from backup${newItems > 0 ? `, ${newItems} kept/added from local` : ''}).`);
                 } else {
                     // REPLACE MODE: Straight replace — backup is the source of truth
                     localStorage.setItem('watchlistData', JSON.stringify(remoteData));

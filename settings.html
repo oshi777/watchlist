@@ -111,7 +111,7 @@
                             <input type="radio" name="syncMode" value="merge" checked>
                             <div class="option-label">
                                 <span class="option-name">Merge Mode (Smart Sync) - Default</span>
-                                <span class="option-desc">Intelligently merges data from both devices. New shows added on either device are combined. Deletions are synced across devices. Best for multi-device usage. <strong>Note:</strong> Deleted items may reappear if other device hasn't synced yet.</span>
+                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
                             </div>
                         </label>
 
@@ -309,7 +309,11 @@
             color: var(--silver);
         }
 
-        /* Display Options */
+        .display-options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
             display: flex;
             flex-direction: column;
             gap: 14px;
