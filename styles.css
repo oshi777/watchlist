@@ -33,6 +33,67 @@
     --glass: rgba(30,33,38,0.85);
 }
 
+/* Light theme hover and interactive states */
+[data-theme="light"] .item:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .currently-watching-item:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .available-show-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .qa-modal-item:hover {
+    background: rgba(245, 245, 245, 0.9);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .season-item:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--light);
+}
+
+[data-theme="light"] .nav-link:hover {
+    background: var(--muted);
+    color: var(--light);
+}
+
+[data-theme="light"] .season-checkbox {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .nav-link.active-nav {
+    background: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .modal {
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+[data-theme="light"] .add-btn:hover,
+[data-theme="light"] .reset-btn:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .action-btn:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+[data-theme="light"] .delete-btn:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+[data-theme="light"] .site-blur-overlay {
+    background: rgba(255, 255, 255, 0.4);
+}
+
 * {
     margin: 0;
     padding: 0;
