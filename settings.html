@@ -231,6 +231,34 @@
                     </div>
                 </div>
 
+                <!-- Backup Sync Mode -->
+                <div class="settings-card">
+                    <div class="settings-card-header">
+                        <h3>Backup Sync Mode</h3>
+                        <p>Choose how data is synced between devices when using GitHub Gist backup</p>
+                    </div>
+                    
+                    <div class="display-options">
+                        <!-- Option 1: Merge Mode (default) -->
+                        <label class="display-option selected" id="optionMerge">
+                            <input type="radio" name="syncMode" value="merge" checked>
+                            <div class="option-label">
+                                <span class="option-name">Merge Mode (Smart Sync) - Default</span>
+                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 2: Replace Mode -->
+                        <label class="display-option" id="optionReplace">
+                            <input type="radio" name="syncMode" value="replace">
+                            <div class="option-label">
+                                <span class="option-name">Replace Mode</span>
+                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss. Best when using one primary device.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Trakt.tv Integration -->
                 <div class="settings-card">
                     <div class="settings-card-header">
@@ -263,31 +291,6 @@
                         </p>
                     </div>
                 </div>
-
-                <!-- Backup Sync Mode -->
-                <div class="settings-card">
-                    <div class="settings-card-header">
-                        <h3>Backup Sync Mode</h3>
-                        <p>Choose how data is synced between devices when using GitHub Gist backup</p>
-                    </div>
-                    
-                    <div class="display-options">
-                        <!-- Option 1: Merge Mode (default) -->
-                        <label class="display-option selected" id="optionMerge">
-                            <input type="radio" name="syncMode" value="merge" checked>
-                            <div class="option-label">
-                                <span class="option-name">Merge Mode (Smart Sync) - Default</span>
-                                <span class="option-desc">Intelligently merges data from both devices using timestamps. New shows added on either device are combined. Deletions are tracked and synced. Conflicts resolved by using the newest version. Best for multi-device usage.</span>
-                            </div>
-                        </label>
-
-                        <!-- Option 2: Replace Mode -->
-                        <label class="display-option" id="optionReplace">
-                            <input type="radio" name="syncMode" value="replace">
-                            <div class="option-label">
-                                <span class="option-name">Replace Mode</span>
-                                <span class="option-desc">When syncing, remote backup completely replaces local data. Simple and reliable, but make sure to backup before syncing to avoid data loss. Best when using one primary device.</span>
-                            </div>
                         </label>
                     </div>
                 </div>
