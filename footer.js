@@ -132,9 +132,9 @@
                 list-style: none;
                 padding: 0;
                 margin: 0;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px 12px;
             }
 
             .footer-links a {
@@ -215,10 +215,10 @@
                 }
 
                 .footer-links ul {
-                    flex-direction: row;
-                    flex-wrap: wrap;
-                    justify-content: center;
-                    gap: 16px;
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 12px 16px;
+                    justify-items: center;
                 }
 
                 .footer-info {
