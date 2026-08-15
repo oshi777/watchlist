@@ -49,7 +49,7 @@
                     <li>List Grouping: With Section Headers</li>
                     <li>Poster Display: Crop to Fill</li>
                 </ul>
-                <p style="color: var(--silver); font-size: 0.9rem;">Netflix and Light themes will be reset to Dark.</p>
+                <p style="color: var(--silver); font-size: 0.9rem;">Netflix, Prime, and Light themes will be reset to Dark.</p>
             </div>
             <div class="modal-footer">
                 <button id="cancelReset" class="modal-btn cancel-btn">Cancel</button>
@@ -127,6 +127,24 @@
                             <div class="option-label">
                                 <span class="option-name">Netflix</span>
                                 <span class="option-desc">Inspired by Netflix with deep blacks and red accents. Perfect for a cinematic feel.</span>
+                            </div>
+                        </label>
+
+                        <!-- Option 4: Prime Theme -->
+                        <label class="display-option" id="optionPrimeTheme">
+                            <input type="radio" name="theme" value="prime">
+                            <div class="option-preview theme-preview prime-preview">
+                                <div class="theme-demo">
+                                    <div class="theme-header"></div>
+                                    <div class="theme-content">
+                                        <div class="theme-card"></div>
+                                        <div class="theme-card"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="option-label">
+                                <span class="option-name">Prime</span>
+                                <span class="option-desc">Amazon Prime inspired with dark blue tones and cyan accents. Sleek and modern.</span>
                             </div>
                         </label>
                     </div>
@@ -727,6 +745,21 @@
         .netflix-preview .theme-card {
             background: #1F1F1F;
             border: 1px solid rgba(229, 9, 20, 0.2);
+        }
+
+        /* Prime theme preview */
+        .prime-preview .theme-demo {
+            background: #0F171E;
+        }
+
+        .prime-preview .theme-header {
+            background: #0F171E;
+            border-bottom: 1px solid rgba(0, 168, 225, 0.3);
+        }
+
+        .prime-preview .theme-card {
+            background: #1A2632;
+            border: 1px solid rgba(0, 168, 225, 0.2);
         }
 
         /* Modal Styles */

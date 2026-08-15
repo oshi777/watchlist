@@ -107,6 +107,25 @@
             box-shadow: 0 0 8px rgba(229, 9, 20, 0.5);
         }
 
+        /* Prime theme - blue timeline and dots */
+        [data-theme="prime"] .timeline::before {
+            background: linear-gradient(to bottom, var(--accent), transparent);
+        }
+
+        [data-theme="prime"] .year-divider::before {
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(0, 168, 225, 0.6);
+        }
+
+        [data-theme="prime"] .history-entry::before {
+            background: var(--accent);
+        }
+
+        [data-theme="prime"] .history-entry:hover::before {
+            background: var(--accent-hi);
+            box-shadow: 0 0 8px rgba(0, 168, 225, 0.5);
+        }
+
         .year-label {
             display: inline-block;
             font-size: 1.4rem;

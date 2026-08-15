@@ -103,6 +103,12 @@
                 border-top: 1px solid rgba(229, 9, 20, 0.2);
             }
 
+            /* Prime theme footer */
+            [data-theme="prime"] .universal-footer {
+                background: linear-gradient(135deg, #0a0f14 0%, #152028 100%);
+                border-top: 1px solid rgba(0, 168, 225, 0.2);
+            }
+
             .footer-container {
                 max-width: 1200px;
                 margin: 0 auto;
@@ -221,6 +227,11 @@
             /* Netflix theme footer bottom */
             [data-theme="netflix"] .footer-bottom {
                 border-top: 1px solid rgba(229, 9, 20, 0.15);
+            }
+
+            /* Prime theme footer bottom */
+            [data-theme="prime"] .footer-bottom {
+                border-top: 1px solid rgba(0, 168, 225, 0.15);
             }
 
             .footer-bottom p {

@@ -33,6 +33,18 @@
     --glass: rgba(31,31,31,0.85);
 }
 
+/* Prime theme variables */
+[data-theme="prime"] {
+    --bg: #0F171E;
+    --surface: #1A2632;
+    --muted: #2A3845;
+    --silver: #AAB7C4;
+    --light: #E3E6E8;
+    --accent: #00A8E1;
+    --accent-hi: #1AC8FF;
+    --glass: rgba(26,38,50,0.85);
+}
+
 /* Dark theme (explicit) */
 [data-theme="dark"] {
     --bg: #0B0C0E;
@@ -84,6 +96,48 @@
 }
 
 [data-theme="netflix"] .filters select:hover {
+    border-color: var(--accent);
+}
+
+/* Prime theme styling for buttons and interactive elements */
+[data-theme="prime"] .add-btn,
+[data-theme="prime"] .reset-btn,
+[data-theme="prime"] .add-to-currently-btn {
+    background: var(--accent);
+    color: #FFFFFF;
+    border-color: var(--accent);
+}
+
+[data-theme="prime"] .add-btn:hover,
+[data-theme="prime"] .reset-btn:hover,
+[data-theme="prime"] .add-to-currently-btn:hover {
+    background: var(--accent-hi);
+    color: #FFFFFF;
+    box-shadow: 0 6px 20px rgba(0, 168, 225, 0.4);
+}
+
+[data-theme="prime"] .add-btn.secondary:hover {
+    background: var(--accent);
+    color: #FFFFFF;
+}
+
+[data-theme="prime"] .action-btn:hover {
+    background: rgba(0, 168, 225, 0.15);
+    border-color: var(--accent);
+}
+
+[data-theme="prime"] .genre-tag:hover {
+    background: var(--accent);
+    color: #FFFFFF;
+    border-color: var(--accent);
+}
+
+[data-theme="prime"] .modal button:hover {
+    background: var(--accent);
+    color: #FFFFFF;
+}
+
+[data-theme="prime"] .filters select:hover {
     border-color: var(--accent);
 }
 
@@ -1892,6 +1946,13 @@ header p {
 [data-theme="netflix"] .navbar {
     background: #141414;
     border-bottom: 1px solid rgba(229, 9, 20, 0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.7);
+}
+
+/* Prime theme navbar */
+[data-theme="prime"] .navbar {
+    background: #0F171E;
+    border-bottom: 1px solid rgba(0, 168, 225, 0.2);
     box-shadow: 0 2px 10px rgba(0,0,0,0.7);
 }
 
