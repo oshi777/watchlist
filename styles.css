@@ -683,6 +683,7 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex-shrink: 0;
 }
 
 .qa-move-btn {
@@ -736,6 +737,10 @@ header p {
 .qa-remove-btn {
     width: 24px;
     height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 24px;
+    max-height: 24px;
     background: rgba(255,68,68,0.15);
     color: #ff4444;
     border: 1px solid rgba(255,68,68,0.4);
