@@ -119,22 +119,6 @@
             background: rgba(195,199,206,0.03);
         }
 
-        .ranking-item.dragging {
-            opacity: 0.5;
-        }
-
-        .ranking-item.drag-over::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--light);
-            box-shadow: 0 0 15px var(--light);
-            border-radius: 2px;
-        }
-
         .rank-number {
             font-size: 2rem;
             font-weight: 700;
@@ -159,20 +143,35 @@
             font-size: 0.9rem;
         }
 
-        .drag-handle {
-            color: var(--muted);
-            font-size: 1.5rem;
-            cursor: grab;
+        .rank-controls {
             display: flex;
+            gap: 8px;
             align-items: center;
-            transform: translateY(-3px);
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: none;
         }
 
-        .drag-handle:active {
-            cursor: grabbing;
+        .rank-arrow {
+            background: rgba(195,199,206,0.1);
+            color: var(--light);
+            border: 1px solid rgba(195,199,206,0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .rank-arrow:hover:not(:disabled) {
+            background: rgba(195,199,206,0.2);
+            border-color: rgba(195,199,206,0.4);
+        }
+
+        .rank-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .no-items {
@@ -304,22 +303,28 @@
                 padding: 0 12px;
             }
 
-            .leaderboard-item {
+            .ranking-item {
                 padding: 14px 12px;
                 gap: 12px;
             }
 
             .rank-number {
+                font-size: 1.5rem;
+                min-width: 40px;
+            }
+
+            .item-title {
                 font-size: 1.1rem;
-                width: 36px;
             }
 
-            .item-content h3 {
-                font-size: 0.95rem;
+            .item-details {
+                font-size: 0.8rem;
             }
 
-            .item-meta {
-                font-size: 0.75rem;
+            .rank-arrow {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
             }
 
             .available-shows-grid {
@@ -333,31 +338,36 @@
                 padding: 0 8px;
             }
 
-            .leaderboard-item {
+            .ranking-item {
                 padding: 12px 8px;
                 gap: 8px;
             }
 
             .rank-number {
-                font-size: 1rem;
-                width: 32px;
+                font-size: 1.2rem;
+                min-width: 32px;
             }
 
-            .item-content h3 {
-                font-size: 0.88rem;
+            .item-title {
+                font-size: 0.95rem;
             }
 
-            .item-meta {
-                font-size: 0.72rem;
+            .item-details {
+                font-size: 0.75rem;
             }
 
-            .drag-handle {
+            .rank-arrow {
+                width: 28px;
+                height: 28px;
                 font-size: 0.9rem;
             }
 
-            .remove-btn {
-                padding: 6px 10px;
-                font-size: 0.75rem;
+            .rank-controls {
+                gap: 4px;
+            }
+
+            .delete-from-ranking {
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -598,167 +608,37 @@
                 div.className = 'ranking-item';
                 div.dataset.index = index;
 
+                const isFirst = index === 0;
+                const isLast = index === rankingIds.length - 1;
+
                 div.innerHTML = `
                     <div class="rank-number">#${index + 1}</div>
                     <div class="item-info">
                         <div class="item-title">${item.title}</div>
                         <div class="item-details">${item.genres.join(', ')} ${item.year ? `(${item.year})` : ''}</div>
                     </div>
-                    <button class="delete-from-ranking" onclick="showRemoveConfirm(${index})">×</button>
-                    <div class="drag-handle" draggable="true">⋮⋮</div>
+                    <div class="rank-controls">
+                        <button class="rank-arrow" onclick="moveRanking(${index}, 'up')" ${isFirst ? 'disabled' : ''}>▲</button>
+                        <button class="rank-arrow" onclick="moveRanking(${index}, 'down')" ${isLast ? 'disabled' : ''}>▼</button>
+                        <button class="delete-from-ranking" onclick="showRemoveConfirm(${index})">×</button>
+                    </div>
                 `;
-
-                // Drag events on the handle only, but operate on the parent item
-                const handle = div.querySelector('.drag-handle');
-                handle.addEventListener('dragstart', (e) => handleDragStart.call(div, e));
-                handle.addEventListener('dragend', (e) => handleDragEnd.call(div, e));
-
-                // Drop zone events stay on the item
-                div.addEventListener('dragover', handleDragOver);
-                div.addEventListener('dragleave', handleDragLeave);
-                div.addEventListener('drop', handleDrop);
-
-                // Touch events on the handle for mobile
-                handle.addEventListener('touchstart', (e) => handleTouchStart.call(div, e), {passive: false});
-                handle.addEventListener('touchmove', (e) => handleTouchMove.call(div, e), {passive: false});
-                handle.addEventListener('touchend', (e) => handleTouchEnd.call(div, e));
 
                 container.appendChild(div);
             });
         }
 
-        let draggedElement = null;
-        let touchStartY = 0;
-        let touchElement = null;
-        let touchOffset = 0;
-
-        function handleDragStart(e) {
-            draggedElement = this;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', this.dataset.index);
-        }
-
-        let autoScrollId = null;
-
-        function autoScroll(direction) {
-            if (autoScrollId) return;
-            
-            autoScrollId = requestAnimationFrame(function scroll() {
-                window.scrollBy(0, direction * 8);
-                autoScrollId = requestAnimationFrame(scroll);
-            });
-        }
-
-        function stopAutoScroll() {
-            if (autoScrollId) {
-                cancelAnimationFrame(autoScrollId);
-                autoScrollId = null;
-            }
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            this.classList.add('drag-over');
-            
-            const threshold = 100;
-            
-            if (e.clientY < threshold) {
-                autoScroll(-1);
-            } else if (e.clientY > window.innerHeight - threshold) {
-                autoScroll(1);
-            } else {
-                stopAutoScroll();
-            }
-        }
-
-        function handleDragLeave(e) {
-            if (!this.contains(e.relatedTarget)) {
-                this.classList.remove('drag-over');
-            }
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            if (this !== draggedElement) {
-                const draggedIndex = parseInt(draggedElement.dataset.index);
-                const targetIndex = parseInt(this.dataset.index);
-                
-                const draggedId = rankingIds.splice(draggedIndex, 1)[0];
-                rankingIds.splice(targetIndex, 0, draggedId);
-                
-                saveRankings();
-                renderLeaderboard();
-            }
-        }
-
-        function handleDragEnd() {
-            this.classList.remove('dragging');
-            document.querySelectorAll('.ranking-item').forEach(item => {
-                item.classList.remove('drag-over');
-            });
-            stopAutoScroll();
-            draggedElement = null;
-        }
-        
-        function handleTouchStart(e) {
-            touchElement = this;
-            touchStartY = e.touches[0].clientY;
-            const rect = this.getBoundingClientRect();
-            touchOffset = touchStartY - rect.top;
-            this.classList.add('dragging');
-        }
-        
-        function handleTouchMove(e) {
-            e.preventDefault();
-            if (!touchElement) return;
-            
-            const touch = e.touches[0];
-            const currentY = touch.clientY;
-            
-            // Find element under touch
-            const elementBelow = document.elementFromPoint(touch.clientX, currentY);
-            const rankingItem = elementBelow?.closest('.ranking-item');
-            
-            // Clear previous highlights
-            document.querySelectorAll('.ranking-item').forEach(item => {
-                item.classList.remove('drag-over');
-            });
-            
-            // Highlight current target
-            if (rankingItem && rankingItem !== touchElement) {
-                rankingItem.classList.add('drag-over');
-            }
-        }
-        
-        function handleTouchEnd(e) {
-            if (!touchElement) return;
-            
-            const touch = e.changedTouches[0];
-            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            const targetItem = elementBelow?.closest('.ranking-item');
-            
-            if (targetItem && targetItem !== touchElement) {
-                const draggedIndex = parseInt(touchElement.dataset.index);
-                const targetIndex = parseInt(targetItem.dataset.index);
-                
-                const draggedId = rankingIds.splice(draggedIndex, 1)[0];
-                rankingIds.splice(targetIndex, 0, draggedId);
-                
-                saveRankings();
-                renderLeaderboard();
+        function moveRanking(index, direction) {
+            if (direction === 'up' && index > 0) {
+                // Swap with item above
+                [rankingIds[index - 1], rankingIds[index]] = [rankingIds[index], rankingIds[index - 1]];
+            } else if (direction === 'down' && index < rankingIds.length - 1) {
+                // Swap with item below
+                [rankingIds[index], rankingIds[index + 1]] = [rankingIds[index + 1], rankingIds[index]];
             }
             
-            // Clean up
-            touchElement.classList.remove('dragging');
-            document.querySelectorAll('.ranking-item').forEach(item => {
-                item.classList.remove('drag-over');
-            });
-            
-            touchElement = null;
-            touchStartY = 0;
-            touchOffset = 0;
+            saveRankings();
+            renderLeaderboard();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
