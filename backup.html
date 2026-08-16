@@ -253,6 +253,59 @@
             font-size: 1rem;
             font-weight: 600;
         }
+
+        @media (max-width: 768px) {
+            .backup-container {
+                padding: 0 4px;
+            }
+
+            .backup-card {
+                padding: 20px;
+            }
+
+            .backup-card h2 {
+                font-size: 1.1rem;
+            }
+
+            .backup-card p {
+                font-size: 0.85rem;
+            }
+
+            .gist-info {
+                padding: 12px;
+            }
+
+            .gist-info-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .backup-card {
+                padding: 16px;
+            }
+
+            .backup-card h2 {
+                font-size: 1rem;
+            }
+
+            .backup-card p {
+                font-size: 0.82rem;
+            }
+
+            .backup-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .backup-actions button {
+                width: 100%;
+            }
+
+            .gist-info-item {
+                font-size: 0.75rem;
+            }
+        }
     </style>
 
     <script>
